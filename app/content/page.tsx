@@ -72,6 +72,20 @@ type CardData = {
   imageUrl: string | null
 }
 
+const renameKey = <T,>(
+  source: Record<string, T>,
+  fromKey: string,
+  toKey: string
+): Record<string, T> => {
+  const { [fromKey]: value, ...rest } = source
+  return { ...rest, [toKey]: value }
+}
+
+const removeKey = <T,>(source: Record<string, T>, key: string): Record<string, T> => {
+  const { [key]: _value, ...rest } = source
+  return rest
+}
+
 const createCard = (): CardData => ({
   id: Math.random().toString(36).slice(2),
   title: '',
@@ -89,6 +103,8 @@ const Page = () => {
   const [highlightMenuOpen, setHighlightMenuOpen] = useState(false)
   const [newTabOpen, setNewTabOpen] = useState(false)
   const [newTabName, setNewTabName] = useState('')
+  const [editingTab, setEditingTab] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
   const editorRef = useRef<HTMLDivElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
@@ -126,6 +142,44 @@ const Page = () => {
     setActiveTab(trimmed)
     setNewTabName('')
     setNewTabOpen(false)
+  }
+
+  const handleStartEdit = (tab: string) => {
+    setEditingTab(tab)
+    setEditValue(tab)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingTab(null)
+    setEditValue('')
+  }
+
+  const handleSaveEdit = () => {
+    if (!editingTab) return
+    const trimmed = editValue.trim()
+    if (!trimmed || contentTabs.includes(trimmed)) return
+    setContentTabs((prev) => prev.map((tab) => (tab === editingTab ? trimmed : tab)))
+    setEditorContent((prev) => renameKey(prev, editingTab, trimmed))
+    setSectionFiles((prev) => renameKey(prev, editingTab, trimmed))
+    setSectionPreview((prev) => renameKey(prev, editingTab, trimmed))
+    setCardsByTab((prev) => renameKey(prev, editingTab, trimmed))
+    if (activeTab === editingTab) setActiveTab(trimmed)
+    setEditingTab(null)
+    setEditValue('')
+  }
+
+  const handleDeleteTab = (tab: string) => {
+    if (contentTabs.length === 1) return
+    setContentTabs((prev) => prev.filter((item) => item !== tab))
+    setEditorContent((prev) => removeKey(prev, tab))
+    setSectionFiles((prev) => removeKey(prev, tab))
+    setSectionPreview((prev) => removeKey(prev, tab))
+    setCardsByTab((prev) => removeKey(prev, tab))
+    if (activeTab === tab) {
+      const remaining = contentTabs.filter((item) => item !== tab)
+      setActiveTab(remaining[0] ?? 'About')
+    }
+    if (editingTab === tab) handleCancelEdit()
   }
 
   useEffect(() => {
@@ -187,7 +241,7 @@ const Page = () => {
     setHighlightMenuOpen(false)
   }
 
-  
+
 
   const handleSectionFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ? Array.from(event.target.files) : []
@@ -296,18 +350,64 @@ const Page = () => {
             {sidebarOpen && contentOpen && (
               <div className="rounded-xl border border-slate-200 bg-white px-2 py-2">
                 {contentTabs.map((tab) => (
-                  <button
+                  <div
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex w-full cursor-pointer items-center rounded-lg px-2 py-1.5 text-left text-sm font-medium transition hover:bg-slate-50 ${activeTab === tab ? 'text-blue-600' : 'text-slate-500'
+                    className={`group flex w-full items-center rounded-lg px-2 py-1.5 text-sm font-medium transition hover:bg-slate-50 ${activeTab === tab ? 'text-blue-600' : 'text-slate-500'
                       }`}
                   >
-                    {tab}
-                  </button>
+                    {editingTab === tab ? (
+                      <div className="flex w-full items-center gap-2">
+                        <input
+                          value={editValue}
+                          onChange={(event) => setEditValue(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') handleSaveEdit()
+                            if (event.key === 'Escape') handleCancelEdit()
+                          }}
+                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600"
+                        />
+                        <button
+                          onClick={handleSaveEdit}
+                          className="rounded-md bg-blue-600 px-2 py-1 text-xs font-semibold text-white"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-500"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setActiveTab(tab)}
+                          className="flex flex-1 cursor-pointer items-center text-left"
+                        >
+                          {tab}
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleStartEdit(tab)}
+                            className="cursor-pointer text-slate-400 hover:text-slate-600"
+                          >
+                            <EditIcon className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTab(tab)}
+                            className="cursor-pointer text-red-400 hover:text-red-600"
+                          >
+                            <DeleteIcon className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 ))}
                 <button
                   onClick={() => setNewTabOpen((prev) => !prev)}
-                  className="mt-1 flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-left text-sm font-medium text-slate-500 transition hover:bg-slate-50"
+                  className="mt-1 flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-left text-sm font-bold text-slate-500 transition hover:bg-slate-50"
                 >
                   Add new page
                   <AddTabIcon className="h-4 w-4 text-blue-600" />
@@ -479,7 +579,7 @@ const Page = () => {
                   icon={<DotListIcon className="h-4 w-4" />}
                   onClick={() => runEditorCommand('insertUnorderedList')}
                 />
-                
+
               </div>
               <div
                 ref={editorRef}
@@ -817,6 +917,22 @@ const UnderlineIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const EditIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path d="M0 7.67442V4.32558C0 2.88895 0.284795 1.77443 1.02961 1.02961C1.77443 0.284795 2.88895 0 4.32558 0H5.44186C5.67305 0 5.86047 0.187416 5.86047 0.418605C5.86047 0.649794 5.67305 0.837209 5.44186 0.837209H4.32558C2.97152 0.837209 2.13254 1.11055 1.62155 1.62155C1.11055 2.13254 0.837209 2.97152 0.837209 4.32558V7.67442C0.837209 9.02848 1.11055 9.86746 1.62155 10.3785C2.13254 10.8894 2.97152 11.1628 4.32558 11.1628H7.67442C9.02848 11.1628 9.86746 10.8894 10.3785 10.3785C10.8894 9.86746 11.1628 9.02848 11.1628 7.67442V6.55814C11.1628 6.32695 11.3502 6.13953 11.5814 6.13953C11.8126 6.13953 12 6.32695 12 6.55814V7.67442C12 9.11105 11.7152 10.2256 10.9704 10.9704C10.2256 11.7152 9.11105 12 7.67442 12H4.32558C2.88895 12 1.77443 11.7152 1.02961 10.9704C0.284795 10.2256 0 9.11105 0 7.67442Z" fill="#566273" />
+    <path d="M9.41074 0.00805899C10.0107 -0.050837 10.6054 0.212947 11.1963 0.803818C11.7871 1.39472 12.0508 1.98953 11.9919 2.58954C11.9351 3.16831 11.5858 3.6478 11.1963 4.03738L6.94531 8.2888C6.82399 8.40621 6.66574 8.50923 6.51274 8.58616C6.36058 8.66264 6.18103 8.73016 6.01018 8.75457L4.38831 8.98614H4.3862C3.98632 9.04118 3.60374 8.93195 3.3353 8.66458C3.06652 8.39676 2.95674 8.01446 3.01535 7.61251L3.2469 5.99152C3.2711 5.81831 3.3377 5.63754 3.41477 5.48417C3.49195 5.33058 3.59629 5.17105 3.71683 5.0505L7.96305 0.803818C8.35258 0.414249 8.83206 0.0649246 9.41074 0.00805899ZM9.48967 0.812766C9.19013 0.842245 8.87777 1.03212 8.53455 1.37538L4.28832 5.62206C4.2472 5.66319 4.18943 5.74356 4.13729 5.84731C4.08513 5.95113 4.05545 6.04524 4.04731 6.10362L4.04678 6.10467L3.81523 7.72672L3.81471 7.72829C3.78757 7.91317 3.8422 8.02865 3.90575 8.09196C3.96985 8.15581 4.08774 8.21081 4.27411 8.18565L5.89598 7.95408C5.95145 7.94615 6.04448 7.91641 6.14963 7.86355C6.25088 7.81264 6.33261 7.75521 6.37907 7.71145L10.6248 3.46582C10.968 3.12254 11.1579 2.81019 11.1873 2.5106C11.2146 2.23216 11.1117 1.86233 10.6248 1.37538C10.1379 0.888449 9.76807 0.785435 9.48967 0.812766Z" fill="#566273" />
+    <path d="M8.25509 1.01305C8.44087 0.961005 8.6334 1.0693 8.68548 1.25509C8.96461 2.25069 9.7442 3.03085 10.746 3.31469C10.9316 3.36733 11.0393 3.56035 10.9867 3.74599C10.934 3.9316 10.741 4.03926 10.5554 3.98666C9.32103 3.63688 8.3582 2.67466 8.01305 1.44344C7.96101 1.25765 8.0693 1.06513 8.25509 1.01305Z" fill="#566273" />
+  </svg>
+)
+const DeleteIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
+    <path d="M9.58447 4.00087C9.82914 4.01573 10.0147 4.2141 9.99908 4.44427L9.61454 10.0545L9.61396 10.0567C9.59815 10.2691 9.58142 10.504 9.53474 10.722C9.48715 10.9444 9.40343 11.1792 9.23347 11.3874C8.8775 11.8234 8.27118 12 7.40042 12H3.599C2.72835 12 2.12247 11.8234 1.76653 11.3874C1.59655 11.1792 1.51286 10.9444 1.46526 10.722C1.41858 10.504 1.40128 10.2691 1.38546 10.0567V10.0545L1.00092 4.44427C0.985269 4.21409 1.17085 4.01573 1.41553 4.00087C1.66018 3.98615 1.87101 4.16076 1.8868 4.39096L2.27192 9.99845L2.29736 10.3037C2.30715 10.3958 2.31946 10.4795 2.3361 10.5572C2.3684 10.708 2.41297 10.8072 2.47083 10.8782C2.57079 11.0006 2.81789 11.1643 3.599 11.1643H7.40042C8.18165 11.1643 8.42861 11.0006 8.52859 10.8782C8.58653 10.8072 8.63157 10.7081 8.6639 10.5572C8.69715 10.4018 8.71134 10.2234 8.72808 9.99845L9.11262 4.39096C9.12842 4.16072 9.33977 3.98609 9.58447 4.00087Z" fill="#C53434" />
+    <path d="M6.27032 0C6.82027 0 7.24546 0.0918676 7.52268 0.334657C7.77345 0.554437 7.8255 0.844492 7.86449 1.02669L7.99374 1.60819C8.0344 1.7909 7.87265 1.96435 7.6324 1.99527C7.3922 2.02613 7.16464 1.90271 7.12399 1.72003L6.99416 1.13853V1.13678C6.94495 0.907273 6.91344 0.824694 6.85629 0.774604C6.82449 0.746796 6.71378 0.671061 6.27032 0.671061H4.72959C4.27892 0.671061 4.17154 0.744789 4.14305 0.769361C4.08891 0.816099 4.05871 0.89462 4.00575 1.13373L3.87592 1.71959C3.83557 1.90231 3.60833 2.0259 3.36808 1.99527C3.12778 1.96458 2.96581 1.79137 3.00617 1.60862L3.13542 1.02276V1.02232C3.17652 0.836697 3.22819 0.543755 3.48126 0.325482C3.76013 0.0849854 4.18609 0 4.72959 0H6.27032Z" fill="#C53434" />
+    <path d="M7.53846 6C7.79336 6 8 6.22386 8 6.5C8 6.77614 7.79336 7 7.53846 7H4.46154C4.20664 7 4 6.77614 4 6.5C4 6.22386 4.20664 6 4.46154 6H7.53846Z" fill="#C53434" />
+    <path d="M6.53417 8C6.79142 8.00003 7 8.22388 7 8.5C7 8.77613 6.79142 8.99997 6.53417 9H4.46583C4.20856 9 4 8.77614 4 8.5C4 8.22386 4.20856 8 4.46583 8H6.53417Z" fill="#C53434" />
+    <path d="M4.92484 2C6.82322 2.00001 8.72699 2.08579 10.6189 2.25198C10.8513 2.27247 11.0209 2.4561 10.9979 2.66217C10.9748 2.86822 10.7676 3.01856 10.5352 2.99814C8.67027 2.83433 6.79454 2.75008 4.92484 2.75007C3.82217 2.75007 2.71907 2.79928 1.61617 2.89804L1.61507 2.89852L0.464252 2.99814C0.23172 3.01835 0.0248766 2.8678 0.00205116 2.66168C-0.020746 2.45556 0.149095 2.27221 0.381617 2.25198L1.53133 2.15236V2.15187C2.6623 2.05061 3.79366 2 4.92484 2Z" fill="#C53434" />
+  </svg>
+)
 const OverlineIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
