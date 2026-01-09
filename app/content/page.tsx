@@ -89,12 +89,7 @@ const Page = () => {
   const [highlightMenuOpen, setHighlightMenuOpen] = useState(false)
   const [newTabOpen, setNewTabOpen] = useState(false)
   const [newTabName, setNewTabName] = useState('')
-  const [linkInput, setLinkInput] = useState('')
-  const [tagInput, setTagInput] = useState('')
-  const [linkOpen, setLinkOpen] = useState(false)
-  const [tagOpen, setTagOpen] = useState(false)
   const editorRef = useRef<HTMLDivElement | null>(null)
-  const editorImageInputRef = useRef<HTMLInputElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
     About: [],
@@ -192,31 +187,7 @@ const Page = () => {
     setHighlightMenuOpen(false)
   }
 
-  const handleInsertLink = () => {
-    if (!linkInput.trim()) return
-    runEditorCommand('createLink', linkInput.trim())
-    setLinkInput('')
-    setLinkOpen(false)
-  }
-
-  const handleInsertTag = () => {
-    if (!tagInput.trim()) return
-    runEditorCommand('insertText', `#${tagInput.trim()} `)
-    setTagInput('')
-    setTagOpen(false)
-  }
-
-  const handleEditorImagePick = () => {
-    editorImageInputRef.current?.click()
-  }
-
-  const handleEditorImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    const url = URL.createObjectURL(file)
-    runEditorCommand('insertImage', url)
-    event.target.value = ''
-  }
+  
 
   const handleSectionFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ? Array.from(event.target.files) : []
@@ -508,79 +479,14 @@ const Page = () => {
                   icon={<DotListIcon className="h-4 w-4" />}
                   onClick={() => runEditorCommand('insertUnorderedList')}
                 />
-                <div className="mx-2 h-10 w-px bg-slate-200" />
-                <ToolButton
-                  icon={<ImageToolbarIcon className="h-4 w-4" />}
-                  onClick={handleEditorImagePick}
-                />
-                <ToolButton
-                  icon={<LinkIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    setLinkOpen((prev) => !prev)
-                    setTagOpen(false)
-                  }}
-                />
-                <div className="mx-2 h-10 w-px bg-slate-200" />
-                <ToolButton
-                  icon={<TagIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    setTagOpen((prev) => !prev)
-                    setLinkOpen(false)
-                  }}
-                />
-                <span className="text-xs font-semibold">Tags</span>
+                
               </div>
-              {(linkOpen || tagOpen) && (
-                <div className="flex flex-wrap items-center gap-4 border-b border-slate-200 px-4 py-2 text-xs text-slate-500">
-                  {linkOpen && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">Link</span>
-                      <input
-                        value={linkInput}
-                        onChange={(event) => setLinkInput(event.target.value)}
-                        placeholder="https://"
-                        className="w-40 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600"
-                      />
-                      <button
-                        onClick={handleInsertLink}
-                        className="rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold text-white"
-                      >
-                        Insert
-                      </button>
-                    </div>
-                  )}
-                  {tagOpen && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">Tags</span>
-                      <input
-                        value={tagInput}
-                        onChange={(event) => setTagInput(event.target.value)}
-                        placeholder="design"
-                        className="w-32 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600"
-                      />
-                      <button
-                        onClick={handleInsertTag}
-                        className="rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold text-white"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
               <div
                 ref={editorRef}
                 contentEditable
                 suppressContentEditableWarning
                 className="min-h-55 px-4 py-4 text-sm text-slate-700 outline-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
                 onInput={handleEditorInput}
-              />
-              <input
-                ref={editorImageInputRef}
-                className="hidden"
-                type="file"
-                accept="image/*"
-                onChange={handleEditorImageChange}
               />
             </div>
 
@@ -955,52 +861,6 @@ const DotListIcon = ({ className }: { className?: string }) => (
       fill="#475569"
       stroke="#475569"
       stroke-width="0.09375"
-    />
-  </svg>
-)
-
-const ImageToolbarIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 16 16"
-    fill="none"
-    className={className}
-  >
-    <path
-      d="M1.5625 0.046875H14.0625C14.4645 0.046875 14.8496 0.206976 15.1338 0.491211C15.418 0.775446 15.5781 1.16053 15.5781 1.5625V14.0625C15.5781 14.4645 15.418 14.8496 15.1338 15.1338C14.8496 15.418 14.4645 15.5781 14.0625 15.5781H1.5625C1.16053 15.5781 0.775446 15.418 0.491211 15.1338C0.206976 14.8496 0.046875 14.4645 0.046875 14.0625V1.5625C0.046875 1.16053 0.206976 0.775446 0.491211 0.491211C0.775446 0.206976 1.16053 0.046875 1.5625 0.046875ZM1.82812 13.8408L1.9082 13.7617L10.1787 5.49121C10.4629 5.20708 10.8481 5.04688 11.25 5.04688C11.6519 5.04688 12.0371 5.20708 12.3213 5.49121L13.7168 6.88672L13.7969 6.96582V1.82812H1.82812V13.8408ZM4.73242 3.91211C5.00937 3.7974 5.3144 3.76769 5.6084 3.82617C5.90231 3.88468 6.17188 4.0293 6.38379 4.24121C6.5957 4.45312 6.74032 4.72269 6.79883 5.0166C6.85731 5.3106 6.8276 5.61563 6.71289 5.89258C6.59818 6.1695 6.40352 6.40573 6.1543 6.57227C5.90505 6.7388 5.61226 6.82812 5.3125 6.82812C4.91053 6.82812 4.52545 6.66802 4.24121 6.38379C3.95698 6.09955 3.79688 5.71447 3.79688 5.3125C3.79688 5.01274 3.8862 4.71995 4.05273 4.4707C4.21927 4.22148 4.4555 4.02682 4.73242 3.91211ZM13.7969 9.48535L11.25 6.93848L4.3916 13.7969H13.7969V9.48535Z"
-      fill="#475569"
-      stroke="#475569"
-      stroke-width="0.09375"
-    />
-  </svg>
-)
-
-const LinkIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 19 17"
-    fill="none"
-    className={className}
-  >
-    <path
-      d="M1.5625 8.17285H5C5.23621 8.17285 5.46286 8.26657 5.62988 8.43359C5.79683 8.60061 5.89062 8.82732 5.89062 9.06348C5.89056 9.2996 5.79685 9.52639 5.62988 9.69336C5.46287 9.86031 5.23615 9.9541 5 9.9541H1.82812V14.4229H16.2969V9.9541H13.125C12.8888 9.9541 12.6621 9.86031 12.4951 9.69336C12.3281 9.52639 12.2344 9.2996 12.2344 9.06348C12.2344 8.82732 12.3282 8.60061 12.4951 8.43359C12.6621 8.26657 12.8888 8.17285 13.125 8.17285H16.5625C16.9643 8.17285 17.3496 8.33221 17.6338 8.61621C17.918 8.90045 18.0781 9.28651 18.0781 9.68848V14.6885C18.0781 15.0904 17.918 15.4756 17.6338 15.7598C17.3496 16.0439 16.9644 16.2041 16.5625 16.2041H1.5625C1.16059 16.2041 0.775434 16.0439 0.491211 15.7598C0.207032 15.4756 0.0469375 15.0904 0.046875 14.6885V9.68848C0.046875 9.28651 0.206976 8.90045 0.491211 8.61621C0.77541 8.33221 1.16071 8.17285 1.5625 8.17285ZM13.5156 11.0078C13.7488 10.9615 13.9903 10.9862 14.21 11.0771C14.4297 11.1682 14.6178 11.3219 14.75 11.5195C14.8822 11.7174 14.9531 11.9505 14.9531 12.1885C14.9531 12.5075 14.8262 12.8135 14.6006 13.0391C14.375 13.2646 14.069 13.3916 13.75 13.3916C13.5121 13.3916 13.2798 13.3206 13.082 13.1885C12.8842 13.0563 12.7297 12.8683 12.6387 12.6484C12.5476 12.4286 12.5239 12.1865 12.5703 11.9531C12.6168 11.72 12.7313 11.506 12.8994 11.3379C13.0677 11.1696 13.2822 11.0542 13.5156 11.0078ZM9.06348 0.046875C9.18063 0.0469007 9.29708 0.0703077 9.40527 0.115234C9.51333 0.160178 9.61172 0.225696 9.69434 0.308594L13.4443 4.05859C13.5272 4.14145 13.5929 4.24038 13.6377 4.34863C13.6824 4.4567 13.705 4.5725 13.7051 4.68945C13.7051 4.80661 13.6825 4.92301 13.6377 5.03125C13.5929 5.13938 13.5271 5.23752 13.4443 5.32031C13.3615 5.40317 13.2625 5.46883 13.1543 5.51367C13.0462 5.55843 12.9305 5.58201 12.8135 5.58203C12.6963 5.58203 12.5799 5.55851 12.4717 5.51367C12.3635 5.46883 12.2654 5.40309 12.1826 5.32031L9.95312 3.09082V9.06348C9.95306 9.2996 9.85935 9.52639 9.69238 9.69336C9.52537 9.86031 9.29865 9.9541 9.0625 9.9541C8.82635 9.9541 8.59963 9.86031 8.43262 9.69336C8.26565 9.52639 8.17194 9.2996 8.17188 9.06348V3.09082L8.0918 3.1709L5.94238 5.31836L5.91504 5.3457C5.75085 5.49635 5.53722 5.58198 5.31348 5.58203C5.07684 5.58203 4.84995 5.48764 4.68262 5.32031C4.51534 5.15299 4.4209 4.92606 4.4209 4.68945C4.42094 4.57245 4.4445 4.45674 4.48926 4.34863C4.5341 4.24038 4.59976 4.14145 4.68262 4.05859L8.43262 0.308594C8.51528 0.225702 8.61357 0.160146 8.72168 0.115234C8.82994 0.0702827 8.94626 0.046875 9.06348 0.046875Z"
-      fill="#475569"
-      stroke="#475569"
-      stroke-width="0.09375"
-    />
-  </svg>
-)
-
-const TagIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 14 14"
-    fill="none"
-    className={className}
-  >
-    <path
-      d="M13.125 0.9375V3.4375C13.125 3.68614 13.0262 3.9246 12.8504 4.10041C12.6746 4.27623 12.4361 4.375 12.1875 4.375C11.9389 4.375 11.7004 4.27623 11.5246 4.10041C11.3488 3.9246 11.25 3.68614 11.25 3.4375V1.875H7.5V11.25H9.0625C9.31114 11.25 9.5496 11.3488 9.72541 11.5246C9.90123 11.7004 10 11.9389 10 12.1875C10 12.4361 9.90123 12.6746 9.72541 12.8504C9.5496 13.0262 9.31114 13.125 9.0625 13.125H4.0625C3.81386 13.125 3.5754 13.0262 3.39959 12.8504C3.22377 12.6746 3.125 12.4361 3.125 12.1875C3.125 11.9389 3.22377 11.7004 3.39959 11.5246C3.5754 11.3488 3.81386 11.25 4.0625 11.25H5.625V1.875H1.875V3.4375C1.875 3.68614 1.77623 3.9246 1.60041 4.10041C1.4246 4.27623 1.18614 4.375 0.9375 4.375C0.68886 4.375 0.450403 4.27623 0.274587 4.10041C0.0987719 3.9246 5.23971e-09 3.68614 0 3.4375V0.9375C0 0.68886 0.0987719 0.450403 0.274587 0.274587C0.450403 0.0987719 0.68886 0 0.9375 0H12.1875C12.4361 0 12.6746 0.0987719 12.8504 0.274587C13.0262 0.450403 13.125 0.68886 13.125 0.9375Z"
-      fill="#475569"
     />
   </svg>
 )
