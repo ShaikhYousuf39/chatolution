@@ -97,7 +97,6 @@ const createCard = (): CardData => ({
 const Page = () => {
   const [contentTabs, setContentTabs] = useState(initialTabs)
   const [activeTab, setActiveTab] = useState('About')
-  const [activeSection, setActiveSection] = useState('Content')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [contentOpen, setContentOpen] = useState(true)
   const [colorMenuOpen, setColorMenuOpen] = useState(false)
@@ -126,9 +125,6 @@ const Page = () => {
     Services: [createCard(), createCard()],
     Blog: [],
   })
-  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard()])
-  const [accreditationContent, setAccreditationContent] = useState('Write a short description here to highlight your certifications or achievements. This content will appear at the top of your page as a hero banner description.')
-  const accreditationEditorRef = useRef<HTMLDivElement | null>(null)
   const [saveStatus, setSaveStatus] = useState('')
 
   const cardTitleLabel = activeTab === 'Portfolio' ? 'Project name' : 'Service name'
@@ -190,13 +186,6 @@ const Page = () => {
     if (!editorRef.current) return
     editorRef.current.innerHTML = editorContent[activeTab] ?? ''
   }, [activeTab])
-
-  useEffect(() => {
-    if (!accreditationEditorRef.current) return
-    if (activeSection === 'Accreditation') {
-      accreditationEditorRef.current.innerHTML = accreditationContent
-    }
-  }, [activeSection])
 
   const handleEditorInput = () => {
     if (!editorRef.current) return
@@ -299,39 +288,6 @@ const Page = () => {
       ...prev,
       [activeTab]: [...(prev[activeTab] ?? []), createCard()],
     }))
-  }
-
-  const updateAccreditationCard = (id: string, patch: Partial<CardData>) => {
-    setAccreditationCards((prev) =>
-      prev.map((card) => (card.id === id ? { ...card, ...patch } : card))
-    )
-  }
-
-  const handleAccreditationImageChange = (
-    id: string,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    const url = URL.createObjectURL(file)
-    setAccreditationCards((prev) =>
-      prev.map((card) => {
-        if (card.id !== id) return card
-        if (card.imageUrl) URL.revokeObjectURL(card.imageUrl)
-        return { ...card, imageName: file.name, imageUrl: url }
-      })
-    )
-    event.target.value = ''
-  }
-
-  const addAccreditationCard = () => {
-    setAccreditationCards((prev) => [...prev, createCard()])
-  }
-
-  const handleAccreditationEditorInput = () => {
-    if (!accreditationEditorRef.current) return
-    const value = accreditationEditorRef.current.innerHTML
-    setAccreditationContent(value)
   }
 
   const handleSave = () => {
@@ -480,10 +436,7 @@ const Page = () => {
             {sidebarLinks.map((item) => (
               <button
                 key={item.label}
-                onClick={() => setActiveSection(item.label)}
-                className={`flex w-full cursor-pointer items-center gap-3  border-b border-slate-100 px-2 py-2 text-left transition hover:bg-slate-50 last:border-b-0 ${
-                  activeSection === item.label ? 'text-blue-600' : 'text-slate-500'
-                }`}
+                className="flex w-full cursor-pointer items-center gap-3  border-b border-slate-100 px-2 py-2 text-left text-slate-500 transition hover:bg-slate-50 last:border-b-0"
               >
                 <item.icon className="h-4 w-4 text-slate-400" />
                 {sidebarOpen && item.label}
@@ -507,12 +460,11 @@ const Page = () => {
 
         <main className="flex min-h-screen flex-1 flex-col px-10 py-6">
           <div className="flex items-center gap-2 text-sm text-slate-600">
-            <span className="font-semibold text-slate-900">{activeSection}</span>
+            <span className="font-semibold text-slate-900">Content</span>
           </div>
 
-          {activeSection === 'Content' && (
-            <div className="mt-6">
-              <h1 className="text-2xl font-semibold">{activeTab}</h1>
+          <div className="mt-6">
+            <h1 className="text-2xl font-semibold">{activeTab}</h1>
 
             <div className="mt-4 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
               <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
@@ -721,86 +673,7 @@ const Page = () => {
                 </div>
               </>
             )}
-            </div>
-          )}
-
-          {activeSection === 'Accreditation' && (
-            <div className="mt-6">
-              <h1 className="text-2xl font-semibold">Accreditation</h1>
-
-              <div className="mt-4 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
-                <div
-                  ref={accreditationEditorRef}
-                  contentEditable
-                  suppressContentEditableWarning
-                  className="min-h-32 px-4 py-4 text-sm text-slate-700 outline-none"
-                  onInput={handleAccreditationEditorInput}
-                />
-              </div>
-
-              <h2 className="mt-10 text-lg font-semibold">
-                Create Accreditation Cards
-              </h2>
-              <div className="mt-4 grid gap-6 lg:grid-cols-3">
-                {accreditationCards.map((card) => (
-                  <div key={card.id} className="space-y-4 flex flex-col justify-center rounded-xl border border-[#DFE9FA] bg-white p-4">
-                    <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
-                      {card.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={card.imageUrl}
-                          alt="Card upload"
-                          className="h-20 w-20 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <UploadCloudIcon className="h-7 w-7 text-blue-500" />
-                      )}
-                      <div>
-                        <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
-                      </div>
-                      <div className="text-[11px] text-slate-400">
-                        {card.imageName || 'JPG, JPEG, PNG less than 5MB'}
-                      </div>
-                      <input
-                        className="hidden"
-                        type="file"
-                        accept="image/*"
-                        onChange={(event) => handleAccreditationImageChange(card.id, event)}
-                      />
-                    </label>
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-600">Accreditation title</label>
-                      <input
-                        value={card.title}
-                        onChange={(event) => updateAccreditationCard(card.id, { title: event.target.value })}
-                        placeholder="Write title..."
-                        className="w-full rounded-xl border mt-2 border-none bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-600">Accreditation description</label>
-                      <textarea
-                        value={card.description}
-                        onChange={(event) => updateAccreditationCard(card.id, { description: event.target.value })}
-                        placeholder="Write description..."
-                        className="min-h-22.5 w-full mt-2 rounded-xl border border-none bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                      />
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={addAccreditationCard}
-                  className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40"
-                >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-blue-600">
-                    <AddFileIcon className="h-8 w-8" />
-                  </div>
-                  <p className="text-lg font-semibold text-slate-600">Want to showcase more?</p>
-                  <p className="text-sm text-slate-400">Add another Accreditation!</p>
-                </button>
-              </div>
-            </div>
-          )}
+          </div>
 
           <div className="mt-auto flex justify-end pt-12">
             <div className="flex items-center gap-4">
