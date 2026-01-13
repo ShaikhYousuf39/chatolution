@@ -97,7 +97,6 @@ const createCard = (): CardData => ({
 const Page = () => {
   const [contentTabs, setContentTabs] = useState(initialTabs)
   const [activeTab, setActiveTab] = useState('About')
-  const [activeSection, setActiveSection] = useState('Content')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [contentOpen, setContentOpen] = useState(true)
   const [colorMenuOpen, setColorMenuOpen] = useState(false)
@@ -193,10 +192,8 @@ const Page = () => {
 
   useEffect(() => {
     if (!accreditationEditorRef.current) return
-    if (activeSection === 'Accreditation') {
-      accreditationEditorRef.current.innerHTML = accreditationContent
-    }
-  }, [activeSection])
+    accreditationEditorRef.current.innerHTML = accreditationContent
+  }, [accreditationContent])
 
   const handleEditorInput = () => {
     if (!editorRef.current) return
@@ -340,181 +337,11 @@ const Page = () => {
   }
 
   return (
-    <div className={`${jakarta.className} min-h-screen bg-white text-slate-900`}>
-      <div className="flex min-h-screen">
-        <aside
-          className={`flex flex-col border-r border-slate-200 bg-white px-5 py-5 transition-all duration-300 ${sidebarOpen ? 'w-56' : 'w-20'
-            }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="relative flex h-9 w-9 items-center justify-center">
-              <div
-                className={`flex h-9 w-9 items-center justify-center text-blue-600 transition ${sidebarOpen ? '' : 'group'
-                  }`}
-              >
-                <div className={`transition ${sidebarOpen ? '' : 'group-hover:opacity-0'}`}>
-                  <SparkIcon className="h-7 w-7" />
-                </div>
-                {!sidebarOpen && (
-                  <button
-                    onClick={() => setSidebarOpen(true)}
-                    className="absolute inset-0 flex items-center justify-center text-slate-500 opacity-0 transition hover:bg-slate-50 active:scale-95 group-hover:opacity-100"
-                  >
-                    <SplitIcon className="h-5 w-5" />
-                  </button>
-                )}
-              </div>
-            </div>
-            {sidebarOpen && (
-              <button
-                onClick={() => setSidebarOpen((prev) => !prev)}
-                className="flex h-7 w-7 cursor-pointer items-center justify-center text-slate-500 transition  active:scale-95"
-              >
-                <SplitIcon className="h-5 w-5" />
-              </button>
-            )}
-          </div>
+    <div className={`${jakarta.className} flex min-h-screen flex-col px-10 py-6 bg-white text-slate-900`}>
+      <div className="mt-6">
+        <h1 className="text-2xl font-semibold">{activeTab}</h1>
 
-          <div className="mt-6 space-y-4">
-            <button
-              onClick={() => setContentOpen((prev) => !prev)}
-              className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-600 transition"
-            >
-              <span className="flex items-center gap-2">
-                <ContentIcon className="h-4 w-4" />
-                {sidebarOpen && 'Content'}
-              </span>
-              {sidebarOpen && (
-                <ChevronIcon
-                  className={`h-6 w-6 transition ${contentOpen ? '' : '-rotate-90'}`}
-                />
-              )}
-            </button>
-
-            {sidebarOpen && contentOpen && (
-              <div className="rounded-xl border border-slate-200 bg-white px-2 py-2">
-                {contentTabs.map((tab) => (
-                  <div
-                    key={tab}
-                    className={`group flex w-full items-center rounded-lg px-2 py-1.5 text-sm font-medium transition hover:bg-slate-50 ${activeTab === tab ? 'text-blue-600' : 'text-slate-500'
-                      }`}
-                  >
-                    {editingTab === tab ? (
-                      <div className="flex w-full items-center gap-2">
-                        <input
-                          value={editValue}
-                          onChange={(event) => setEditValue(event.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter') handleSaveEdit()
-                            if (event.key === 'Escape') handleCancelEdit()
-                          }}
-                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600"
-                        />
-                        <button
-                          onClick={handleSaveEdit}
-                          className="rounded-md bg-blue-600 px-2 py-1 text-xs font-semibold text-white"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={handleCancelEdit}
-                          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-500"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => setActiveTab(tab)}
-                          className="flex flex-1 cursor-pointer items-center text-left"
-                        >
-                          {tab}
-                        </button>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleStartEdit(tab)}
-                            className="cursor-pointer text-slate-400 hover:text-slate-600"
-                          >
-                            <EditIcon className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteTab(tab)}
-                            className="cursor-pointer text-red-400 hover:text-red-600"
-                          >
-                            <DeleteIcon className="h-3 w-3" />
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-                <button
-                  onClick={() => setNewTabOpen((prev) => !prev)}
-                  className="mt-1 flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-left text-sm font-bold text-slate-500 transition hover:bg-slate-50"
-                >
-                  Add new page
-                  <AddTabIcon className="h-4 w-4 text-blue-600" />
-                </button>
-                {newTabOpen && (
-                  <div className="mt-2 space-y-2 rounded-lg border border-slate-200 bg-[#F8FCFF] px-2 py-2">
-                    <input
-                      value={newTabName}
-                      onChange={(event) => setNewTabName(event.target.value)}
-                      placeholder="Page name"
-                      className="w-full rounded-md border border-slate-200 bg-white px-2 py-2 text-xs text-slate-600"
-                    />
-                    <button
-                      onClick={handleAddTab}
-                      className="w-full rounded-md bg-blue-600 px-2 py-2 text-xs font-semibold text-white"
-                    >
-                      Add Page
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="mt-2 space-y-2 border-t border-slate-100 pt-2 text-sm text-slate-600">
-            {sidebarLinks.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setActiveSection(item.label)}
-                className={`flex w-full cursor-pointer items-center gap-3  border-b border-slate-100 px-2 py-2 text-left transition hover:bg-slate-50 last:border-b-0 ${
-                  activeSection === item.label ? 'text-blue-600' : 'text-slate-500'
-                }`}
-              >
-                <item.icon className="h-4 w-4 text-slate-400" />
-                {sidebarOpen && item.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-auto space-y-4 pt-6 text-sm text-slate-500">
-            <button className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-left transition hover:bg-slate-50">
-              <SettingsIcon className="h-4 w-4 text-slate-400" />
-              {sidebarOpen && 'Settings'}
-            </button>
-            <div className="flex items-center gap-3 px-2">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C7E3EC] text-xs font-semibold text-[#1C7089]">
-                j
-              </div>
-              {sidebarOpen && 'Joel'}
-            </div>
-          </div>
-        </aside>
-
-        <main className="flex min-h-screen flex-1 flex-col px-10 py-6">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <span className="font-semibold text-slate-900">{activeSection}</span>
-          </div>
-
-          {activeSection === 'Content' && (
-            <div className="mt-6">
-              <h1 className="text-2xl font-semibold">{activeTab}</h1>
-
-            <div className="mt-4 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-4 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
               <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
                 <select
                   className="cursor-pointer bg-white px-2 py-1 text-[16px]"
@@ -721,10 +548,6 @@ const Page = () => {
                 </div>
               </>
             )}
-            </div>
-          )}
-
-          {activeSection === 'Accreditation' && (
             <div className="mt-6">
               <h1 className="text-2xl font-semibold">Accreditation</h1>
 
@@ -799,25 +622,23 @@ const Page = () => {
                   <p className="text-sm text-slate-400">Add another Accreditation!</p>
                 </button>
               </div>
-            </div>
-          )}
+        </div>
 
-          <div className="mt-auto flex justify-end pt-12">
-            <div className="flex items-center gap-4">
-              {saveStatus && (
-                <span className="text-xs font-semibold text-green-600">
-                  {saveStatus}
-                </span>
-              )}
-              <button
-                onClick={handleSave}
-                className="cursor-pointer rounded-full bg-slate-900 px-7 py-3 text-sm font-semibold text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
-              >
-                Save Content
-              </button>
-            </div>
+        <div className="mt-auto flex justify-end pt-12">
+          <div className="flex items-center gap-4">
+            {saveStatus && (
+              <span className="text-xs font-semibold text-green-600">
+                {saveStatus}
+              </span>
+            )}
+            <button
+              onClick={handleSave}
+              className="cursor-pointer rounded-full bg-slate-900 px-7 py-3 text-sm font-semibold text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
+            >
+              Save Content
+            </button>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   )
