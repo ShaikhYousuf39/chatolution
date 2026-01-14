@@ -1,5 +1,10 @@
+import { Suspense } from 'react'
 import DashboardPage from '../_components/DashboardPage'
 
-const DashboardAccreditationPage = () => <DashboardPage />
+const DashboardAccreditationPage = () => (
+  <Suspense fallback={null}>
+    <DashboardPage />
+  </Suspense>
+)
 
 export default DashboardAccreditationPage
