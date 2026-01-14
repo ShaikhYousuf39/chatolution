@@ -711,7 +711,7 @@ const DashboardPage = () => {
     <div className={`${inter.className} h-screen bg-white text-slate-900`}>
       <div className="flex h-screen">
         <aside
-          className={`flex h-screen flex-col border-r border-slate-200 bg-white px-5 py-5 transition-all duration-300 ${sidebarOpen ? 'w-56' : 'w-20'
+          className={`flex h-screen flex-col border-r border-slate-200 bg-white px-5 py-5 transition-all duration-300 ${sidebarOpen ? 'w-56' : 'items-center w-20'
             }`}
         >
           <div className="flex items-center justify-between">
@@ -726,7 +726,7 @@ const DashboardPage = () => {
                 {!sidebarOpen && (
                   <button
                     onClick={() => setSidebarOpen(true)}
-                    className="absolute inset-0 flex items-center justify-center text-slate-500 opacity-0 transition hover:bg-slate-50 active:scale-95 group-hover:opacity-100"
+                    className="absolute inset-0 flex items-center justify-center text-slate-500 cursor-pointer opacity-0 transition hover:bg-slate-50 active:scale-95 group-hover:opacity-100"
                   >
                     <SplitIcon className="h-5 w-5" />
                   </button>
