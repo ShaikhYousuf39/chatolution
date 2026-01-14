@@ -799,7 +799,7 @@ const Page = () => {
             )}
           </div>
 
-          <div className="my-1 h-px w-full bg-slate-100" />
+          <div className="my-2 h-px w-full bg-slate-100" />
 
           <div className="text-sm text-slate-600">
             {sidebarLinks.map((item, index) => {
@@ -820,7 +820,7 @@ const Page = () => {
                     {sidebarOpen && item.label}
                   </button>
                   {index < sidebarLinks.length - 1 && (
-                    <div className="my-1 h-px w-full bg-slate-100" />
+                    <div className="my-2 h-px w-full bg-slate-100" />
                   )}
                 </div>
               )
