@@ -17,15 +17,15 @@ const inter = Inter({
 const initialTabs = ['Welcome message', 'About', 'Portfolio', 'Services', 'How It Works', 'Resources', 'FAQs', 'Privacy', 'T&C']
 
 const defaultEditorContent: Record<string, string> = {
-  'Welcome message': 'Start writing your welcome message here.',
-  'About': 'Start writing about your about section here.',
-  'Portfolio': 'Start writing about your portfolio section here.',
-  'Services': 'Start writing about your services section here.',
-  'How It Works': 'Start writing about how it works here.',
+  'Welcome message': '',
+  'About': '',
+  'Portfolio': '',
+  'Services': '',
+  'How It Works': '',
   'FAQs': '',
   'Resources': '',
-  'Privacy': 'Start writing your privacy policy here.',
-  'T&C': 'Start writing your terms and conditions here.',
+  'Privacy': '',
+  'T&C': '',
 }
 
 const themeColors = [
@@ -73,6 +73,7 @@ const standardColors = [
   '#fb7185',
   '#f9a8d4',
 ]
+
 
 type CardData = {
   id: string
@@ -171,7 +172,13 @@ const DashboardPage = () => {
   const [contentTabs, setContentTabs] = useState(initialTabs)
   const [activeTab, setActiveTab] = useState('Welcome message')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [contentOpen, setContentOpen] = useState(true)
+  const [contentOpen, setContentOpen] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const stored = window.localStorage.getItem('dashboardContentOpen')
+    if (stored === 'true') return true
+    if (stored === 'false') return false
+    return true
+  })
   const [colorMenuOpen, setColorMenuOpen] = useState(false)
   const [highlightMenuOpen, setHighlightMenuOpen] = useState(false)
   const [editingTab, setEditingTab] = useState<string | null>(null)
@@ -239,7 +246,7 @@ const DashboardPage = () => {
   }
 
   // Accreditation state
-  const [accreditationEditorContent, setAccreditationEditorContent] = useState('Start writing about your accreditation section here.')
+  const [accreditationEditorContent, setAccreditationEditorContent] = useState('')
   const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard(), createCard()])
 
   // Testimonials state
@@ -348,6 +355,10 @@ const DashboardPage = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' })
   }, [pathname])
+
+  useEffect(() => {
+    window.localStorage.setItem('dashboardContentOpen', String(contentOpen))
+  }, [contentOpen])
 
   useEffect(() => {
     if (activeSidebarSection !== 'Content') return
@@ -711,7 +722,7 @@ const DashboardPage = () => {
     <div className={`${inter.className} h-screen bg-white text-slate-900`}>
       <div className="flex h-screen">
         <aside
-          className={`flex h-screen flex-col border-r border-slate-200 bg-white px-5 py-5 transition-all duration-300 ${sidebarOpen ? 'w-56' : 'items-center w-20'
+          className={`flex h-screen flex-col overflow-y-auto border-r border-slate-200 bg-white px-4 py-4 transition-all duration-300 ${sidebarOpen ? 'w-56' : 'items-center w-20'
             }`}
         >
           <div className="flex items-center justify-between">
@@ -743,17 +754,15 @@ const DashboardPage = () => {
             )}
           </div>
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-4 space-y-1">
             <button
               onClick={() => {
                 router.push('/dashboard/content')
                 if (activeSidebarSection === 'Content') {
                   setContentOpen((prev) => !prev)
-                } else {
-                  setContentOpen(true)
                 }
               }}
-              className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold transition ${activeSidebarSection === 'Content'
+              className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-1.5 text-sm font-semibold transition ${activeSidebarSection === 'Content'
                 ? 'bg-blue-50 text-blue-600'
                 : 'bg-white text-slate-500 hover:bg-slate-50'
                 }`}
@@ -774,15 +783,14 @@ const DashboardPage = () => {
             </button>
 
             {sidebarOpen && contentOpen && (
-              <div className="rounded-xl border border-slate-200 bg-white px-2 py-2">
+              <div className="rounded-xl border border-slate-200 bg-white px-2 py-1.5">
                 {contentTabs.map((tab) => (
                   <div
                     key={tab}
-                    className={`group flex w-full items-center rounded-lg px-2 py-1.5 text-sm font-medium transition hover:bg-slate-50 ${
-                      activeTab === tab && activeSidebarSection === 'Content'
-                        ? 'text-blue-600'
-                        : 'text-slate-500'
-                    }`}
+                    className={`group flex w-full items-center rounded-lg px-2 py-1 text-sm font-medium transition hover:bg-slate-50 ${activeTab === tab && activeSidebarSection === 'Content'
+                      ? 'text-blue-600'
+                      : 'text-slate-500'
+                      }`}
                   >
                     {editingTab === tab ? (
                       <div className="flex w-full items-center gap-2">
@@ -849,7 +857,7 @@ const DashboardPage = () => {
                       const route = sidebarRoutes[item.label]
                       if (route) router.push(route)
                     }}
-                    className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition hover:bg-slate-50 ${activeSidebarSection === item.label
+                    className={`flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-1.5 text-sm font-semibold transition hover:bg-slate-50 ${activeSidebarSection === item.label
                       ? 'bg-blue-50 text-blue-600'
                       : 'text-slate-500'
                       }`}
@@ -865,8 +873,8 @@ const DashboardPage = () => {
             })}
           </div>
 
-          <div className="mt-auto space-y-4 pt-6 text-sm text-slate-500">
-            <button className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-left transition hover:bg-slate-50">
+          <div className="mt-auto space-y-3 pt-4 text-sm text-slate-500">
+            <button className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50">
               <SettingsIcon className="h-4 w-4 text-slate-400" />
               {sidebarOpen && 'Settings'}
             </button>
@@ -1303,7 +1311,7 @@ const DashboardPage = () => {
                       {resources.map((resource) => (
                         <div key={resource.id} className="rounded-xl border border-slate-200 bg-white p-6">
                           <div className="flex items-start gap-4">
-                            <div className="shrink-0 mt-1">
+                            <div className="shrink-0 mt-3">
                               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                                 <g clipPath="url(#clip0_296_1299)">
                                   <path d="M11.5006 2.30398L9.34414 0.147534C9.24639 0.04978 9.116 -0.000267834 8.98122 2.4844e-05C8.84396 -0.00129221 8.71064 0.04978 8.61289 0.147534L6.50093 2.2595C6.30308 2.45735 6.30308 2.779 6.50093 2.9767L6.77326 3.24904C6.96424 3.44001 7.29759 3.44001 7.48871 3.24904L8.29724 2.43876V5.41632C8.29724 5.42539 8.3025 5.43285 8.30411 5.44134C8.32606 5.7008 8.54367 5.90611 8.80898 5.90611H9.19385C9.47351 5.90611 9.7034 5.67899 9.7034 5.39934V5.06686C9.7034 5.0654 9.7034 5.06437 9.7034 5.0632V2.48296L10.5122 3.29338C10.7101 3.49123 11.031 3.49123 11.2287 3.29338L11.5006 3.02134C11.6984 2.82334 11.6984 2.50154 11.5006 2.30398Z" fill="#566273" />
@@ -1344,7 +1352,7 @@ const DashboardPage = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex mt-2 items-center gap-2">
                               <button
                                 onClick={() => handleOpenEditResourceModal(resource)}
                                 className="flex h-6 w-6 items-center justify-center rounded-md cursor-pointer hover:bg-green-50"
@@ -1600,7 +1608,6 @@ const DashboardPage = () => {
                         <div className="space-y-2">
                           <label className="text-xs font-semibold text-slate-600">Testimonials</label>
                           <textarea
-                            value={testimonial.testimonial}
                             onChange={(event) => updateTestimonial(testimonial.id, { testimonial: event.target.value })}
                             placeholder="This website builder made setting up my portfolio so easy and professional. Highly recommend!"
                             className="min-h-32 w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
@@ -1653,7 +1660,6 @@ const DashboardPage = () => {
                       <label className="text-sm font-semibold text-slate-600">Name</label>
                       <input
                         readOnly
-                        value="John Doe"
                         placeholder="John Doe"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -1663,7 +1669,6 @@ const DashboardPage = () => {
                       <label className="text-sm font-semibold text-slate-600">Email</label>
                       <input
                         readOnly
-                        value="johndoe@gmail.com"
                         placeholder="johndoe@gmail.com"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -1673,94 +1678,102 @@ const DashboardPage = () => {
                       <label className="text-sm font-semibold text-slate-600">Message</label>
                       <textarea
                         readOnly
-                        value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                        placeholder="Your message..."
-                        className="min-h-32 w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
+                        placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                        className="min-h-16 w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
                     </div>
                   </div>
 
                   {/* Custom Fields */}
                   {customFields.map((field) => (
-                    <div key={field.id} className="rounded-xl border border-slate-200 bg-white p-6">
+                    <div className="mt-10">
                       <div className="flex items-center justify-between mb-4">
-                        <input
-                          value={field.label}
-                          onChange={(e) => updateCustomField(field.id, { label: e.target.value })}
-                          placeholder="Select Your Preferences"
-                          className="text-sm font-semibold text-slate-700 bg-transparent border-none outline-none flex-1"
-                        />
+                        <div className="font-medium text-xl">Select Your Preferences</div>
                         <div className="flex items-center gap-2">
                           <button className="flex h-6 w-6 items-center justify-center rounded-md text-blue-600 hover:bg-blue-50">
-                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                              <path strokeWidth="2" d="M12 16v-4m0-4h.01" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+                              <path d="M18.425 10.0411C18.4248 5.43237 14.6498 1.65822 10.0411 1.65822C5.43249 1.65842 1.65842 5.43249 1.65822 10.0411C1.65822 14.6498 5.43237 18.4248 10.0411 18.425C14.65 18.425 18.425 14.65 18.425 10.0411ZM20.0833 10.0411C20.0833 15.5658 15.5658 20.0833 10.0411 20.0833C4.51656 20.0831 0 15.5657 0 10.0411C0.000196011 4.51668 4.51668 0.000196007 10.0411 0C15.5657 0 20.0831 4.51656 20.0833 10.0411Z" fill="#0F67FD" />
+                              <path d="M13.7267 9.21216C14.1844 9.21235 14.5558 9.58348 14.5558 10.0413C14.5558 10.4991 14.1844 10.8702 13.7267 10.8704H6.35645C5.89855 10.8704 5.52734 10.4992 5.52734 10.0413C5.52734 9.58336 5.89855 9.21216 6.35645 9.21216H13.7267Z" fill="#0F67FD" />
+                              <path d="M9.21484 13.7267V6.35645C9.21484 5.89855 9.58605 5.52734 10.044 5.52734C10.5019 5.52734 10.8731 5.89855 10.8731 6.35645V13.7267C10.8729 14.1844 10.5017 14.5558 10.044 14.5558C9.58617 14.5558 9.21504 14.1844 9.21484 13.7267Z" fill="#0F67FD" />
                             </svg>
                           </button>
                           <button className="flex h-6 w-6 items-center justify-center rounded-md text-green-600 hover:bg-green-50">
-                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                              <path d="M0 12.7905V7.20922C0 4.81485 0.474653 2.95736 1.716 1.716C2.95736 0.474653 4.81485 0 7.20922 0H9.06966C9.45497 0 9.76733 0.312356 9.76733 0.697666C9.76733 1.08298 9.45497 1.39533 9.06966 1.39533H7.20922C4.95247 1.39533 3.55419 1.8509 2.70255 2.70255C1.8509 3.55419 1.39533 4.95247 1.39533 7.20922V12.7905C1.39533 15.0473 1.8509 16.4456 2.70255 17.2972C3.55419 18.1489 4.95247 18.6044 7.20922 18.6044H12.7905C15.0473 18.6044 16.4456 18.1489 17.2972 17.2972C18.1489 16.4456 18.6044 15.0473 18.6044 12.7905V10.9301C18.6044 10.5448 18.9168 10.2324 19.3021 10.2324C19.6874 10.2324 19.9998 10.5448 19.9998 10.9301V12.7905C19.9998 15.1849 19.5251 17.0424 18.2838 18.2838C17.0424 19.5251 15.1849 19.9998 12.7905 19.9998H7.20922C4.81485 19.9998 2.95736 19.5251 1.716 18.2838C0.474653 17.0424 0 15.1849 0 12.7905Z" fill="#566273" />
+                              <path d="M15.6844 0.0134315C16.6843 -0.0847273 17.6756 0.354907 18.6603 1.33968C19.645 2.3245 20.0845 3.31584 19.9864 4.31585C19.8917 5.28045 19.3095 6.07959 18.6603 6.72889L11.5754 13.8145C11.3732 14.0102 11.1095 14.1819 10.8545 14.3101C10.6009 14.4376 10.3017 14.5501 10.0169 14.5908L7.31382 14.9767H7.31031C6.64384 15.0685 6.00622 14.8864 5.55883 14.4408C5.11087 13.9944 4.9279 13.3573 5.02558 12.6874L5.41149 9.98574C5.45184 9.69706 5.56283 9.39578 5.69127 9.14017C5.81991 8.88419 5.99381 8.61831 6.1947 8.4174L13.2717 1.33968C13.9209 0.690407 14.72 0.108206 15.6844 0.0134315ZM15.816 1.35459C15.3168 1.40373 14.7962 1.72018 14.2241 2.29227L7.14718 9.36999C7.07864 9.43853 6.98236 9.57249 6.89546 9.74541C6.80852 9.91844 6.75906 10.0753 6.74549 10.1726L6.74461 10.1743L6.35871 12.8777L6.35783 12.8803C6.31261 13.1885 6.40364 13.3809 6.50956 13.4864C6.61639 13.5929 6.81287 13.6845 7.1235 13.6426L9.82658 13.2566C9.91903 13.2434 10.0741 13.1939 10.2493 13.1058C10.4181 13.0209 10.5543 12.9252 10.6317 12.8523L17.7078 5.7763C18.2799 5.20418 18.5963 4.6836 18.6454 4.18428C18.6909 3.72022 18.5193 3.10385 17.7078 2.29227C16.8963 1.48073 16.28 1.30904 15.816 1.35459Z" fill="#566273" />
+                              <path d="M13.7591 1.68831C14.0688 1.60157 14.3896 1.78206 14.4764 2.0917C14.9416 3.75102 16.2409 5.05127 17.9106 5.52433C18.2199 5.61206 18.3994 5.93377 18.3117 6.24316C18.224 6.55251 17.9023 6.73194 17.5929 6.64428C15.5357 6.06132 13.931 4.45763 13.3557 2.40562C13.269 2.09598 13.4495 1.77511 13.7591 1.68831Z" fill="#566273" />
                             </svg>
                           </button>
                           <button
                             onClick={() => deleteCustomField(field.id)}
                             className="flex h-6 w-6 items-center justify-center rounded-md text-red-600 hover:bg-red-50"
                           >
-                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="20" viewBox="0 0 19 20" fill="none">
+                              <path d="M15.9753 6.6682C16.383 6.69297 16.6923 7.02357 16.6663 7.40719L16.0254 16.7574L16.0244 16.7611C15.998 17.1151 15.9702 17.5066 15.8924 17.87C15.813 18.2406 15.6735 18.6319 15.3903 18.9789C14.797 19.7057 13.7865 19.9999 12.3352 19.9999H5.99959C4.54852 19.9999 3.53873 19.7056 2.9455 18.9789C2.6622 18.6319 2.52272 18.2406 2.44339 17.87C2.36559 17.5066 2.33676 17.1151 2.31039 16.7611V16.7574L1.6695 7.40719C1.64342 7.02357 1.95272 6.69297 2.36051 6.6682C2.76825 6.64366 3.11963 6.93467 3.14595 7.31833L3.7878 16.664L3.83021 17.1727C3.84652 17.3264 3.86705 17.4657 3.89478 17.5953C3.94862 17.8466 4.02289 18.012 4.11933 18.1302C4.28593 18.3343 4.69775 18.6071 5.99959 18.6072H12.3352C13.6372 18.6072 14.0488 18.3343 14.2155 18.1302C14.312 18.0119 14.3871 17.8468 14.441 17.5953C14.4964 17.3363 14.52 17.0389 14.548 16.664L15.1888 7.31833C15.2152 6.93461 15.5674 6.64356 15.9753 6.6682Z" fill="#C53434" />
+                              <path d="M10.4505 0C11.367 0 12.0757 0.153111 12.5377 0.557755C12.9557 0.924051 13.0424 1.40747 13.1074 1.71113L13.3228 2.68028C13.3906 2.98479 13.121 3.27388 12.7206 3.32541C12.3202 3.37684 11.941 3.17114 11.8732 2.86668L11.6569 1.89753V1.89462C11.5748 1.5121 11.5223 1.37447 11.4271 1.29099C11.3741 1.24465 11.1896 1.11842 10.4505 1.11842H7.88261C7.13151 1.11842 6.95255 1.2413 6.90506 1.28225C6.81483 1.36015 6.76449 1.49102 6.67623 1.88952L6.45985 2.86596C6.3926 3.17048 6.01388 3.37645 5.61347 3.32541C5.21297 3.27426 4.94302 2.98559 5.01028 2.68101L5.2257 1.70457V1.70385C5.2942 1.39448 5.38032 0.906247 5.80208 0.542464C6.26686 0.141641 6.97679 0 7.88261 0H10.4505Z" fill="#C53434" />
+                              <path d="M12.5653 10C12.9902 10 13.3346 10.3731 13.3346 10.8333C13.3346 11.2936 12.9902 11.6666 12.5653 11.6666H7.43719C7.01236 11.6666 6.66797 11.2936 6.66797 10.8333C6.66797 10.3731 7.01236 10 7.43719 10H12.5653Z" fill="#C53434" />
+                              <path d="M10.8915 13.333C11.3203 13.3331 11.6679 13.7061 11.6679 14.1663C11.6679 14.6265 11.3203 14.9996 10.8915 14.9997H7.44434C7.01556 14.9997 6.66797 14.6266 6.66797 14.1663C6.66797 13.7061 7.01556 13.333 7.44434 13.333H10.8915Z" fill="#C53434" />
+                              <path d="M8.20798 3.3335C11.3719 3.33351 14.5448 3.47647 17.6979 3.75345C18.0853 3.78761 18.368 4.09366 18.3296 4.4371C18.2911 4.78051 17.9458 5.03108 17.5584 4.99705C14.4503 4.72403 11.3241 4.58362 8.20798 4.5836C6.3702 4.5836 4.53172 4.66562 2.69359 4.8302L2.69175 4.83102L0.773744 4.99705C0.386195 5.03073 0.0414606 4.77981 0.00341856 4.43629C-0.0345763 4.09276 0.248489 3.78717 0.636022 3.75345L2.55219 3.58742V3.58661C4.43711 3.41784 6.3227 3.3335 8.20798 3.3335Z" fill="#C53434" />
                             </svg>
                           </button>
                         </div>
                       </div>
+                      <div key={field.id} className="rounded-xl shadow shadow-gray-100 p-6">
 
-                      {(field.type === 'checkboxes' || field.type === 'radio') && (
-                        <div className="space-y-3">
-                          {field.options.map((option, index) => (
-                            <div key={index} className="flex items-center gap-3">
-                              <input
-                                type={field.type === 'checkboxes' ? 'checkbox' : 'radio'}
-                                className="h-4 w-4 text-blue-600"
-                                disabled
-                              />
-                              <input
-                                value={option}
-                                onChange={(e) => updateFieldOption(field.id, index, e.target.value)}
-                                className="flex-1 text-sm text-slate-600 bg-transparent border-none outline-none"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                        {(field.type === 'checkboxes' || field.type === 'radio') && (
+                          <div className="space-y-3">
+                            {field.options.map((option, index) => (
+                              <div key={index} className="flex items-center gap-3">
+                                <input
+                                  type={field.type === 'checkboxes' ? 'checkbox' : 'radio'}
+                                  className="h-4 w-4 text-blue-600"
+                                  disabled
+                                />
+                                <input
+                                  value={option}
+                                  onChange={(e) => updateFieldOption(field.id, index, e.target.value)}
+                                  className="flex-1 text-sm text-slate-600 bg-transparent border-none outline-none"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
-                      {field.type === 'number' && (
-                        <input
-                          type="number"
-                          placeholder="Enter number"
-                          className="w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                          disabled
-                        />
-                      )}
+                        {field.type === 'number' && (
+                          <input
+                            type="number"
+                            placeholder="Enter number"
+                            className="w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
+                            disabled
+                          />
+                        )}
 
-                      {field.type === 'address' && (
-                        <textarea
-                          placeholder="Enter address"
-                          className="min-h-24 w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                          disabled
-                        />
-                      )}
+                        {field.type === 'address' && (
+                          <textarea
+                            placeholder="Enter address"
+                            className="min-h-24 w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
+                            disabled
+                          />
+                        )}
+                      </div>
                     </div>
                   ))}
 
                   {/* Add Custom Field Button */}
-                  <div className="relative">
+                  <div className={`relative ${showFieldMenu || customFields.length === 0 ? 'mb-16' : ''}`}>
                     <button
                       onClick={() => setShowFieldMenu(!showFieldMenu)}
-                      className="flex mb-16 items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer border-blue-600 bg-white px-4 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
+                      className="flex items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer border-blue-600 bg-white pr-5 pl-6  py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
                     >
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeWidth="2" d="M12 4v16m8-8H4" />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M7.99918 16C7.39868 16 6.91211 15.5134 6.91211 14.9129V1.08707C6.91211 0.486575 7.39868 0 7.99918 0C8.59968 0 9.08626 0.486575 9.08626 1.08707V14.9129C9.08626 15.5134 8.59968 16 7.99918 16Z" fill="#0F67FD" />
+                        <path d="M14.9129 9.08717H1.08707C0.486575 9.08717 0 8.6006 0 8.0001C0 7.3996 0.486575 6.91302 1.08707 6.91302H14.9129C15.5134 6.91302 16 7.3996 16 8.0001C16 8.6006 15.5134 9.08717 14.9129 9.08717Z" fill="#0F67FD" />
                       </svg>
-                      Add Custom Field
+                      <span className='text-lg'>Add Custom Field</span>
+                      {showFieldMenu && <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23" fill="none">
+                        <path d="M5.6554 16.9702C5.23078 16.5456 5.23078 15.8575 5.6554 15.4328L15.4317 5.6565C15.8564 5.23188 16.5445 5.23188 16.9691 5.6565C17.3937 6.08111 17.3937 6.76923 16.9691 7.19385L7.19275 16.9702C6.76813 17.3948 6.08001 17.3948 5.6554 16.9702Z" fill="#A9A9A9" />
+                        <path d="M15.4327 16.9708L5.65636 7.19446C5.23174 6.76984 5.23174 6.08172 5.65636 5.65711C6.08098 5.23249 6.7691 5.23249 7.19371 5.65711L16.9701 15.4335C17.3947 15.8581 17.3947 16.5462 16.9701 16.9708C16.5454 17.3954 15.8573 17.3954 15.4327 16.9708Z" fill="#A9A9A9" />
+                      </svg>}
                     </button>
 
                     {showFieldMenu && (
@@ -1769,8 +1782,9 @@ const DashboardPage = () => {
                           onClick={() => addCustomField('checkboxes')}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                         >
-                          <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M17.7096 7.50008C17.7096 5.47839 17.3015 4.22575 16.5386 3.46281C15.7756 2.69987 14.523 2.29175 12.5013 2.29175H7.5013C5.47961 2.29175 4.22697 2.69987 3.46403 3.46281C2.70109 4.22575 2.29297 5.47839 2.29297 7.50008V12.5001C2.29297 14.5218 2.70109 15.7744 3.46403 16.5374C4.22697 17.3003 5.47961 17.7084 7.5013 17.7084H12.5013C14.523 17.7084 15.7756 17.3003 16.5386 16.5374C17.3015 15.7744 17.7096 14.5218 17.7096 12.5001V7.50008ZM18.9596 12.5001C18.9596 14.6451 18.5344 16.3091 17.4224 17.4211C16.3103 18.5332 14.6463 18.9584 12.5013 18.9584H7.5013C5.35633 18.9584 3.6923 18.5332 2.58024 17.4211C1.46818 16.3091 1.04297 14.6451 1.04297 12.5001V7.50008C1.04297 5.3551 1.46818 3.69108 2.58024 2.57902C3.6923 1.46696 5.35633 1.04175 7.5013 1.04175H12.5013C14.6463 1.04175 16.3103 1.46696 17.4224 2.57902C18.5344 3.69108 18.9596 5.3551 18.9596 7.50008V12.5001Z" fill="#566273" />
+                            <path d="M13.0984 7.199C13.3427 6.95516 13.7392 6.95553 13.983 7.19981C14.2269 7.44411 14.2265 7.84056 13.9822 8.08442L9.25645 12.8004C9.01234 13.044 8.61739 13.0442 8.37347 12.8004L6.01507 10.442C5.77101 10.1979 5.77103 9.80229 6.01507 9.55821C6.25915 9.31414 6.65478 9.31414 6.89886 9.55821L8.81455 11.4739L13.0984 7.199Z" fill="#566273" />
                           </svg>
                           Checkboxes
                         </button>
@@ -1778,9 +1792,9 @@ const DashboardPage = () => {
                           onClick={() => addCustomField('radio')}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                         >
-                          <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                            <circle cx="12" cy="12" r="3" fill="currentColor" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M16.0002 8.62467C16 4.55172 12.6977 1.25 8.62467 1.25C4.55183 1.25018 1.25018 4.55183 1.25 8.62467C1.25 12.6977 4.55172 16 8.62467 16.0002C12.6978 16.0002 16.0002 12.6978 16.0002 8.62467ZM17.2502 8.62467C17.2502 13.3881 13.3881 17.2502 8.62467 17.2502C3.86137 17.25 0 13.388 0 8.62467C0.000176091 3.86148 3.86148 0.000176088 8.62467 0C13.388 0 17.25 3.86137 17.2502 8.62467Z" fill="#566273" />
+                            <path d="M9.59831 8.62508C9.59827 8.08663 9.16183 7.65015 8.62337 7.65015C8.08495 7.65018 7.64847 8.08666 7.64844 8.62508C7.64844 9.16354 8.08492 9.59998 8.62337 9.60002C9.16185 9.60002 9.59831 9.16356 9.59831 8.62508ZM10.8483 8.62508C10.8483 9.85391 9.85221 10.85 8.62337 10.85C7.39457 10.85 6.39844 9.85389 6.39844 8.62508C6.39847 7.3963 7.39459 6.40018 8.62337 6.40015C9.85218 6.40015 10.8483 7.39628 10.8483 8.62508Z" fill="#566273" />
                           </svg>
                           Radio buttons
                         </button>
@@ -1788,8 +1802,11 @@ const DashboardPage = () => {
                           onClick={() => addCustomField('number')}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                         >
-                          <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="20" viewBox="0 0 22 20" fill="none">
+                            <path d="M9.2432 1.87912C9.62047 1.91733 9.89206 2.22622 9.85013 2.56923L8.0168 17.5692C7.97477 17.9122 7.63499 18.1591 7.25769 18.121C6.88042 18.0828 6.60883 17.7739 6.65075 17.4309L8.48409 2.43088C8.52611 2.08791 8.86589 1.84101 9.2432 1.87912Z" fill="#566273" />
+                            <path d="M14.7432 1.87912C15.1205 1.91733 15.3921 2.22622 15.3501 2.56923L13.5168 17.5692C13.4748 17.9122 13.135 18.1591 12.7577 18.121C12.3804 18.0828 12.1088 17.7739 12.1508 17.4309L13.9841 2.43088C14.0261 2.08791 14.3659 1.84101 14.7432 1.87912Z" fill="#566273" />
+                            <path d="M19.707 6.875C20.0867 6.875 20.3945 7.15482 20.3945 7.5C20.3945 7.84518 20.0867 8.125 19.707 8.125H3.20703C2.82734 8.125 2.51953 7.84518 2.51953 7.5C2.51953 7.15482 2.82734 6.875 3.20703 6.875H19.707Z" fill="#566273" />
+                            <path d="M18.793 11.875C19.1727 11.875 19.4805 12.1548 19.4805 12.5C19.4805 12.8452 19.1727 13.125 18.793 13.125H2.29297C1.91327 13.125 1.60547 12.8452 1.60547 12.5C1.60547 12.1548 1.91327 11.875 2.29297 11.875H18.793Z" fill="#566273" />
                           </svg>
                           Number Field
                         </button>
@@ -1797,16 +1814,18 @@ const DashboardPage = () => {
                           onClick={() => addCustomField('address')}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                         >
-                          <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                            <path d="M12.5735 8.5918C12.5735 7.50107 11.6449 6.61675 10.4996 6.6167C9.35433 6.6167 8.42578 7.50103 8.42578 8.5918C8.42584 9.68251 9.35437 10.5669 10.4996 10.5669C11.6449 10.5668 12.5734 9.68248 12.5735 8.5918ZM13.886 8.5918C13.8859 10.3728 12.3697 11.8168 10.4996 11.8169C8.62949 11.8169 7.11334 10.3729 7.11328 8.5918C7.11328 6.81068 8.62946 5.3667 10.4996 5.3667C12.3698 5.36675 13.886 6.81071 13.886 8.5918Z" fill="#566273" />
+                            <path d="M10.5042 1.04175C13.987 1.04399 17.5355 3.00018 18.4731 6.94507C19.5606 11.5202 16.562 15.3205 14.105 17.5676C12.0913 19.4174 8.9075 19.4156 6.88709 17.5676L6.88623 17.5668C4.4382 15.3198 1.44096 11.5115 2.52832 6.93693V6.93612C3.47076 2.99129 7.02122 1.03953 10.5042 1.04175ZM10.5033 2.29175C7.51402 2.28983 4.58949 3.94146 3.8075 7.212L3.80835 7.21281C2.88333 11.1044 5.41455 14.4796 7.79627 16.6659C9.31043 18.0509 11.6911 18.0491 13.1949 16.6667L13.1958 16.6659C15.5862 14.4798 18.1179 11.1131 17.1931 7.22176C16.4157 3.95022 13.4931 2.29367 10.5033 2.29175Z" fill="#566273" />
                           </svg>
                           Address Field
                         </button>
-                        <div className="my-1 border-t border-slate-200"></div>
+                        <div className=" "></div>
                         <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
-                          <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeWidth="2" d="M12 4v16m8-8H4" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M5.20833 9.99998C5.20833 9.42849 4.73816 8.95831 4.16667 8.95831C3.59518 8.95831 3.125 9.42849 3.125 9.99998C3.125 10.5715 3.59518 11.0416 4.16667 11.0416C4.73816 11.0416 5.20833 10.5715 5.20833 9.99998ZM6.45833 9.99998C6.45833 11.2618 5.42851 12.2916 4.16667 12.2916C2.90482 12.2916 1.875 11.2618 1.875 9.99998C1.875 8.73814 2.90482 7.70831 4.16667 7.70831C5.42851 7.70831 6.45833 8.73814 6.45833 9.99998Z" fill="#566273" />
+                            <path d="M16.8763 9.99992C16.8763 9.42843 16.4061 8.95825 15.8346 8.95825C15.2631 8.95825 14.793 9.42843 14.793 9.99992C14.793 10.5714 15.2631 11.0416 15.8346 11.0416C16.4061 11.0416 16.8763 10.5714 16.8763 9.99992ZM18.1263 9.99992C18.1263 11.2618 17.0965 12.2916 15.8346 12.2916C14.5728 12.2916 13.543 11.2618 13.543 9.99992C13.543 8.73807 14.5728 7.70825 15.8346 7.70825C17.0965 7.70825 18.1263 8.73807 18.1263 9.99992Z" fill="#566273" />
+                            <path d="M11.0404 9.99992C11.0404 9.42843 10.5702 8.95825 9.9987 8.95825C9.42721 8.95825 8.95703 9.42843 8.95703 9.99992C8.95703 10.5714 9.42721 11.0416 9.9987 11.0416C10.5702 11.0416 11.0404 10.5714 11.0404 9.99992ZM12.2904 9.99992C12.2904 11.2618 11.2605 12.2916 9.9987 12.2916C8.73685 12.2916 7.70703 11.2618 7.70703 9.99992C7.70703 8.73807 8.73685 7.70825 9.9987 7.70825C11.2605 7.70825 12.2904 8.73807 12.2904 9.99992Z" fill="#566273" />
                           </svg>
                           More
                         </button>
@@ -2134,7 +2153,6 @@ const CardForm = ({
     <div className="space-y-2">
       <label className="text-xs  font-semibold text-slate-600">{descLabel}</label>
       <textarea
-        value={card.description}
         onChange={(event) => onDescriptionChange(event.target.value)}
         placeholder="Write details..."
         className="min-h-22.5 w-full mt-2 rounded-xl border border-none bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
