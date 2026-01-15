@@ -193,6 +193,8 @@ const DashboardPage = () => {
   const [editResourceFile, setEditResourceFile] = useState<File | null>(null)
   const [editResourceFileName, setEditResourceFileName] = useState('')
   const [editResourceFileUrl, setEditResourceFileUrl] = useState<string | null>(null)
+  const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
+  const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
   const editorRef = useRef<HTMLDivElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
@@ -572,6 +574,16 @@ const DashboardPage = () => {
     setFaqs((prev) => prev.filter((faq) => faq.id !== id))
   }
 
+  const handleConfirmDeleteFAQ = () => {
+    if (!deleteFAQTarget) return
+    setFaqs((prev) => prev.filter((faq) => faq.id !== deleteFAQTarget))
+    setDeleteFAQTarget(null)
+  }
+
+  const handleCancelDeleteFAQ = () => {
+    setDeleteFAQTarget(null)
+  }
+
   const addFAQ = () => {
     setFaqs((prev) => [...prev, createFAQ()])
   }
@@ -623,6 +635,16 @@ const DashboardPage = () => {
 
   const deleteResource = (id: string) => {
     setResources((prev) => prev.filter((resource) => resource.id !== id))
+  }
+
+  const handleConfirmDeleteResource = () => {
+    if (!deleteResourceTarget) return
+    setResources((prev) => prev.filter((resource) => resource.id !== deleteResourceTarget))
+    setDeleteResourceTarget(null)
+  }
+
+  const handleCancelDeleteResource = () => {
+    setDeleteResourceTarget(null)
   }
 
   const addResource = () => {
@@ -1152,7 +1174,7 @@ const DashboardPage = () => {
                                 </svg>
                               </button>
                               <button
-                                onClick={() => deleteFAQ(faq.id)}
+                                onClick={() => setDeleteFAQTarget(faq.id)}
                                 className="flex h-6 w-6 items-center justify-center rounded-md cursor-pointer hover:bg-red-50"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none">
@@ -1364,7 +1386,7 @@ const DashboardPage = () => {
                                 </svg>
                               </button>
                               <button
-                                onClick={() => deleteResource(resource.id)}
+                                onClick={() => setDeleteResourceTarget(resource.id)}
                                 className="flex h-6 w-6 items-center cursor-pointer justify-center rounded-md hover:bg-red-50"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none">
@@ -1942,6 +1964,62 @@ const DashboardPage = () => {
               <button
                 onClick={handleCancelDelete}
                 className="rounded-md bg-[#ECEDF0] px-5 py-2.5 text-sm font-semibold text-slate-600"
+              >
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteFAQTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-base font-semibold text-slate-900">
+              Are you sure you want to delete this FAQ?
+            </h3>
+            <div className="mt-3 h-px w-full bg-slate-200" />
+            <p className="mt-2 text-sm text-slate-500">
+              Once deleted, this FAQ cannot be recovered. Please make sure you want
+              to permanently remove it.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              <button
+                onClick={handleConfirmDeleteFAQ}
+                className="rounded-md bg-[#C53434] px-5 py-2.5 text-sm font-semibold text-white cursor-pointer"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={handleCancelDeleteFAQ}
+                className="rounded-md bg-[#ECEDF0] px-5 py-2.5 text-sm font-semibold text-slate-600 cursor-pointer"
+              >
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteResourceTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-base font-semibold text-slate-900">
+              Are you sure you want to delete this resource?
+            </h3>
+            <div className="mt-3 h-px w-full bg-slate-200" />
+            <p className="mt-2 text-sm text-slate-500">
+              Once deleted, this resource cannot be recovered. Please make sure you want
+              to permanently remove it.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              <button
+                onClick={handleConfirmDeleteResource}
+                className="rounded-md bg-[#C53434] px-5 py-2.5 text-sm font-semibold text-white cursor-pointer"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={handleCancelDeleteResource}
+                className="rounded-md bg-[#ECEDF0] px-5 py-2.5 text-sm font-semibold text-slate-600 cursor-pointer"
               >
                 No, Cancel
               </button>
