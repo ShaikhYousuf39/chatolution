@@ -30,15 +30,20 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="w-full bg-gradient-to-r from-white via-[#BFD5FC] to-[#F8DBBD]">
+        <section className="relative w-full overflow-hidden bg-[linear-gradient(90deg,#f2f5ff_0%,#dce9ff_45%,#f6e2cd_100%)]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.7),transparent_55%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(255,255,255,0.55),transparent_60%)]" />
           <div
-            className="relative w-full bg-cover bg-center bg-no-repeat px-5 py-10"
+            className="pointer-events-none absolute inset-0 bg-center bg-no-repeat opacity-60"
             style={{
               backgroundImage:
-                "linear-gradient(to right, white, #BFD5FC, #F8DBBD), url('/assetes/bg_circular_lines.png')",
-              backgroundAttachment: "fixed",
+                "url('/assetes/bg_circular_lines-removebg-preview.png')",
+              backgroundSize: "1100px auto",
+              backgroundPosition: "center 80px",
             }}
-          >
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent via-white/85 to-white" />
+          <div className="relative w-full px-5 py-10">
             <div className="mx-auto w-full max-w-[1160px]">
               <div className="mx-auto flex w-fit items-center gap-3 rounded-full bg-white/60 px-4 py-2 shadow-sm">
                 <div className="flex -space-x-2">
