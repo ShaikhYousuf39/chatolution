@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url(/assetes/bg_circular_lines-removebg-preview.png);
+  background-size: cover;
+  background-position: top;
+  z-index: 0;
+  opacity: 0.2;
+  top: 12%;
+}

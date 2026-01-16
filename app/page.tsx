@@ -1,7 +1,14 @@
+'use client';
+import { Plus_Jakarta_Sans, Inter } from 'next/font/google'
+import './globals.css';
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+})
 export default function Home() {
   return (
-    <div className="bg-white text-[#1F2937]">
-      <header className="w-full bg-gradient-to-r from-white via-[#BFD5FC] to-[#F8DBBD] py-4">
+    <div className={`${inter.className} bg-white text-[#1F2937]`}>
+      <header className="absolute top-0 w-full z-10 bg-transparent py-4">
         <div className="mx-auto flex w-full max-w-[1160px] items-center justify-between px-5">
           <div className="flex items-center gap-2 text-2xl font-bold">
             <img src="/assetes/Group.svg" alt="Chatolution logo" className="h-8 w-8" />
@@ -30,13 +37,15 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="w-full bg-gradient-to-r from-white via-[#BFD5FC] to-[#F8DBBD]">
+        <section className="w-full">
+          {/* hero section */}
           <div
-            className="relative w-full bg-cover bg-center bg-no-repeat px-5 py-10"
+            className="relative w-full min-h-[600px] pt-[150px] px-5 py-20 bg-gradient-to-tr from-white via-[#e8f1ff] to-[#f0e8d8] bg-cover bg-center hero-banner"
             style={{
-              backgroundImage:
-                "linear-gradient(to right, white, #BFD5FC, #F8DBBD), url('/assetes/bg_circular_lines.png')",
-              backgroundAttachment: "fixed",
+              backgroundImage: "url('/assets/bg_circular_lines-removebg-preview.png'), linear-gradient(to bottom, transparent 0%, transparent 70%, #F9FAFB 100%), linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(232, 241, 255, 0.75) 25%, rgba(191, 213, 252, 0.75) 50%, rgba(248, 219, 189, 0.75) 75%, rgba(250, 232, 216, 0.75) 100%)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
             }}
           >
             <div className="mx-auto w-full max-w-[1160px]">
@@ -58,27 +67,28 @@ export default function Home() {
                 </svg>
               </div>
 
-              <div className="mx-auto mt-10 max-w-[790px] text-center">
-                <h1 className="text-[56px] font-extrabold leading-[1.1] text-black">
+              <div className="w-full mt-10 text-center">
+                <h1 className="text-[72px] font-extrabold leading-[1.1] text-black">
                   Build Your Website with Ease
                 </h1>
-                <p className="mt-6 text-[40px] font-medium italic text-[#F59E0B]">
+                <p className="mt-6 text-[72px] font-medium italic text-[#F59E0B]">
                   Powered by Chatolution
                 </p>
-                <p className="mt-6 text-lg leading-relaxed text-slate-600">
+                <p className="px-16 mt-6 text-[18px] leading-[1.7] text-slate-600 font-normal max-w-[900px] mx-auto text-center">
                   Create your portfolio or eCommerce site in minutes with our AI-driven chatbot. No
                   technical skills required - just follow simple steps and watch your site come to
                   life!
                 </p>
-                <button className="mt-8 inline-flex items-center gap-2 rounded-md bg-black px-6 py-3 text-base font-semibold text-white">
+
+                <button className="mt-8 inline-flex items-center gap-2 rounded-[14px] bg-black px-10 py-4 text-base font-semibold text-white">
                   Get Started
                   <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M5 10h10M11 6l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none" />
+                    <path d="M5 10h10M11 6l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none"></path>
                   </svg>
                 </button>
               </div>
 
-              <div className="mx-auto mt-10 w-full max-w-[600px] overflow-hidden rounded-xl bg-white shadow-lg">
+              <div className="mx-auto mt-10 w-full max-w-[600px] overflow-hidden rounded-xl bg-white shadow-lg relative z-10">
                 <div className="border-b border-slate-200 px-4 py-3">
                   <div className="flex gap-2 overflow-x-auto pb-1">
                     {["Translate", "Calendar", "Document", "Map", "All"].map((tab) => (
@@ -103,7 +113,7 @@ export default function Home() {
                         Web
                       </span>
                     </div>
-                    <button className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-100 text-slate-500">
+                    <button className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-slate-100 text-slate-500">
                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z" />
                         <path d="M5 11a7 7 0 0014 0h-2a5 5 0 01-10 0H5z" />
@@ -119,6 +129,9 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+
+
 
           <div className="bg-[#F9FAFB] px-5 py-24 text-center">
             <div className="mx-auto max-w-[900px]">
@@ -163,21 +176,20 @@ export default function Home() {
           ].map((step, index) => (
             <div key={step.title} className="bg-[#F9FAFB] px-5 py-16">
               <div
-                className={`mx-auto flex w-full max-w-[1160px] flex-col items-center gap-10 ${
-                  step.reverse ? "lg:flex-row-reverse" : "lg:flex-row"
-                }`}
+                className={`mx-auto flex w-full max-w-[1160px] flex-col items-center justify-center gap-28 ${step.reverse ? "lg:flex-row-reverse" : "lg:flex-row"
+                  }`}
               >
-                <div className="max-w-[480px] text-center lg:text-left">
-                  <h3 className="text-[31px] font-semibold text-black">{step.title}</h3>
-                  <p className="mt-6 text-lg text-[#4B5563]">{step.copy}</p>
-                  <button className="mt-8 inline-flex items-center gap-2 rounded-md bg-black px-6 py-3 text-base font-semibold text-white">
+                <div className="flex flex-1 flex-col items-center justify-center max-w-[480px] lg:items-start">
+                  <h3 className="text-[31px] font-semibold text-black text-center lg:text-left">{step.title}</h3>
+                  <p className="mt-6 text-lg text-[#4B5563] text-center lg:text-left">{step.copy}</p>
+                  <button className="mt-8 inline-flex items-center gap-2 rounded-[14px] bg-black px-10 py-4 text-base font-semibold text-white">
                     {step.cta}
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M5 10h10M11 6l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none" />
                     </svg>
                   </button>
                 </div>
-                <div className="flex w-full max-w-[550px] justify-center">
+                <div className="flex flex-1 w-full max-w-[550px] justify-center">
                   <div className="flex h-[380px] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-[#A7C7FF] via-white to-[#F5CEAA]">
                     <div className="h-[80%] w-[85%] overflow-hidden rounded-xl bg-white shadow-sm">
                       <img src="/assetes/2416.jpg" alt="Preview" className="h-full w-full object-cover" />
@@ -208,7 +220,7 @@ export default function Home() {
                         <span className="text-[42px] font-extrabold text-black">$30</span>
                         <span className="text-sm font-medium text-[#4B5563]">per month</span>
                       </div>
-                      <button className="mt-6 w-full rounded-lg bg-[#111827] px-6 py-3 text-base font-semibold text-white">
+                      <button className="mt-6 w-full rounded-[14px] bg-[#111827] px-10 py-4 text-base font-semibold text-white">
                         Get started
                       </button>
                       <a href="#" className="mt-4 text-sm font-semibold text-[#1F2937] underline">
@@ -250,7 +262,7 @@ export default function Home() {
                 Get started in minutes with easy-to-follow steps and customizations tailored to your
                 needs.
               </p>
-              <button className="mt-8 inline-flex items-center gap-2 rounded-md bg-black px-6 py-3 text-base font-semibold text-white">
+              <button className="mt-8 inline-flex items-center gap-2 rounded-[14px] bg-black px-10 py-4 text-base font-semibold text-white">
                 Get Started
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M5 10h10M11 6l4 4-4 4" stroke="currentColor" strokeWidth="2" fill="none" />
