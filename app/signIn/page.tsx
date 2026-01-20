@@ -1,8 +1,9 @@
 
-
 "use client";
 import Image from "next/image";
 import { useState } from 'react';
+import Link from 'next/link';
+
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +20,12 @@ export default function SignInPage() {
           <div className="relative w-full h-full">
             <div className="absolute top-[-7px] left-0 mb-auto flex items-center gap-2">
               <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
-                <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                <Link href={"/"}>
+
+                  <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+
+                </Link>
+
               </div>
             </div>
           </div>

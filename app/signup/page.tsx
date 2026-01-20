@@ -26,7 +26,10 @@ export default function SignUpPage() {
                         {/* Logo */}
                         <div className="flex items-center gap-2 mb-auto">
                             <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
-                                <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                                <Link href={"/"}>
+
+                                    <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                                </Link>
                             </div>
                         </div>
 

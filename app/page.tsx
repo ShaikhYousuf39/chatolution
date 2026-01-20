@@ -1,5 +1,4 @@
 'use client';
-
 import Link from 'next/link';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google'
 import './globals.css';
@@ -14,7 +13,7 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-[1160px] items-center justify-between px-5">
           <div className="flex items-center gap-2 text-2xl font-bold">
             <img src="/assetes/Group.svg" alt="Chatolution logo" className="h-8 w-8" />
-            <span>Chatolution</span>
+            <span className="hidden md:block">Chatolution</span>
           </div>
           <nav className="hidden items-center gap-8 md:flex">
             <Link href="#" className="text-sm font-bold text-[#4F46E5]">
@@ -28,10 +27,10 @@ export default function Home() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/signIn" className="rounded-md border border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-slate-100">
+            <Link href="/signIn" className="rounded-md border border-black px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm font-medium text-black transition hover:bg-slate-100">
               Login
             </Link>
-            <Link href="/signup" className="rounded-md bg-[#000003] px-4 py-2 text-sm font-semibold text-white">
+            <Link href="/signup" className="rounded-md bg-[#000003] px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm font-semibold text-white">
               Sign Up
             </Link>
           </div>
@@ -42,7 +41,7 @@ export default function Home() {
         <section className="w-full">
           {/* hero section */}
           <div
-            className="relative w-full min-h-[600px] pt-[150px] px-5 py-20 bg-gradient-to-tr from-white via-[#e8f1ff] to-[#f0e8d8] bg-cover bg-center hero-banner"
+            className="relative w-full min-h-[600px] pt-32 md:pt-[150px] px-5 py-20 bg-gradient-to-tr from-white via-[#e8f1ff] to-[#f0e8d8] bg-cover bg-center hero-banner"
             style={{
               backgroundImage: "url('/assets/bg_circular_lines-removebg-preview.png'), linear-gradient(to bottom, transparent 0%, transparent 70%, #F9FAFB 100%), linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(232, 241, 255, 0.75) 25%, rgba(191, 213, 252, 0.75) 50%, rgba(248, 219, 189, 0.75) 75%, rgba(250, 232, 216, 0.75) 100%)",
               backgroundSize: "cover",
@@ -70,13 +69,13 @@ export default function Home() {
               </div>
 
               <div className="w-full mt-10 text-center">
-                <h1 className="text-[72px] font-extrabold leading-[1.1] text-black">
+                <h1 className="text-4xl md:text-6xl lg:text-[72px] font-extrabold leading-[1.1] text-black">
                   Build Your Website with Ease
                 </h1>
-                <p className="mt-6 text-[72px] font-medium italic text-[#F59E0B]">
+                <p className="mt-6 text-2xl md:text-5xl lg:text-[72px] font-medium italic text-[#F59E0B]">
                   Powered by Chatolution
                 </p>
-                <p className="px-16 mt-6 text-[18px] leading-[1.7] text-slate-600 font-normal max-w-[900px] mx-auto text-center">
+                <p className="px-4 md:px-16 mt-6 text-base md:text-[18px] leading-[1.7] text-slate-600 font-normal max-w-[900px] mx-auto text-center">
                   Create your portfolio or eCommerce site in minutes with our AI-driven chatbot. No
                   technical skills required - just follow simple steps and watch your site come to
                   life!
@@ -91,44 +90,47 @@ export default function Home() {
               </div>
 
               <div className="mx-auto mt-10 w-full max-w-[600px] overflow-hidden rounded-xl bg-white shadow-lg relative z-10">
+
                 <div className="border-b border-slate-200 px-4 py-3">
                   <div className="flex gap-2 overflow-x-auto pb-1">
-                    {["Translate", "Calendar", "Document", "Map", "All"].map((tab) => (
-                      <button
-                        key={tab}
-                        className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200"
-                      >
-                        {tab}
-                      </button>
-                    ))}
+                    <button className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200">Translate</button>
+                    <button className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200">Calendar</button>
+                    <button className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200">Document</button>
+                    <button className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200">Map</button>
+                    <button className="rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-200">All</button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 px-4 py-4">
-                  <input
-                    className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm outline-none focus:border-[#4F46E5]"
-                    placeholder="Ask anything..."
-                  />
-                  <div className="flex items-center gap-2">
+
+
+                <div className="flex flex-col md:flex-row items-center gap-3 px-4 py-4">
+
+                  <input className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-sm outline-none focus:border-[#4F46E5] w-full md:w-auto" placeholder="Ask anything..." />
+
+
+                  <div className="flex items-center gap-2 mt-3 md:mt-0">
+
                     <div className="flex rounded-md bg-slate-100 p-1 text-xs">
                       <span className="rounded px-2 py-1 text-slate-500">Mobile</span>
-                      <span className="rounded bg-white px-2 py-1 font-medium text-[#4F46E5] shadow-sm">
-                        Web
-                      </span>
+                      <span className="rounded bg-white px-2 py-1 font-medium text-[#4F46E5] shadow-sm">Web</span>
                     </div>
+
+
                     <button className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-slate-100 text-slate-500">
                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z" />
-                        <path d="M5 11a7 7 0 0014 0h-2a5 5 0 01-10 0H5z" />
+                        <path d="M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z"></path>
+                        <path d="M5 11a7 7 0 0014 0h-2a5 5 0 01-10 0H5z"></path>
                       </svg>
                     </button>
+
                     <button className="flex h-9 w-9 items-center justify-center rounded-md bg-[#4F46E5] text-white">
                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 12l18-9-6 18-3-6-9-3z" />
+                        <path d="M3 12l18-9-6 18-3-6-9-3z"></path>
                       </svg>
                     </button>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -160,6 +162,7 @@ export default function Home() {
                 "Our smart chatbot guides you through every step, making site creation effortless. Whether you're building a portfolio or an online store, no technical skills are needed.",
               cta: "Get Started",
               reverse: false,
+              image: "/assetes/chatbot-guidence.jpg"
             },
             {
               title: "Fully Customizable Designs",
@@ -167,6 +170,7 @@ export default function Home() {
                 "Choose from a variety of templates and easily customize them to reflect your unique style. Tailor your site without any limitations.",
               cta: "Explore Designs",
               reverse: true,
+              image: "/assetes/customizable-design.jpg"
             },
             {
               title: "Quick and Easy Setup",
@@ -174,11 +178,12 @@ export default function Home() {
                 "Launch your site in no time! Our streamlined process allows you to add content, images, and products with ease.",
               cta: "Start Now",
               reverse: false,
+              image: "/assetes/easy-setup.jpg"
             },
           ].map((step, index) => (
             <div key={step.title} className="bg-[#F9FAFB] px-5 py-16">
               <div
-                className={`mx-auto flex w-full max-w-[1160px] flex-col items-center justify-center gap-28 ${step.reverse ? "lg:flex-row-reverse" : "lg:flex-row"
+                className={`mx-auto flex w-full max-w-[1160px] flex-col items-center justify-center gap-12 lg:gap-28 ${step.reverse ? "lg:flex-row-reverse" : "lg:flex-row"
                   }`}
               >
                 <div className="flex flex-1 flex-col items-center justify-center max-w-[480px] lg:items-start">
@@ -194,7 +199,7 @@ export default function Home() {
                 <div className="flex flex-1 w-full max-w-[550px] justify-center">
                   <div className="flex h-[380px] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-[#A7C7FF] via-white to-[#F5CEAA]">
                     <div className="h-[80%] w-[85%] overflow-hidden rounded-xl bg-white shadow-sm">
-                      <img src="/assetes/2416.jpg" alt="Preview" className="h-full w-full object-cover" />
+                      <img src={step.image} alt={step.title} className="h-full w-full object-cover" />
                     </div>
                   </div>
                 </div>
@@ -216,7 +221,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="mx-auto mt-14 flex w-full max-w-[800px] flex-col overflow-hidden rounded-3xl bg-white shadow-[0_10px_25px_rgba(0,0,0,0.05)] md:flex-row">
-                    <div className="flex flex-1 flex-col justify-center rounded-3xl bg-gradient-to-br from-[#FDE6D2] to-[#D8E6FD] p-10 text-left md:m-2">
+                    <div className="flex flex-1 flex-col justify-center rounded-3xl bg-gradient-to-br from-[#FDE6D2] to-[#D8E6FD] p-6 md:p-10 text-left md:m-2">
                       <h4 className="text-lg font-medium text-[#1F2937]">Professional Plan</h4>
                       <div className="mt-4 flex items-end gap-2">
                         <span className="text-[42px] font-extrabold text-black">$30</span>
@@ -229,7 +234,7 @@ export default function Home() {
                         Get your free 7-day trail today!
                       </a>
                     </div>
-                    <div className="flex flex-1 flex-col justify-center p-10 text-left">
+                    <div className="flex flex-1 flex-col justify-center p-6 md:p-10 text-left">
                       <h5 className="text-base font-semibold text-[#1F2937]">What's included</h5>
                       <ul className="mt-6 space-y-4 text-base text-[#4B5563]">
                         {["Up to 3 Websites", "Premium Templates", "eCommerce Features", "Priority Support"].map(

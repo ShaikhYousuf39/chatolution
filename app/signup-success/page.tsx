@@ -9,7 +9,9 @@ export default function SignupSuccessPage() {
             {/* Logo at top-left */}
             <div className="absolute left-6 top-6 lg:left-10 lg:top-10">
                 <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
-                    <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                    <Link href={"/"}>
+                        <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                    </Link>
                 </div>
             </div>
 
@@ -36,7 +38,7 @@ export default function SignupSuccessPage() {
 
                 {/* Action Button */}
                 <Link
-                    href="#" 
+                    href="#"
                     className="mt-8 w-full rounded-xl bg-black py-3.5 text-sm font-semibold text-white transition hover:bg-slate-900"
                 >
                     Let's get started
