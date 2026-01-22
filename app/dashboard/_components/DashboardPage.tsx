@@ -896,7 +896,10 @@ const DashboardPage = () => {
           </div>
 
           <div className="mt-auto space-y-3 pt-4 text-sm text-slate-500">
-            <button className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50">
+            <button
+              onClick={() => router.push('/dashboard/settings/general')}
+              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
+            >
               <SettingsIcon className="h-4 w-4 text-slate-400" />
               {sidebarOpen && 'Settings'}
             </button>
