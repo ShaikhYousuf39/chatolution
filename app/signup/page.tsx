@@ -153,11 +153,11 @@ export default function SignUpPage() {
                             {/* Card 1 */}
                             <button
                                 onClick={() => setSelectedOption('portfolio')}
-                                className={`group relative flex flex-col items-center rounded-3xl border-2 p-6 shadow-sm transition hover:shadow-md ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
+                                className={` group relative flex flex-col items-center rounded-3xl border-2 p-6 shadow-sm transition hover:shadow-md ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
                             >
                                 {selectedOption === 'portfolio' && (
-                                    <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center rounded bg-blue-500 text-white shadow-sm">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center   text-white ">
+                                        {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> */}
                                     </div>
                                 )}
                                 <h3 className="text-lg font-medium text-slate-900">Create Portfolio Site</h3>
@@ -174,8 +174,8 @@ export default function SignUpPage() {
                                 className={`group relative flex flex-col items-center rounded-3xl border-2 p-6 shadow-sm transition hover:shadow-md ${selectedOption === 'ecommerce' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
                             >
                                 {selectedOption === 'ecommerce' && (
-                                    <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center rounded bg-blue-500 text-white shadow-sm">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center text-white ">
+                                        {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> */}
                                     </div>
                                 )}
                                 <h3 className="text-lg font-medium text-slate-900">Create eCommerce Site</h3>

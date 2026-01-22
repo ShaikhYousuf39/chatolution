@@ -43,7 +43,7 @@ export default function Home() {
           <div
             className="relative w-full min-h-[600px] pt-32 md:pt-[150px] px-5 py-20 bg-gradient-to-tr from-white via-[#e8f1ff] to-[#f0e8d8] bg-cover bg-center hero-banner"
             style={{
-              backgroundImage: "url('/assets/bg_circular_lines-removebg-preview.png'), linear-gradient(to bottom, transparent 0%, transparent 70%, #F9FAFB 100%), linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(232, 241, 255, 0.75) 25%, rgba(191, 213, 252, 0.75) 50%, rgba(248, 219, 189, 0.75) 75%, rgba(250, 232, 216, 0.75) 100%)",
+              backgroundImage: "linear-gradient(to bottom, transparent 0%, transparent 70%, #F9FAFB 100%), linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(232, 241, 255, 0.75) 25%, rgba(191, 213, 252, 0.75) 50%, rgba(248, 219, 189, 0.75) 75%, rgba(250, 232, 216, 0.75) 100%)",
               backgroundSize: "cover",
               backgroundPosition: "center",
               position: "relative",

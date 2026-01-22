@@ -11,7 +11,7 @@ export default function SignInPage() {
     setShowPassword(!showPassword);
   };
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white overflow-hidden">
       <div className="mx-auto flex min-h-screen w-full max-w-[1450px] items-stretch">
         {/* LEFT: Sign in form */}
         {/* LEFT: Sign in form */}
@@ -164,7 +164,7 @@ export default function SignInPage() {
         </section>
 
         {/* RIGHT: iPhone mock + background */}
-        <section className="relative py-10 hidden w-[50%] overflow-hidden lg:block rounded-lg">
+        <section className="relative my-4 mr-4 hidden w-[50%] overflow-hidden lg:flex items-center justify-center rounded-lg">
           <div className="relative w-full h-full rounded-lg">
             {/* Background */}
             <div className="absolute inset-0 bg-[#fbfbfd] rounded-lg"></div>
@@ -183,11 +183,11 @@ export default function SignInPage() {
             <div className="absolute inset-0 opacity-[0.35]" style={{ backgroundImage: 'linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
             {/* Circle behind iPhone */}
-            <div className="absolute left-1/2 top-1/2 h-[650px] w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full "></div>
+            <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full "></div>
 
             {/* iPhone Mockup */}
             <div className="relative z-10 flex h-full items-center justify-center">
-              <div className="relative h-[620px] w-[400px]">
+              <div className="relative h-[500px] w-[320px]">
                 <img
                   alt="iPhone preview"
                   decoding="async"
