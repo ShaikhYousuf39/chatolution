@@ -19,7 +19,7 @@ export default function SignUpPage() {
 
     return (
         <main className="min-h-screen bg-white">
-            <div className="mx-auto flex min-h-screen w-full max-w-[1450px] items-stretch">
+            <div className="mx-auto flex min-h-screen w-full max-w-[1450px] flex-col items-stretch lg:flex-row">
                 {/* LEFT: Sign Up Form */}
                 <section className="flex w-full flex-col px-6 py-12 lg:w-[40%] lg:px-10 items-center">
                     <div className="w-full max-w-sm flex flex-col h-full">
@@ -72,15 +72,12 @@ export default function SignUpPage() {
                                             onClick={() => setShowPassword(!showPassword)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                                         >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                className="w-5 h-5"
-                                            >
-                                                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                                                <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12.9832 9.99998C12.9832 11.65 11.6499 12.9833 9.99987 12.9833C8.34987 12.9833 7.01654 11.65 7.01654 9.99998C7.01654 8.34998 8.34987 7.01664 9.99987 7.01664C11.6499 7.01664 12.9832 8.34998 12.9832 9.99998Z" stroke="#566273" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M9.99987 16.8916C12.9415 16.8916 15.6832 15.1583 17.5915 12.1583C18.3415 10.9833 18.3415 9.00831 17.5915 7.83331C15.6832 4.83331 12.9415 3.09998 9.99987 3.09998C7.0582 3.09998 4.31654 4.83331 2.4082 7.83331C1.6582 9.00831 1.6582 10.9833 2.4082 12.1583C4.31654 15.1583 7.0582 16.8916 9.99987 16.8916Z" stroke="#566273" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
+
                                         </button>
                                     </div>
                                 </div>
@@ -88,25 +85,25 @@ export default function SignUpPage() {
                                 {/* Password Criteria */}
                                 <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 rounded-full bg-slate-400 flex items-center justify-center text-[10px] text-white">×</div>
-                                        <span className="text-xs text-slate-500">At least 8 characters</span>
+                                        <div className="h-4 w-4 rounded-full bg-slate-600 flex items-center justify-center text-[10px] text-white">×</div>
+                                        <span className="text-xs text-slate-500 whitespace-nowrap">At least 8 characters</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 rounded-full bg-slate-400 flex items-center justify-center text-[10px] text-white">×</div>
-                                        <span className="text-xs text-slate-500">At least one uppercase letter</span>
+                                        <div className="h-4 w-4 rounded-full bg-slate-600 flex items-center justify-center text-[10px] text-white">×</div>
+                                        <span className="text-xs text-slate-500 whitespace-nowrap">At least one uppercase letter</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 rounded-full bg-slate-400 flex items-center justify-center text-[10px] text-white">×</div>
-                                        <span className="text-xs text-slate-500">At least one number</span>
+                                        <div className="h-4 w-4 rounded-full bg-slate-600 flex items-center justify-center text-[10px] text-white">×</div>
+                                        <span className="text-xs text-slate-500 whitespace-nowrap">At least one number</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="h-4 w-4 rounded-full bg-slate-400 flex items-center justify-center text-[10px] text-white">×</div>
-                                        <span className="text-xs text-slate-500">At least one lowercase letter</span>
+                                       <div className="h-4 w-4 rounded-full bg-slate-600 flex items-center justify-center text-[10px] text-white">×</div>
+                                        <span className="text-xs text-slate-500 whitespace-nowrap">At least one lowercase letter</span>
                                     </div>
                                 </div>
 
                                 {/* Terms */}
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-3 sm:items-center sm:gap-2">
                                     <input
                                         type="checkbox"
                                         id="terms"
@@ -114,7 +111,7 @@ export default function SignUpPage() {
                                         onChange={(e) => setTermsAccepted(e.target.checked)}
                                         className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <label htmlFor="terms" className="text-sm text-slate-600">
+                                    <label htmlFor="terms" className="text-sm text-slate-600 sm:whitespace-nowrap">
                                         I agree to the <a href="#" className="font-medium text-blue-600 hover:underline">Services Agreement</a> and the <a href="#" className="font-medium text-blue-600 hover:underline">Privacy Policy</a>
                                     </label>
                                 </div>
@@ -141,15 +138,15 @@ export default function SignUpPage() {
                 </section>
 
                 {/* RIGHT: Selection Cards */}
-                <section className="relative my-4 mr-4 hidden flex-col items-center justify-center w-[60%] overflow-hidden rounded-3xl bg-[#FFF5F5] lg:flex">
+                <section className="relative my-4 mx-4 flex w-full flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] lg:mx-0 lg:mr-4 lg:w-[60%]">
                     {/* Background Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F5] to-[#F9F6FA]" />
 
-                    <div className="relative z-10 text-center w-full max-w-2xl px-10">
+                    <div className="relative z-10 text-center w-full max-w-3xl px-10">
                         <h2 className="text-2xl font-semibold text-slate-900">Lets Build Your Website!</h2>
                         <p className="mt-2 text-slate-500">Choose an option to get started</p>
 
-                        <div className="mt-10 grid grid-cols-2 gap-6">
+                        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-[repeat(2,361px)] md:justify-center">
                             {/* Card 1 */}
                             <button
                                 onClick={() => setSelectedOption('portfolio')}
