@@ -27,7 +27,7 @@ const HomeLandingPage = () => (
               Pick a prompt or ask anything to start working smarter with Neo.
             </p>
           </div>
-          <div className="mt-4 grid w-full grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mt-4 grid w-[85%] grid-cols-2 gap-4 md:grid-cols-4">
             {[
               "Create a new case",
               "Draft a proposal",
@@ -36,13 +36,13 @@ const HomeLandingPage = () => (
             ].map((label) => (
               <button
                 key={label}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-xs font-medium text-slate-700 shadow-sm transition hover:border-slate-300"
+                className="w-[150px] h-[92px] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-xs font-medium text-slate-700 shadow-sm transition hover:border-slate-300"
               >
                 {label}
               </button>
             ))}
           </div>
-          <button className="mt-2 inline-flex items-center gap-2 text-xs font-medium text-slate-500">
+          <button className="mt-2 inline-flex items-center gap-2 text-[14px ] font-bold text-slate-800">
             See prompt library
             <svg viewBox="0 0 20 20" className="h-3 w-3" fill="none">
               <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" />

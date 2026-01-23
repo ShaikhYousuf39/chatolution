@@ -46,7 +46,7 @@ const PublishingSettingsPage = () => {
       <div className="flex">
         <aside className="w-56 border-r border-slate-200 px-6 py-6">
           <a href="/dashboard/content" className="flex items-center gap-2 text-sm text-slate-600">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full ">
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
                 <path d="M12.5 5l-5 5 5 5" stroke="#566273" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -91,19 +91,20 @@ const PublishingSettingsPage = () => {
           </div>
         </aside>
 
-        <main className="flex-1 px-10 py-8">
+        <main className="flex-1 px-10 py-6">
           <h1 className="text-xl font-semibold">Publishing</h1>
+          <div>
+            <h2 className="mt-7 text-xl font-semibold ">Connect Your Domain</h2>
+            <p className="mt-5 text-[16px] font-normal text-slate-500">
+              Connect your custom domain to our platform to gain control over your site's web address. Configure your domain's DNS settings to point it here.
+            </p>
+          </div>
           <div className="mt-6 rounded-xl shadow bg-white p-3">
             <div className="space-y-4">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">Connect Your Domain</h2>
-                <p className="mt-1 text-xs text-slate-500">
-                  Connect your custom domain to our platform to gain control over your site's web address. Configure your domain's DNS settings to point it here.
-                </p>
-              </div>
+
 
               <div className="mt-4">
-                <p className="text-xs font-semibold text-slate-700">
+                <p className="text-[18px] font-normal text-slate-700">
                   Configure your domain's DNS records as follows:
                 </p>
                 <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
@@ -134,11 +135,11 @@ const PublishingSettingsPage = () => {
                     </div>
                   ))}
                 </div>
-                <p className="mt-3 text-[11px] text-slate-400">
+                <p className="mt-3 text-[14px] text-slate-400">
                   DNS changes can take up to 48 hours to propagate and verify.
                 </p>
                 <div className="mt-4 flex justify-end">
-                  <button className="rounded-[12px] bg-[#0F67FD] py-[15px] px-[30px] text-xs font-semibold text-white">
+                  <button className="rounded-[12px] bg-[#0F67FD] py-[15px] px-[30px] text-[12px] font-semibold text-white">
                     Verify &amp; Connect
                   </button>
                 </div>

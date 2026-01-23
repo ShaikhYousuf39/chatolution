@@ -1,9 +1,9 @@
 const SettingsPage = () => (
   <div className="min-h-screen bg-white text-slate-900">
     <div className="flex">
-      <aside className="w-56 border-r border-slate-200 px-6 py-6">
+      <aside className="w-56 border-r border-slate-200 px-6 py-3">
         <a href="/dashboard/content" className="flex items-center gap-2 text-sm text-slate-600">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full ">
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
               <path d="M12.5 5l-5 5 5 5" stroke="#566273" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -44,9 +44,9 @@ const SettingsPage = () => (
         </div>
       </aside>
 
-      <main className="flex-1 px-10 py-8">
+      <main className="flex-1 px-10 py-4">
         <h1 className="text-xl font-semibold">General Settings</h1>
-        <div className="mt-6 rounded-xl shadow bg-white p-3">
+        <div className="mt-3 rounded-xl shadow bg-white p-3">
           <div className="space-y-6">
             <div>
               <label className="text-sm font-semibold text-slate-700">Site Title</label>
@@ -62,7 +62,7 @@ const SettingsPage = () => (
                 placeholder="Just another site"
                 className="mt-2 w-full rounded-lg bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
               />
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-[14px] font-normal text-slate-500">
                 In a few words, explain what this site is about.
               </p>
             </div>
@@ -70,7 +70,7 @@ const SettingsPage = () => (
             <div>
               <label className="text-sm font-semibold text-slate-700">Fav icon</label>
               <div className="mt-2 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-[#F8FAFC] text-slate-400">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#e9ebed] text-slate-400">
 
                   <svg width="27" height="22" viewBox="0 0 27 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M0 2.68667C0 1.20286 1.20286 0 2.68667 0H23.7667C25.2505 0 26.4533 1.20286 26.4533 2.68667V19.22C26.4533 20.7038 25.2505 21.9067 23.7667 21.9067H2.68667C1.20286 21.9067 0 20.7038 0 19.22V2.68667ZM2.68667 1.24C1.88769 1.24 1.24 1.8877 1.24 2.68667V19.22C1.24 20.019 1.8877 20.6667 2.68667 20.6667H23.7667C24.5656 20.6667 25.2133 20.019 25.2133 19.22V2.68667C25.2133 1.8877 24.5656 1.24 23.7667 1.24H2.68667Z" fill="#B2B9C4" />
@@ -79,7 +79,7 @@ const SettingsPage = () => (
                   </svg>
 
                 </div>
-                <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 cursor-pointer">
+                <label className="flex items-center gap-3 rounded-lg  bg-[#F8FCFF] px-3 py-2 text-sm text-slate-600 cursor-pointer">
                   <span className="rounded-md border border-[#0F67FD] bg-[#F2F6FF] px-3 py-1 text-sm font-semibold text-[#0F67FD]">
                     Choose File
                   </span>
@@ -87,8 +87,8 @@ const SettingsPage = () => (
                   <input className="hidden" type="file" accept="image/*" />
                 </label>
               </div>
-              <p className="mt-2 text-xs text-slate-500">
-                The Site Icon is what you see in browser tabs, bookmark bars, mobile apps. It should be square and at least 512 by 512 pixels.
+              <p className="mt-2 text-[14px] font-normal text-slate-500">
+                The Site Icon is what you see in browser tabs, bookmark bars, mobile apps. It should be square and at least <span className="font-bold">512 by 512</span> pixels.
               </p>
             </div>
 
@@ -111,7 +111,7 @@ const SettingsPage = () => (
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <button className="rounded-[14px] bg-black px-[30px] py-[15px] text-sm font-semibold text-white">
             Save Changes
           </button>
