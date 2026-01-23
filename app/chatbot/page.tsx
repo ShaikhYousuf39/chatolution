@@ -1,6 +1,4 @@
 
-
-
 "use client"
 
 import { useRef } from "react"
@@ -19,10 +17,10 @@ const HomeLandingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2] ">
-      <div className="min-h-screen rounded-lg     bg-[linear-gradient(to_bottom,transparent_0%,transparent_70%,#F9FAFB_100%),linear-gradient(135deg,rgba(255,255,255,0.75)_0%,rgba(232,241,255,0.75)_25%,rgba(191,213,252,0.75)_50%,rgba(248,219,189,0.75)_75%,rgba(250,232,216,0.75)_100%)]
-">
-        <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 py-8 md:px-6 md:py-14">
+    // bg-[#F2F2F2]
+    <div className="min-h-screen  ">
+      <div className="min-h-screen  bg-[linear-gradient(to_right,rgba(172,209,254,0.3)_20%,rgba(247,212,179,0.3)_100%,white_100%)] ">
+        <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 pt-8 pb-24 md:px-6 md:py-14">
           <div className="mb-[25px] flex w-full max-w-3xl flex-col items-center gap-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg  ">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +54,7 @@ const HomeLandingPage = () => {
               ].map((label) => (
                 <button
                   key={label}
-                  className="w-full min-h-[92px] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-[14px] font-medium text-slate-700 shadow-sm transition hover:border-slate-300"
+                  className="w-full min-h-[92px] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-[14px] font-medium text-slate-800 shadow-sm transition hover:border-slate-300 "
                 >
                   {label}
                 </button>
@@ -70,7 +68,7 @@ const HomeLandingPage = () => {
             </button>
           </div>
 
-          <div className="mb-[-20px] md:mb-[-40px] w-full max-w-3xl px-4">
+          <div className="mb-0 md:mb-[-70px] w-full max-w-3xl px-4">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <input
                 className="w-full border-none bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-300"
@@ -86,9 +84,9 @@ const HomeLandingPage = () => {
                   />
                   <button
                     onClick={handleFileClick}
-                    className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 hover:cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="font-bold inline-flex items-center gap-2 rounded-full px-3 py-1.5 hover:cursor-pointer hover:bg-slate-100 transition-colors"
                   >
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full">
 
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.97396 10V12.9167C9.97396 14.525 11.2823 15.8333 12.8906 15.8333C14.499 15.8333 15.8073 14.525 15.8073 12.9167V8.33333C15.8073 5.10833 13.199 2.5 9.97396 2.5C6.74896 2.5 4.14062 5.10833 4.14062 8.33333V13.3333C4.14062 16.0917 6.38229 18.3333 9.14063 18.3333" stroke="#566273" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -97,8 +95,8 @@ const HomeLandingPage = () => {
                     </span>
                     Add
                   </button>
-                  <button className="inline-flex items-center gap-2 rounded-full  px-3 py-1.5">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200">
+                  <button className="font-bold inline-flex items-center gap-2 rounded-full  px-3 py-1.5">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full ">
 
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18.0515 8.69992L17.2348 12.1833C16.5348 15.1916 15.1515 16.4083 12.5515 16.1583C12.1348 16.1249 11.6848 16.0499 11.2015 15.9333L9.80145 15.5999C6.32645 14.7749 5.25145 13.0583 6.06812 9.57493L6.88479 6.08326C7.05145 5.37493 7.25145 4.75826 7.50145 4.24993C8.47645 2.23326 10.1348 1.69159 12.9181 2.34993L14.3098 2.67493C17.8015 3.49159 18.8681 5.21659 18.0515 8.69992Z" stroke="#566273" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -111,11 +109,13 @@ const HomeLandingPage = () => {
                     Browse Prompts
                   </button>
                 </div>
-                <button className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                  <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
-                    <path d="M6 10h8" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M10 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" />
+                <button className="flex h-8 w-8 items-center justify-center rounded-full  text-slate-400">
+
+                  <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="25" height="25.3333" rx="12.5" fill="#ECEDF0" />
+                    <path d="M12.5 19.3333V5.99992M12.5 5.99992L17.5 10.9999M12.5 5.99992L7.5 10.9999" stroke="white" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
+
                 </button>
               </div>
             </div>
