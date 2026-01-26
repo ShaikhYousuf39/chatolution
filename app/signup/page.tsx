@@ -20,7 +20,7 @@ export default function SignUpPage() {
     return (
         <main className="min-h-screen bg-white overflow-x-hidden">
             <div className="mx-auto flex min-h-screen w-full max-w-[1450px] flex-col items-stretch">
-                <div className="flex items-center px-6 pt-8 lg:px-10">
+                <div className="w-[30%] flex items-center px-6 pt-8 lg:px-10">
                     <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
                         <Link href={"/"}>
                             <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
@@ -81,38 +81,38 @@ export default function SignUpPage() {
                                     </div>
 
                                     {/* Password Criteria */}
-                                    <div className="grid grid-cols-2 gap-y-2 gap-x-4">
-                                        <div className="flex items-center gap-0">
+                                    <div className="grid grid-cols-2 gap-y-2 gap-x-3">
+                                        <div className="flex items-start gap-2">
 
                                             <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M10.0001 1.66675C5.40841 1.66675 1.66675 5.40841 1.66675 10.0001C1.66675 14.5917 5.40841 18.3334 10.0001 18.3334C14.5917 18.3334 18.3334 14.5917 18.3334 10.0001C18.3334 5.40841 14.5917 1.66675 10.0001 1.66675ZM12.8001 11.9167C13.0417 12.1584 13.0417 12.5584 12.8001 12.8001C12.6751 12.9251 12.5167 12.9834 12.3584 12.9834C12.2001 12.9834 12.0417 12.9251 11.9167 12.8001L10.0001 10.8834L8.08341 12.8001C7.95841 12.9251 7.80008 12.9834 7.64175 12.9834C7.48341 12.9834 7.32508 12.9251 7.20008 12.8001C6.95842 12.5584 6.95842 12.1584 7.20008 11.9167L9.11675 10.0001L7.20008 8.08341C6.95842 7.84175 6.95842 7.44175 7.20008 7.20008C7.44175 6.95842 7.84175 6.95842 8.08341 7.20008L10.0001 9.11675L11.9167 7.20008C12.1584 6.95842 12.5584 6.95842 12.8001 7.20008C13.0417 7.44175 13.0417 7.84175 12.8001 8.08341L10.8834 10.0001L12.8001 11.9167Z" fill="#566273" />
                                             </svg>
 
-                                            <span className="text-xs text-slate-500 whitespace-nowrap">At least 8 characters</span>
+                                            <span className="text-xs text-slate-500 whitespace-normal sm:whitespace-nowrap">At least 8 characters</span>
                                         </div>
-                                        <div className="flex items-center gap-0">
+                                        <div className="flex items-start gap-2">
 
                                             <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M10.0001 1.66675C5.40841 1.66675 1.66675 5.40841 1.66675 10.0001C1.66675 14.5917 5.40841 18.3334 10.0001 18.3334C14.5917 18.3334 18.3334 14.5917 18.3334 10.0001C18.3334 5.40841 14.5917 1.66675 10.0001 1.66675ZM12.8001 11.9167C13.0417 12.1584 13.0417 12.5584 12.8001 12.8001C12.6751 12.9251 12.5167 12.9834 12.3584 12.9834C12.2001 12.9834 12.0417 12.9251 11.9167 12.8001L10.0001 10.8834L8.08341 12.8001C7.95841 12.9251 7.80008 12.9834 7.64175 12.9834C7.48341 12.9834 7.32508 12.9251 7.20008 12.8001C6.95842 12.5584 6.95842 12.1584 7.20008 11.9167L9.11675 10.0001L7.20008 8.08341C6.95842 7.84175 6.95842 7.44175 7.20008 7.20008C7.44175 6.95842 7.84175 6.95842 8.08341 7.20008L10.0001 9.11675L11.9167 7.20008C12.1584 6.95842 12.5584 6.95842 12.8001 7.20008C13.0417 7.44175 13.0417 7.84175 12.8001 8.08341L10.8834 10.0001L12.8001 11.9167Z" fill="#566273" />
                                             </svg>
 
-                                            <span className="text-xs text-slate-500 whitespace-nowrap">At least one uppercase letter</span>
+                                            <span className="text-xs text-slate-500 whitespace-normal sm:whitespace-nowrap">At least one uppercase letter</span>
                                         </div>
-                                        <div className="flex items-center gap-0">
+                                        <div className="flex items-start gap-2">
 
                                             <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M10.0001 1.66675C5.40841 1.66675 1.66675 5.40841 1.66675 10.0001C1.66675 14.5917 5.40841 18.3334 10.0001 18.3334C14.5917 18.3334 18.3334 14.5917 18.3334 10.0001C18.3334 5.40841 14.5917 1.66675 10.0001 1.66675ZM12.8001 11.9167C13.0417 12.1584 13.0417 12.5584 12.8001 12.8001C12.6751 12.9251 12.5167 12.9834 12.3584 12.9834C12.2001 12.9834 12.0417 12.9251 11.9167 12.8001L10.0001 10.8834L8.08341 12.8001C7.95841 12.9251 7.80008 12.9834 7.64175 12.9834C7.48341 12.9834 7.32508 12.9251 7.20008 12.8001C6.95842 12.5584 6.95842 12.1584 7.20008 11.9167L9.11675 10.0001L7.20008 8.08341C6.95842 7.84175 6.95842 7.44175 7.20008 7.20008C7.44175 6.95842 7.84175 6.95842 8.08341 7.20008L10.0001 9.11675L11.9167 7.20008C12.1584 6.95842 12.5584 6.95842 12.8001 7.20008C13.0417 7.44175 13.0417 7.84175 12.8001 8.08341L10.8834 10.0001L12.8001 11.9167Z" fill="#566273" />
                                             </svg>
 
-                                            <span className="text-xs text-slate-500 whitespace-nowrap">At least one number</span>
+                                            <span className="text-xs text-slate-500 whitespace-normal sm:whitespace-nowrap">At least one number</span>
                                         </div>
-                                        <div className="flex items-center gap-0">
+                                        <div className="flex items-start gap-2">
 
                                             <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M10.0001 1.66675C5.40841 1.66675 1.66675 5.40841 1.66675 10.0001C1.66675 14.5917 5.40841 18.3334 10.0001 18.3334C14.5917 18.3334 18.3334 14.5917 18.3334 10.0001C18.3334 5.40841 14.5917 1.66675 10.0001 1.66675ZM12.8001 11.9167C13.0417 12.1584 13.0417 12.5584 12.8001 12.8001C12.6751 12.9251 12.5167 12.9834 12.3584 12.9834C12.2001 12.9834 12.0417 12.9251 11.9167 12.8001L10.0001 10.8834L8.08341 12.8001C7.95841 12.9251 7.80008 12.9834 7.64175 12.9834C7.48341 12.9834 7.32508 12.9251 7.20008 12.8001C6.95842 12.5584 6.95842 12.1584 7.20008 11.9167L9.11675 10.0001L7.20008 8.08341C6.95842 7.84175 6.95842 7.44175 7.20008 7.20008C7.44175 6.95842 7.84175 6.95842 8.08341 7.20008L10.0001 9.11675L11.9167 7.20008C12.1584 6.95842 12.5584 6.95842 12.8001 7.20008C13.0417 7.44175 13.0417 7.84175 12.8001 8.08341L10.8834 10.0001L12.8001 11.9167Z" fill="#566273" />
                                             </svg>
 
-                                            <span className="text-xs text-slate-500 whitespace-nowrap">At least one lowercase letter</span>
+                                            <span className="text-xs text-slate-500 whitespace-normal sm:whitespace-nowrap">At least one lowercase letter</span>
                                         </div>
                                     </div>
 
@@ -152,50 +152,52 @@ export default function SignUpPage() {
                     </section>
 
                     {/* RIGHT: Selection Cards */}
-                    <section className="relative my-4 mx-4 flex w-auto  flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-4 py-6 order-1 lg:order-2 lg:mx-0 lg:mr-4 lg:px-0 lg:py-5 sm:w-full">
+                    <section className="relative mx-4 my-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-4 py-4 order-1 md:min-h-[88vh] lg:order-2 lg:mx-0 lg:mr-4 lg:py-2 lg:px-0 lg:pt-1 lg:pb-2 sm:w-full">
 
                         {/* Background Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F5] to-[#F9F6FA]" />
 
                         <div className="relative z-10 w-full max-w-3xl px-0 text-center sm:px-6 lg:px-10">
-                            <h2 className="text-2xl font-semibold text-slate-900">Lets Build Your Website!</h2>
-                            <p className="mt-2 text-slate-500">Choose an option to get started</p>
+                            <h2 className="text-base font-semibold text-slate-900 sm:text-2xl">Lets Build Your Website!</h2>
+                            <p className="mt-1 text-xs text-slate-500 sm:mt-2 sm:text-base">Choose an option to get started</p>
 
-                            <div className="mt-8 grid grid-cols-1 gap-4 md:mt-10 md:grid-cols-[repeat(2,330px)] md:justify-center">
+                            <div className="mt-6 grid w-full grid-cols-2 gap-2 px-2 md:mt-10 md:grid-cols-[repeat(2,330px)] md:justify-center md:gap-4 md:px-0">
                                 {/* Card 1 */}
                                 <button
                                     onClick={() => setSelectedOption('portfolio')}
-                                className={`group relative mx-auto flex w-[280px] max-w-[280px] flex-col items-center rounded-3xl border-2 p-4 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
+                                    className={`group relative flex w-full min-w-0 flex-col items-center rounded-2xl border-2 p-2 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
                                 >
                                     {selectedOption === 'portfolio' && (
                                         <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center   text-white ">
                                             {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> */}
                                         </div>
                                     )}
-                                    <h3 className="text-lg font-medium text-slate-900">Create Portfolio Site</h3>
+                                    <h3 className="text-[12px] font-semibold text-slate-900 sm:text-lg">Create Portfolio Site</h3>
 
-                                    <div className="mt-5 aspect-[4/3] w-full rounded-lg bg-slate-50 p-3 sm:mt-6">
+                                    <div className="mt-2 aspect-[4/3] w-full max-h-[72px] overflow-hidden rounded-lg bg-slate-50 p-2 sm:mt-6 sm:max-h-[160px]">
                                         <img src="/assetes/portfolio.png" alt="portfolio" className="h-full w-full object-contain" />
                                     </div>
-                                    <p className="mt-4 text-center text-sm text-slate-500">Showcase your work with an interactive portfolio site. Add your services, projects, and contact information.</p>
+                                    <p className="mt-2 max-h-[52px] overflow-hidden text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:max-h-none sm:text-sm">
+                                        Showcase your work with an interactive portfolio site. Add your services, projects, and contact information.
+                                    </p>
                                 </button>
 
                                 {/* Card 2 */}
                                 <button
                                     onClick={() => setSelectedOption('ecommerce')}
-                                className={`group relative mx-auto flex w-[280px] max-w-[280px] flex-col items-center rounded-3xl border-2 p-4 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'ecommerce' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
+                                    className={`group relative flex w-full min-w-0 flex-col items-center rounded-2xl border-2 p-2 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'ecommerce' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
                                 >
                                     {selectedOption === 'ecommerce' && (
                                         <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center text-white ">
                                             {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> */}
                                         </div>
                                     )}
-                                    <h3 className="text-lg font-medium text-slate-900">Create eCommerce Site</h3>
+                                    <h3 className="text-[12px] font-semibold text-slate-900 sm:text-lg">Create eCommerce Site</h3>
 
-                                    <div className="mt-5 aspect-[4/3] w-full rounded-lg bg-slate-50 p-3 sm:mt-6">
+                                    <div className="mt-2 aspect-[4/3] w-full max-h-[72px] overflow-hidden rounded-lg bg-slate-50 p-2 sm:mt-6 sm:max-h-[160px]">
                                         <img src="/assetes/e-commerce.png" alt="ecommerce" className="h-full w-full object-contain" />
                                     </div>
-                                    <p className="mt-4 text-center text-sm text-slate-500">Set up an online store to sell your products. Add and manage your products to start selling online.</p>
+                                    <p className="mt-2 max-h-[52px] overflow-hidden text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:max-h-none sm:text-sm">Set up an online store to sell your products. Add and manage your products to start selling online.</p>
                                 </button>
                             </div>
                         </div>
