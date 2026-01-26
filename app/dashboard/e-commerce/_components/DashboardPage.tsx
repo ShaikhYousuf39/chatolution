@@ -14,7 +14,7 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 })
 
-const initialTabs = ['Welcome message', 'About', 'Portfolio', 'Services', 'How It Works', 'Resources', 'FAQs', 'Privacy', 'T&C']
+const initialTabs = ['Welcome message', 'About', 'FAQs', 'Privacy', 'T&C', 'Returns & Refunds']
 
 const defaultEditorContent: Record<string, string> = {
   'Welcome message': '',
@@ -26,6 +26,7 @@ const defaultEditorContent: Record<string, string> = {
   'Resources': '',
   'Privacy': '',
   'T&C': '',
+  'Returns & Refunds': '',
 }
 
 const themeColors = [
@@ -322,7 +323,7 @@ export const DashboardSidebar = ({
 
       <div className="mt-auto space-y-3 pt-4 text-sm text-slate-500">
         <button
-          onClick={() => onNavigate('/dashboard/settings/general')}
+          onClick={() => onNavigate('/dashboard/e-commerce/settings/general')}
           className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
         >
           <SettingsIcon className="h-4 w-4 text-slate-400" />
@@ -414,7 +415,11 @@ const DashboardPage = () => {
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
   const editorRef = useRef<HTMLDivElement | null>(null)
+  const returnsPolicyRef = useRef<HTMLDivElement | null>(null)
+  const refundsPolicyRef = useRef<HTMLDivElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
+  const [returnsPolicyContent, setReturnsPolicyContent] = useState('')
+  const [refundsPolicyContent, setRefundsPolicyContent] = useState('')
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
     'Welcome message': [],
     'About': [],
@@ -425,6 +430,7 @@ const DashboardPage = () => {
     'Resources': [],
     'Privacy': [],
     'T&C': [],
+    'Returns & Refunds': [],
   })
   const [sectionPreview, setSectionPreview] = useState<Record<string, string | null>>({
     'Welcome message': null,
@@ -436,6 +442,7 @@ const DashboardPage = () => {
     'Resources': null,
     'Privacy': null,
     'T&C': null,
+    'Returns & Refunds': null,
   })
   const [cardsByTab, setCardsByTab] = useState<Record<string, CardData[]>>({
     'Welcome message': [],
@@ -447,22 +454,23 @@ const DashboardPage = () => {
     'Resources': [],
     'Privacy': [],
     'T&C': [],
+    'Returns & Refunds': [],
   })
   const [saveStatus, setSaveStatus] = useState('')
 
   const activeSidebarSection = (() => {
-    if (pathname?.startsWith('/dashboard/accreditation')) return 'Accreditation'
-    if (pathname?.startsWith('/dashboard/testimonials')) return 'Testimonials'
-    if (pathname?.startsWith('/dashboard/forms')) return 'Forms'
-    if (pathname?.startsWith('/dashboard/contact')) return 'Contact'
+    if (pathname?.startsWith('/dashboard/e-commerce/accreditation')) return 'Accreditation'
+    if (pathname?.startsWith('/dashboard/e-commerce/testimonials')) return 'Testimonials'
+    if (pathname?.startsWith('/dashboard/e-commerce/forms')) return 'Forms'
+    if (pathname?.startsWith('/dashboard/e-commerce/contact')) return 'Contact'
     return 'Content'
   })()
   const sidebarRoutes: Record<string, string> = {
-    Content: '/dashboard/content',
-    Accreditation: '/dashboard/accreditation',
-    Testimonials: '/dashboard/testimonials',
-    Forms: '/dashboard/forms',
-    Contact: '/dashboard/contact',
+    Content: '/dashboard/e-commerce/content',
+    Accreditation: '/dashboard/e-commerce/accreditation',
+    Testimonials: '/dashboard/e-commerce/testimonials',
+    Forms: '/dashboard/e-commerce/forms',
+    Contact: '/dashboard/e-commerce/contact',
   }
 
   // Accreditation state
@@ -562,7 +570,7 @@ const DashboardPage = () => {
       const remaining = contentTabs.filter((item) => item !== tab)
       const nextTab = remaining[0] ?? 'Welcome message'
       setActiveTab(nextTab)
-      router.push(`/dashboard/content?tab=${encodeURIComponent(nextTab)}`)
+      router.push(`/dashboard/e-commerce/content?tab=${encodeURIComponent(nextTab)}`)
     }
     if (editingTab === tab) handleCancelEdit()
     setDeleteTarget(null)
@@ -599,6 +607,14 @@ const DashboardPage = () => {
     setEditorContent((prev) => ({ ...prev, [activeTab]: value }))
   }
 
+  const handlePolicyInput = (
+    ref: React.RefObject<HTMLDivElement>,
+    setValue: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    if (!ref.current) return
+    setValue(ref.current.innerHTML)
+  }
+
   const ensureEditorSelection = () => {
     if (!editorRef.current) return
     const selection = window.getSelection()
@@ -622,9 +638,43 @@ const DashboardPage = () => {
     handleEditorInput()
   }
 
+  const ensureEditorSelectionFor = (ref: React.RefObject<HTMLDivElement>) => {
+    if (!ref.current) return
+    const selection = window.getSelection()
+    if (!selection) return
+    const hasFocus =
+      selection.rangeCount > 0 &&
+      ref.current.contains(selection.getRangeAt(0).commonAncestorContainer)
+    if (hasFocus) return
+    const range = document.createRange()
+    range.selectNodeContents(ref.current)
+    range.collapse(false)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+
+  const runEditorCommandFor = (
+    ref: React.RefObject<HTMLDivElement>,
+    command: string,
+    value?: string
+  ) => {
+    if (!ref.current) return
+    ref.current.focus()
+    ensureEditorSelectionFor(ref)
+    document.execCommand(command, false, value)
+  }
+
   const handleFontSizeChange = (value: string) => {
     const sizeMap: Record<string, string> = { '16': '3', '18': '4', '20': '5' }
     runEditorCommand('fontSize', sizeMap[value] ?? '3')
+  }
+
+  const handleFontSizeChangeFor = (
+    ref: React.RefObject<HTMLDivElement>,
+    value: string
+  ) => {
+    const sizeMap: Record<string, string> = { '16': '3', '18': '4', '20': '5' }
+    runEditorCommandFor(ref, 'fontSize', sizeMap[value] ?? '3')
   }
 
   const handleColorPick = () => {
@@ -961,9 +1011,9 @@ const DashboardPage = () => {
           activeSidebarSection={activeSidebarSection}
           activeTab={activeTab}
           contentTabs={contentTabs}
-          contentRoute="/dashboard/content"
+          contentRoute="/dashboard/e-commerce/content"
           onNavigate={(route) => router.push(route)}
-          onTabSelect={(tab) => router.push(`/dashboard/content?tab=${encodeURIComponent(tab)}`)}
+          onTabSelect={(tab) => router.push(`/dashboard/e-commerce/content?tab=${encodeURIComponent(tab)}`)}
           onTabEditStart={handleStartEdit}
           editingTab={editingTab}
           editValue={editValue}
@@ -977,177 +1027,339 @@ const DashboardPage = () => {
         <main className="flex flex-1 flex-col overflow-y-auto px-10 py-6">
           {activeSidebarSection === 'Content' && (
             <>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
+              <div className="hidden flex items-center gap-2 text-sm text-slate-600">
                 <span className="font-semibold text-slate-900">{activeSidebarSection}</span>
               </div>
               <div className="mt-7">
                 <h1 className="text-xl font-medium">{activeTabHeading}</h1>
 
-                {activeTab !== 'FAQs' && activeTab !== 'Resources' && (
-                  <>
-                    <div className="mt-6 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
+                {activeTab === 'Returns & Refunds' ? (
+                  <div className="mt-6 space-y-6">
+                    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                      <div className="border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900">
+                        Returns Policy
+                      </div>
                       <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
                         <select
                           className="cursor-pointer bg-white px-2 py-1 text-[16px]"
-                          onChange={(event) => handleFontSizeChange(event.target.value)}
+                          onChange={(event) =>
+                            handleFontSizeChangeFor(returnsPolicyRef, event.target.value)
+                          }
                         >
                           <option>16</option>
                           <option>18</option>
                           <option>20</option>
                         </select>
                         <div className="mx h-10 w-px bg-slate-200" />
-                        <div className="relative">
-                          <ToolButton icon={<ColorIcon className="h-4 w-4" />} onClick={handleColorPick} />
-                          {colorMenuOpen && (
-                            <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-                              <button
-                                onClick={() => handlePalettePick('#111827')}
-                                className="mb-3 flex w-full items-center justify-between text-xs text-slate-600"
-                              >
-                                <span>Automatic</span>
-                                <span className="h-4 w-4 rounded border border-slate-200 bg-slate-900" />
-                              </button>
-                              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                                Theme Colors
-                              </div>
-                              <div className="mt-2 grid grid-cols-10 gap-1">
-                                {themeColors.map((color) => (
-                                  <button
-                                    key={color}
-                                    onClick={() => handlePalettePick(color)}
-                                    className="h-4 w-4 rounded border border-slate-200"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                              <div className="mt-3 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                                Standard Colors
-                              </div>
-                              <div className="mt-2 grid grid-cols-10 gap-1">
-                                {standardColors.map((color) => (
-                                  <button
-                                    key={color}
-                                    onClick={() => handlePalettePick(color)}
-                                    className="h-4 w-4 rounded border border-slate-200"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <div className="relative">
-                          <ToolButton
-                            icon={<HighlightIcon className="h-4 w-4" />}
-                            onClick={handleHighlightToggle}
-                          />
-                          {highlightMenuOpen && (
-                            <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-                              <button
-                                onClick={() => handleHighlightSelect('#fef08a')}
-                                className="mb-3 flex w-full items-center justify-between text-xs text-slate-600"
-                              >
-                                <span>Automatic</span>
-                                <span className="h-4 w-4 rounded border border-slate-200 bg-yellow-200" />
-                              </button>
-                              <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                                Highlight Colors
-                              </div>
-                              <div className="mt-2 grid grid-cols-10 gap-1">
-                                {standardColors.map((color) => (
-                                  <button
-                                    key={color}
-                                    onClick={() => handleHighlightSelect(color)}
-                                    className="h-4 w-4 rounded border border-slate-200"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <ToolButton icon={<BoldIcon className="h-4 w-4" />} onClick={() => runEditorCommand('bold')} />
-                        <ToolButton icon={<ItalicIcon className="h-4 w-4" />} onClick={() => runEditorCommand('italic')} />
+                        <ToolButton
+                          icon={<BoldIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'bold')}
+                        />
+                        <ToolButton
+                          icon={<ItalicIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'italic')}
+                        />
                         <ToolButton
                           icon={<UnderlineIcon className="h-4 w-4" />}
-                          onClick={() => runEditorCommand('underline')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'underline')}
                         />
                         <ToolButton
                           icon={<OverlineIcon className="h-4 w-4" />}
-                          onClick={() => runEditorCommand('strikeThrough')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'strikeThrough')}
                         />
                         <div className="mx-2 h-10 w-px bg-slate-200" />
                         <ToolButton
                           icon={<AlignLeftIcon className="h-5 w-5" />}
-                          onClick={() => runEditorCommand('justifyLeft')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'justifyLeft')}
                         />
                         <ToolButton
                           icon={<AlignCenterIcon className="h-5 w-5" />}
-                          onClick={() => runEditorCommand('justifyCenter')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'justifyCenter')}
                         />
                         <ToolButton
                           icon={<AlignRightIcon className="h-5 w-5" />}
-                          onClick={() => runEditorCommand('justifyRight')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'justifyRight')}
                         />
                         <div className="mx-2 h-10 w-px bg-slate-200" />
                         <ToolButton
                           icon={<NumberListIcon className="h-4 w-4" />}
-                          onClick={() => runEditorCommand('insertOrderedList')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'insertOrderedList')}
                         />
                         <ToolButton
                           icon={<DotListIcon className="h-4 w-4" />}
-                          onClick={() => runEditorCommand('insertUnorderedList')}
+                          onClick={() => runEditorCommandFor(returnsPolicyRef, 'insertUnorderedList')}
                         />
-
+                        <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
+                        <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
+                        <ToolButton icon={<TextToolbarIcon className="h-4 w-4" />} />
+                        
+                        <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
+                          <span className="inline-flex items-center gap-2">
+                            <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
+                            Tags
+                          </span>
+                        </button>
                       </div>
                       <div
-                        ref={editorRef}
+                        ref={returnsPolicyRef}
                         contentEditable
                         suppressContentEditableWarning
                         className="min-h-55 px-4 py-4 text-sm text-slate-700 outline-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
-                        onInput={handleEditorInput}
+                        onInput={() => handlePolicyInput(returnsPolicyRef, setReturnsPolicyContent)}
                       />
+                      <div className="flex justify-end px-4 pb-4">
+                        <button className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                          Save
+                        </button>
+                      </div>
                     </div>
 
-                    {activeTab !== 'Privacy' && activeTab !== 'T&C' && (
-                      <div className="mt-6 flex items-center gap-4">
-                        <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
-                          {sectionPreview[activeTab] ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={sectionPreview[activeTab] ?? ''}
-                              alt="Uploaded preview"
-                              className="h-full w-full rounded-lg object-cover"
+                    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                      <div className="border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900">
+                        Refunds Policy
+                      </div>
+                      <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
+                        <select
+                          className="cursor-pointer bg-white px-2 py-1 text-[16px]"
+                          onChange={(event) =>
+                            handleFontSizeChangeFor(refundsPolicyRef, event.target.value)
+                          }
+                        >
+                          <option>16</option>
+                          <option>18</option>
+                          <option>20</option>
+                        </select>
+                        <div className="mx h-10 w-px bg-slate-200" />
+                        <ToolButton
+                          icon={<BoldIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'bold')}
+                        />
+                        <ToolButton
+                          icon={<ItalicIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'italic')}
+                        />
+                        <ToolButton
+                          icon={<UnderlineIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'underline')}
+                        />
+                        <ToolButton
+                          icon={<OverlineIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'strikeThrough')}
+                        />
+                        <div className="mx-2 h-10 w-px bg-slate-200" />
+                        <ToolButton
+                          icon={<AlignLeftIcon className="h-5 w-5" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'justifyLeft')}
+                        />
+                        <ToolButton
+                          icon={<AlignCenterIcon className="h-5 w-5" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'justifyCenter')}
+                        />
+                        <ToolButton
+                          icon={<AlignRightIcon className="h-5 w-5" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'justifyRight')}
+                        />
+                        <div className="mx-2 h-10 w-px bg-slate-200" />
+                        <ToolButton
+                          icon={<NumberListIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'insertOrderedList')}
+                        />
+                        <ToolButton
+                          icon={<DotListIcon className="h-4 w-4" />}
+                          onClick={() => runEditorCommandFor(refundsPolicyRef, 'insertUnorderedList')}
+                        />
+                        <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
+                        <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
+                        <ToolButton icon={<TextToolbarIcon className="h-5 w-5" />} />
+                        <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
+                          <span className="inline-flex items-center gap-2">
+                            <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
+                            Tags
+                          </span>
+                        </button>
+                      </div>
+                      <div
+                        ref={refundsPolicyRef}
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="min-h-55 px-4 py-4 text-sm text-slate-700 outline-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+                        onInput={() => handlePolicyInput(refundsPolicyRef, setRefundsPolicyContent)}
+                      />
+                      <div className="flex justify-end px-4 pb-4">
+                        <button className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  activeTab !== 'FAQs' &&
+                  activeTab !== 'Resources' && (
+                    <>
+                      <div className="mt-6 overflow-visible rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
+                          <select
+                            className="cursor-pointer bg-white px-2 py-1 text-[16px]"
+                            onChange={(event) => handleFontSizeChange(event.target.value)}
+                          >
+                            <option>16</option>
+                            <option>18</option>
+                            <option>20</option>
+                          </select>
+                          <div className="mx h-10 w-px bg-slate-200" />
+                          <div className="relative">
+                            <ToolButton icon={<ColorIcon className="h-4 w-4" />} onClick={handleColorPick} />
+                            {colorMenuOpen && (
+                              <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+                                <button
+                                  onClick={() => handlePalettePick('#111827')}
+                                  className="mb-3 flex w-full items-center justify-between text-xs text-slate-600"
+                                >
+                                  <span>Automatic</span>
+                                  <span className="h-4 w-4 rounded border border-slate-200 bg-slate-900" />
+                                </button>
+                                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                  Theme Colors
+                                </div>
+                                <div className="mt-2 grid grid-cols-10 gap-1">
+                                  {themeColors.map((color) => (
+                                    <button
+                                      key={color}
+                                      onClick={() => handlePalettePick(color)}
+                                      className="h-4 w-4 rounded border border-slate-200"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </div>
+                                <div className="mt-3 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                  Standard Colors
+                                </div>
+                                <div className="mt-2 grid grid-cols-10 gap-1">
+                                  {standardColors.map((color) => (
+                                    <button
+                                      key={color}
+                                      onClick={() => handlePalettePick(color)}
+                                      className="h-4 w-4 rounded border border-slate-200"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="relative">
+                            <ToolButton
+                              icon={<HighlightIcon className="h-4 w-4" />}
+                              onClick={handleHighlightToggle}
                             />
-                          ) : (
-                            <ImageIcon className="h-6 w-6" />
-                          )}
+                            {highlightMenuOpen && (
+                              <div className="absolute left-0 top-full z-30 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+                                <button
+                                  onClick={() => handleHighlightSelect('#fef08a')}
+                                  className="mb-3 flex w-full items-center justify-between text-xs text-slate-600"
+                                >
+                                  <span>Automatic</span>
+                                  <span className="h-4 w-4 rounded border border-slate-200 bg-yellow-200" />
+                                </button>
+                                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                                  Highlight Colors
+                                </div>
+                                <div className="mt-2 grid grid-cols-10 gap-1">
+                                  {standardColors.map((color) => (
+                                    <button
+                                      key={color}
+                                      onClick={() => handleHighlightSelect(color)}
+                                      className="h-4 w-4 rounded border border-slate-200"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <ToolButton icon={<BoldIcon className="h-4 w-4" />} onClick={() => runEditorCommand('bold')} />
+                          <ToolButton icon={<ItalicIcon className="h-4 w-4" />} onClick={() => runEditorCommand('italic')} />
+                          <ToolButton
+                            icon={<UnderlineIcon className="h-4 w-4" />}
+                            onClick={() => runEditorCommand('underline')}
+                          />
+                          <ToolButton
+                            icon={<OverlineIcon className="h-4 w-4" />}
+                            onClick={() => runEditorCommand('strikeThrough')}
+                          />
+                          <div className="mx-2 h-10 w-px bg-slate-200" />
+                          <ToolButton
+                            icon={<AlignLeftIcon className="h-5 w-5" />}
+                            onClick={() => runEditorCommand('justifyLeft')}
+                          />
+                          <ToolButton
+                            icon={<AlignCenterIcon className="h-5 w-5" />}
+                            onClick={() => runEditorCommand('justifyCenter')}
+                          />
+                          <ToolButton
+                            icon={<AlignRightIcon className="h-5 w-5" />}
+                            onClick={() => runEditorCommand('justifyRight')}
+                          />
+                          <div className="mx-2 h-10 w-px bg-slate-200" />
+                          <ToolButton
+                            icon={<NumberListIcon className="h-4 w-4" />}
+                            onClick={() => runEditorCommand('insertOrderedList')}
+                          />
+                          <ToolButton
+                            icon={<DotListIcon className="h-4 w-4" />}
+                            onClick={() => runEditorCommand('insertUnorderedList')}
+                          />
+
                         </div>
-                        <div className="flex-1 px-2">
-                          <p className="text-xs italic text-slate-500">
-                            Upload upto 3 images, each less than 5MB (1240 x 600)
-                          </p>
-                          <div className="mt-3 py-2 px-2 rounded-sm max-w-95.75 flex items-center bg-[#F8FCFF] gap-3">
-                            <label className="cursor-pointer rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD]">
-                              Choose File
-                              <input
-                                className="hidden"
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={handleSectionFileChange}
+                        <div
+                          ref={editorRef}
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="min-h-55 px-4 py-4 text-sm text-slate-700 outline-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+                          onInput={handleEditorInput}
+                        />
+                      </div>
+
+                      {activeTab !== 'Privacy' && activeTab !== 'T&C' && (
+                        <div className="mt-6 flex items-center gap-4">
+                          <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
+                            {sectionPreview[activeTab] ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={sectionPreview[activeTab] ?? ''}
+                                alt="Uploaded preview"
+                                className="h-full w-full rounded-lg object-cover"
                               />
-                            </label>
-                            <span className="text-sm text-slate-500">
-                              {sectionFiles[activeTab]?.length
-                                ? sectionFiles[activeTab].map((file) => file.name).join(', ')
-                                : 'No File Chosen'}
-                            </span>
+                            ) : (
+                              <ImageIcon className="h-6 w-6" />
+                            )}
+                          </div>
+                          <div className="flex-1 px-2">
+                            <p className="text-xs italic text-slate-500">
+                              Upload upto 3 images, each less than 5MB (1240 x 600)
+                            </p>
+                            <div className="mt-3 py-2 px-2 rounded-sm max-w-95.75 flex items-center bg-[#F8FCFF] gap-3">
+                              <label className="cursor-pointer rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD]">
+                                Choose File
+                                <input
+                                  className="hidden"
+                                  type="file"
+                                  multiple
+                                  accept="image/*"
+                                  onChange={handleSectionFileChange}
+                                />
+                              </label>
+                              <span className="text-sm text-slate-500">
+                                {sectionFiles[activeTab]?.length
+                                  ? sectionFiles[activeTab].map((file) => file.name).join(', ')
+                                  : 'No File Chosen'}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </>
+                      )}
+                    </>
+                  )
                 )}
 
                 {(activeTab === 'Portfolio' || activeTab === 'Services') && (
@@ -2725,6 +2937,51 @@ const UploadIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const ImageToolbarIcon = ({ className }: { className?: string }) => (
+ 
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.75 8.23438H22.25C22.652 8.23438 23.0371 8.39448 23.3213 8.67871C23.6055 8.96295 23.7656 9.34803 23.7656 9.75V22.25C23.7656 22.652 23.6055 23.0371 23.3213 23.3213C23.0371 23.6055 22.652 23.7656 22.25 23.7656H9.75C9.34803 23.7656 8.96295 23.6055 8.67871 23.3213C8.39448 23.0371 8.23438 22.652 8.23438 22.25V9.75C8.23438 9.34803 8.39448 8.96295 8.67871 8.67871C8.96295 8.39448 9.34803 8.23438 9.75 8.23438ZM10.0156 22.0283L10.0957 21.9492L18.3662 13.6787C18.6504 13.3946 19.0356 13.2344 19.4375 13.2344C19.8394 13.2344 20.2246 13.3946 20.5088 13.6787L21.9043 15.0742L21.9844 15.1533V10.0156H10.0156V22.0283ZM12.9199 12.0996C13.1969 11.9849 13.5019 11.9552 13.7959 12.0137C14.0898 12.0722 14.3594 12.2168 14.5713 12.4287C14.7832 12.6406 14.9278 12.9102 14.9863 13.2041C15.0448 13.4981 15.0151 13.8031 14.9004 14.0801C14.7857 14.357 14.591 14.5932 14.3418 14.7598C14.0926 14.9263 13.7998 15.0156 13.5 15.0156C13.098 15.0156 12.7129 14.8555 12.4287 14.5713C12.1445 14.2871 11.9844 13.902 11.9844 13.5C11.9844 13.2002 12.0737 12.9074 12.2402 12.6582C12.4068 12.409 12.643 12.2143 12.9199 12.0996ZM21.9844 17.6729L19.4375 15.126L12.5791 21.9844H21.9844V17.6729Z" fill="#475569" stroke="#475569" stroke-width="0.09375"/>
+</svg>
+
+)
+
+const UploadToolbarIcon = ({ className }: { className?: string }) => (
+
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.5 15.1094H11.9375C12.1737 15.1094 12.4004 15.2031 12.5674 15.3701C12.7343 15.5371 12.8281 15.7638 12.8281 16C12.8281 16.2361 12.7344 16.4629 12.5674 16.6299C12.4004 16.7968 12.1737 16.8906 11.9375 16.8906H8.76562V21.3594H23.2344V16.8906H20.0625C19.8263 16.8906 19.5996 16.7968 19.4326 16.6299C19.2656 16.4629 19.1719 16.2361 19.1719 16C19.1719 15.7638 19.2657 15.5371 19.4326 15.3701C19.5996 15.2031 19.8263 15.1094 20.0625 15.1094H23.5C23.9018 15.1094 24.2871 15.2687 24.5713 15.5527C24.8555 15.837 25.0156 16.223 25.0156 16.625V21.625C25.0156 22.0269 24.8555 22.4121 24.5713 22.6963C24.2871 22.9805 23.9019 23.1406 23.5 23.1406H8.5C8.09809 23.1406 7.71293 22.9805 7.42871 22.6963C7.14453 22.4121 6.98444 22.0269 6.98438 21.625V16.625C6.98438 16.223 7.14448 15.837 7.42871 15.5527C7.71291 15.2687 8.09821 15.1094 8.5 15.1094ZM20.4531 17.9443C20.6863 17.898 20.9278 17.9227 21.1475 18.0137C21.3672 18.1047 21.5553 18.2584 21.6875 18.4561C21.8197 18.6539 21.8906 18.887 21.8906 19.125C21.8906 19.444 21.7637 19.75 21.5381 19.9756C21.3125 20.2011 21.0065 20.3281 20.6875 20.3281C20.4496 20.3281 20.2173 20.2571 20.0195 20.125C19.8217 19.9928 19.6672 19.8048 19.5762 19.585C19.4851 19.3651 19.4614 19.123 19.5078 18.8896C19.5543 18.6565 19.6688 18.4425 19.8369 18.2744C20.0052 18.1062 20.2197 17.9908 20.4531 17.9443ZM16.001 6.9834C16.1181 6.98342 16.2346 7.00683 16.3428 7.05176C16.4508 7.0967 16.5492 7.16222 16.6318 7.24512L20.3818 10.9951C20.4647 11.078 20.5304 11.1769 20.5752 11.2852C20.6199 11.3932 20.6425 11.509 20.6426 11.626C20.6426 11.7431 20.62 11.8595 20.5752 11.9678C20.5304 12.0759 20.4646 12.174 20.3818 12.2568C20.299 12.3397 20.2 12.4054 20.0918 12.4502C19.9837 12.495 19.868 12.5185 19.751 12.5186C19.6338 12.5186 19.5174 12.495 19.4092 12.4502C19.301 12.4054 19.2029 12.3396 19.1201 12.2568L16.8906 10.0273V16C16.8906 16.2361 16.7969 16.4629 16.6299 16.6299C16.4629 16.7968 16.2362 16.8906 16 16.8906C15.7638 16.8906 15.5371 16.7968 15.3701 16.6299C15.2031 16.4629 15.1094 16.2361 15.1094 16V10.0273L15.0293 10.1074L12.8799 12.2549L12.8525 12.2822C12.6884 12.4329 12.4747 12.5185 12.251 12.5186C12.0143 12.5186 11.7874 12.4242 11.6201 12.2568C11.4528 12.0895 11.3584 11.8626 11.3584 11.626C11.3584 11.509 11.382 11.3933 11.4268 11.2852C11.4716 11.1769 11.5373 11.078 11.6201 10.9951L15.3701 7.24512C15.4528 7.16223 15.5511 7.09667 15.6592 7.05176C15.7674 7.00681 15.8838 6.9834 16.001 6.9834Z" fill="#475569" stroke="#475569" stroke-width="0.09375"/>
+</svg>
+
+)
+
+const TextToolbarIcon = ({ className }: { className?: string }) => (
+  
+<svg width="59" height="20" viewBox="0 0 59 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1010_7680)">
+<path d="M16.5625 4.375V6.875C16.5625 7.12364 16.4637 7.3621 16.2879 7.53791C16.1121 7.71373 15.8736 7.8125 15.625 7.8125C15.3764 7.8125 15.1379 7.71373 14.9621 7.53791C14.7863 7.3621 14.6875 7.12364 14.6875 6.875V5.3125H10.9375V14.6875H12.5C12.7486 14.6875 12.9871 14.7863 13.1629 14.9621C13.3387 15.1379 13.4375 15.3764 13.4375 15.625C13.4375 15.8736 13.3387 16.1121 13.1629 16.2879C12.9871 16.4637 12.7486 16.5625 12.5 16.5625H7.5C7.25136 16.5625 7.0129 16.4637 6.83709 16.2879C6.66127 16.1121 6.5625 15.8736 6.5625 15.625C6.5625 15.3764 6.66127 15.1379 6.83709 14.9621C7.0129 14.7863 7.25136 14.6875 7.5 14.6875H9.0625V5.3125H5.3125V6.875C5.3125 7.12364 5.21373 7.3621 5.03791 7.53791C4.8621 7.71373 4.62364 7.8125 4.375 7.8125C4.12636 7.8125 3.8879 7.71373 3.71209 7.53791C3.53627 7.3621 3.4375 7.12364 3.4375 6.875V4.375C3.4375 4.12636 3.53627 3.8879 3.71209 3.71209C3.8879 3.53627 4.12636 3.4375 4.375 3.4375H15.625C15.8736 3.4375 16.1121 3.53627 16.2879 3.71209C16.4637 3.8879 16.5625 4.12636 16.5625 4.375Z" fill="#475569"/>
+<path d="M30.856 16V7.25H28.154V5.57H35.434V7.25H32.774V16H30.856ZM37.8339 16.168C37.3019 16.168 36.8399 16.0793 36.4479 15.902C36.0559 15.7247 35.7526 15.4727 35.5379 15.146C35.3232 14.81 35.2159 14.4227 35.2159 13.984C35.2159 13.564 35.3092 13.1907 35.4959 12.864C35.6826 12.528 35.9719 12.248 36.3639 12.024C36.7559 11.8 37.2506 11.6413 37.8479 11.548L40.3399 11.142V12.542L38.1979 12.906C37.8339 12.9713 37.5632 13.088 37.3859 13.256C37.2086 13.424 37.1199 13.6433 37.1199 13.914C37.1199 14.1753 37.2179 14.3853 37.4139 14.544C37.6192 14.6933 37.8712 14.768 38.1699 14.768C38.5526 14.768 38.8886 14.6887 39.1779 14.53C39.4766 14.362 39.7052 14.1333 39.8639 13.844C40.0319 13.5547 40.1159 13.2373 40.1159 12.892V10.932C40.1159 10.6053 39.9852 10.3347 39.7239 10.12C39.4719 9.896 39.1359 9.784 38.7159 9.784C38.3239 9.784 37.9739 9.89133 37.6659 10.106C37.3672 10.3113 37.1479 10.5867 37.0079 10.932L35.5099 10.204C35.6592 9.80267 35.8926 9.45733 36.2099 9.168C36.5366 8.86933 36.9192 8.636 37.3579 8.468C37.7966 8.3 38.2726 8.216 38.7859 8.216C39.4112 8.216 39.9619 8.33267 40.4379 8.566C40.9139 8.79 41.2826 9.10733 41.5439 9.518C41.8146 9.91933 41.9499 10.3907 41.9499 10.932V16H40.2139V14.698L40.6059 14.67C40.4099 14.9967 40.1766 15.272 39.9059 15.496C39.6352 15.7107 39.3272 15.8787 38.9819 16C38.6366 16.112 38.2539 16.168 37.8339 16.168ZM47.257 19.08C46.6877 19.08 46.1603 18.9867 45.675 18.8C45.1897 18.6133 44.7697 18.352 44.415 18.016C44.0697 17.6893 43.8177 17.302 43.659 16.854L45.367 16.21C45.479 16.5647 45.6983 16.8493 46.025 17.064C46.361 17.288 46.7717 17.4 47.257 17.4C47.6303 17.4 47.957 17.33 48.237 17.19C48.5263 17.05 48.7503 16.8447 48.909 16.574C49.0677 16.3127 49.147 15.9953 49.147 15.622V13.886L49.497 14.306C49.2357 14.7633 48.8857 15.1087 48.447 15.342C48.0083 15.5753 47.509 15.692 46.949 15.692C46.2397 15.692 45.605 15.5287 45.045 15.202C44.485 14.8753 44.0463 14.4273 43.729 13.858C43.4117 13.2887 43.253 12.6493 43.253 11.94C43.253 11.2213 43.4117 10.582 43.729 10.022C44.0463 9.462 44.4803 9.02333 45.031 8.706C45.5817 8.37933 46.207 8.216 46.907 8.216C47.4763 8.216 47.9757 8.33733 48.405 8.58C48.8437 8.81333 49.2077 9.154 49.497 9.602L49.245 10.064V8.384H50.981V15.622C50.981 16.2847 50.8177 16.8773 50.491 17.4C50.1737 17.9227 49.735 18.3333 49.175 18.632C48.6243 18.9307 47.985 19.08 47.257 19.08ZM47.173 13.998C47.565 13.998 47.9057 13.914 48.195 13.746C48.4937 13.5687 48.727 13.326 48.895 13.018C49.063 12.71 49.147 12.3553 49.147 11.954C49.147 11.562 49.0583 11.212 48.881 10.904C48.713 10.5867 48.4797 10.3393 48.181 10.162C47.8917 9.98467 47.5557 9.896 47.173 9.896C46.7903 9.896 46.445 9.98467 46.137 10.162C45.829 10.3393 45.5863 10.5867 45.409 10.904C45.241 11.212 45.157 11.562 45.157 11.954C45.157 12.346 45.241 12.696 45.409 13.004C45.5863 13.312 45.8243 13.5547 46.123 13.732C46.431 13.9093 46.781 13.998 47.173 13.998ZM55.5078 16.168C54.6958 16.168 53.9865 15.9767 53.3798 15.594C52.7825 15.202 52.3718 14.6747 52.1478 14.012L53.5198 13.354C53.7158 13.7833 53.9865 14.1193 54.3318 14.362C54.6865 14.6047 55.0785 14.726 55.5078 14.726C55.8438 14.726 56.1098 14.6513 56.3058 14.502C56.5018 14.3527 56.5998 14.1567 56.5998 13.914C56.5998 13.7647 56.5578 13.6433 56.4738 13.55C56.3991 13.4473 56.2918 13.3633 56.1518 13.298C56.0211 13.2233 55.8765 13.1627 55.7178 13.116L54.4718 12.766C53.8278 12.5793 53.3378 12.2947 53.0018 11.912C52.6751 11.5293 52.5118 11.0767 52.5118 10.554C52.5118 10.0873 52.6285 9.68133 52.8618 9.336C53.1045 8.98133 53.4358 8.706 53.8558 8.51C54.2851 8.314 54.7751 8.216 55.3258 8.216C56.0445 8.216 56.6791 8.38867 57.2298 8.734C57.7805 9.07933 58.1725 9.56467 58.4058 10.19L57.0058 10.848C56.8751 10.5027 56.6558 10.2273 56.3478 10.022C56.0398 9.81667 55.6945 9.714 55.3118 9.714C55.0038 9.714 54.7611 9.784 54.5838 9.924C54.4065 10.064 54.3178 10.246 54.3178 10.47C54.3178 10.61 54.3551 10.7313 54.4298 10.834C54.5045 10.9367 54.6071 11.0207 54.7378 11.086C54.8778 11.1513 55.0365 11.212 55.2138 11.268L56.4318 11.632C57.0571 11.8187 57.5378 12.0987 57.8738 12.472C58.2191 12.8453 58.3918 13.3027 58.3918 13.844C58.3918 14.3013 58.2705 14.7073 58.0278 15.062C57.7851 15.4073 57.4491 15.678 57.0198 15.874C56.5905 16.07 56.0865 16.168 55.5078 16.168Z" fill="#475569"/>
+</g>
+<defs>
+<clipPath id="clip0_1010_7680">
+<rect width="59" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
+)
+
+
+const TagIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 20 20" fill="none" className={className}>
+    <path
+      d="M3 6a2 2 0 0 1 2-2h4.6a2 2 0 0 1 1.4.6l5 5a2 2 0 0 1 0 2.8l-2.6 2.6a2 2 0 0 1-2.8 0l-5-5A2 2 0 0 1 5 9.6V6Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <circle cx="7" cy="7" r="1" fill="currentColor" />
+  </svg>
+)
+
 const UploadCloudIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24" fill="none">
     <path d="M29.025 9.06C28.005 3.885 23.46 0 18 0C13.665 0 9.9 2.46 8.025 6.06C3.51 6.54 0 10.365 0 15C0 19.965 4.035 24 9 24H28.5C32.64 24 36 20.64 36 16.5C36 12.54 32.925 9.33 29.025 9.06ZM28.5 21H9C5.685 21 3 18.315 3 15C3 11.925 5.295 9.36 8.34 9.045L9.945 8.88L10.695 7.455C12.12 4.71 14.91 3 18 3C21.93 3 25.32 5.79 26.085 9.645L26.535 11.895L28.83 12.06C31.17 12.21 33 14.175 33 16.5C33 18.975 30.975 21 28.5 21ZM12 13.5H15.825V18H20.175V13.5H24L18 7.5L12 13.5Z" fill="#0F67FD" />
@@ -2746,7 +3003,31 @@ const AddFileIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const ProductIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 20 20" fill="none" className={className}>
+    <path
+      d="M3.33337 6.66667L10 3.33334L16.6667 6.66667V13.3333L10 16.6667L3.33337 13.3333V6.66667Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <path d="M3.33337 6.66667L10 10L16.6667 6.66667" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M10 10V16.6667" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+)
+
+const CategoriesIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 20 20" fill="none" className={className}>
+    <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+)
+
 export const dashboardSidebarLinks = [
+  { label: 'Product', icon: ProductIcon, activeIcon: ProductIcon },
+  { label: 'Categories', icon: CategoriesIcon, activeIcon: CategoriesIcon },
   { label: 'Accreditation', icon: AwardIcon, activeIcon: AccreditationActiveIcon },
   { label: 'Testimonials', icon: QuoteIcon, activeIcon: TestimonialActiveIcon },
   { label: 'Forms', icon: FormIcon, activeIcon: FormActiveIcon },
