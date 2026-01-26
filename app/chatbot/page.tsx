@@ -19,7 +19,7 @@ const HomeLandingPage = () => {
   return (
     // bg-[#F2F2F2]
     <div className="min-h-screen  ">
-      <div className="h-full w-full bg-white bg-[url('/assetes/bg-gradiante.png')] bg-no-repeat bg-top bg-cover">
+      <div className="min-h-screen w-full bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_55%,rgba(255,255,255,0.9)_72%,white_100%),linear-gradient(to_right,#ACD1FE4D_0%,#F7D4B34D_100%)]">
         <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 pt-8 pb-24 md:px-6 md:py-14">
           <div className="mb-[25px] flex w-full max-w-3xl flex-col items-center gap-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg  ">
@@ -45,7 +45,7 @@ const HomeLandingPage = () => {
                 Pick a prompt or ask anything to start working smarter with Neo.
               </p>
             </div>
-            <div className="mt-4 grid w-full max-w-4xl grid-cols-2 gap-4 md:grid-cols-4 px-4">
+            <div className="mt-4 grid w-full max-w-4xl grid-cols-2 gap-5 px-4 md:grid-cols-4">
               {[
                 "Create a new case",
                 "Draft a proposal",
@@ -54,7 +54,7 @@ const HomeLandingPage = () => {
               ].map((label) => (
                 <button
                   key={label}
-                  className="w-full min-h-[92px] rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left text-[14px] font-medium text-slate-800 shadow-sm transition hover:border-slate-300 "
+                  className="w-full min-h-[124px] rounded-2xl border border-slate-200 bg-white px-5 py-5 text-left text-[14px] font-medium text-slate-800 shadow-sm transition hover:border-slate-300"
                 >
                   {label}
                 </button>

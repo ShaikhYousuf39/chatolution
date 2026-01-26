@@ -152,7 +152,7 @@ export default function SignUpPage() {
                     </section>
 
                     {/* RIGHT: Selection Cards */}
-                    <section className="relative my-4 mx-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-4 py-6 order-1 lg:order-2 lg:mx-0 lg:mr-4 lg:px-0 lg:py-8 sm:w-full">
+                    <section className="relative my-4 mx-4 flex w-auto  flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-4 py-6 order-1 lg:order-2 lg:mx-0 lg:mr-4 lg:px-0 lg:py-10 sm:w-full">
 
                         {/* Background Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F5] to-[#F9F6FA]" />
