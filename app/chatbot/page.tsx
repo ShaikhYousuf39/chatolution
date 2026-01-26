@@ -68,7 +68,7 @@ const HomeLandingPage = () => {
             </button>
           </div>
 
-          <div className="mt-3 mb-[-8px] w-full max-w-3xl px-4 md:mt-0 md:mb-[-70px]">
+          <div className="mt-3 mb-[-40px] w-full max-w-3xl px-4 md:mt-0 md:mb-[-70px]">
             <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
               <input
                 className="w-full border-none bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-300"
