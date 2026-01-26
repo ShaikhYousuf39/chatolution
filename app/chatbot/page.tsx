@@ -19,7 +19,7 @@ const HomeLandingPage = () => {
   return (
     // bg-[#F2F2F2]
     <div className="min-h-screen  ">
-      <div className="min-h-screen  bg-[linear-gradient(to_right,rgba(172,209,254,0.3)_20%,rgba(247,212,179,0.3)_100%,white_100%)] ">
+      <div className="h-full w-full bg-white bg-[url('/assetes/bg-gradiante.png')] bg-no-repeat bg-top bg-cover">
         <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 pt-8 pb-24 md:px-6 md:py-14">
           <div className="mb-[25px] flex w-full max-w-3xl flex-col items-center gap-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg  ">
