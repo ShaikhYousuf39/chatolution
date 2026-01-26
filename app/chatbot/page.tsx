@@ -18,10 +18,10 @@ const HomeLandingPage = () => {
 
   return (
     // bg-[#F2F2F2]
-    <div className="min-h-screen  ">
+    <div className="min-h-screen overflow-x-hidden">
       <div className="min-h-screen w-full bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_55%,rgba(255,255,255,0.9)_72%,white_100%),linear-gradient(to_right,#ACD1FE4D_0%,#F7D4B34D_100%)]">
-        <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 pt-8 pb-24 md:px-6 md:py-14">
-          <div className="mb-[25px] flex w-full max-w-3xl flex-col items-center gap-6">
+        <div className="flex min-h-[calc(100vh-48px)] flex-col items-center justify-between px-4 pt-8 pb-4 sm:pt-8 sm:pb-8 md:px-6 md:py-14">
+          <div className="mb-10 flex w-full max-w-3xl flex-col items-center gap-4 sm:mb-16 sm:gap-5 md:mb-[25px] md:gap-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg  ">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0584 8.08642C18.9349 7.54336 18.4521 7.15796 17.8951 7.15796C17.3381 7.15796 16.8553 7.54336 16.7318 8.08642L16.0717 10.9892C15.7664 12.3319 14.718 13.3803 13.3753 13.6856L10.4725 14.3457C9.92945 14.4692 9.54405 14.9521 9.54405 15.509C9.54405 16.066 9.92945 16.5488 10.4725 16.6723L13.3753 17.3324C14.718 17.6377 15.7664 18.6861 16.0717 20.0288L16.7318 22.9316C16.8553 23.4747 17.3381 23.8601 17.8951 23.8601C18.4521 23.8601 18.9349 23.4747 19.0584 22.9316L19.7185 20.0288C20.0238 18.6861 21.0722 17.6377 22.4149 17.3324L25.3177 16.6723C25.8608 16.5488 26.2462 16.066 26.2462 15.509C26.2462 14.9521 25.8608 14.4692 25.3177 14.3457L22.4149 13.6856C21.0722 13.3803 20.0238 12.3319 19.7185 10.9892L19.0584 8.08642ZM15.2934 15.509C16.4123 14.938 17.3241 14.0262 17.8951 12.9073C18.4661 14.0262 19.3779 14.938 20.4968 15.509C19.3779 16.08 18.4661 16.9918 17.8951 18.1107C17.3241 16.9918 16.4123 16.08 15.2934 15.509Z" fill="url(#paint0_linear_35_136)" />
@@ -45,7 +45,7 @@ const HomeLandingPage = () => {
                 Pick a prompt or ask anything to start working smarter with Neo.
               </p>
             </div>
-            <div className="mt-4 grid w-full max-w-4xl grid-cols-2 gap-5 px-4 md:grid-cols-4">
+            <div className="mt-4 grid w-full max-w-4xl grid-cols-2 gap-3 px-0 sm:px-4 sm:gap-4 md:w-[88%] md:grid-cols-4 md:gap-0">
               {[
                 "Create a new case",
                 "Draft a proposal",
@@ -54,7 +54,7 @@ const HomeLandingPage = () => {
               ].map((label) => (
                 <button
                   key={label}
-                  className="w-full min-h-[124px] rounded-2xl border border-slate-200 bg-white px-5 py-5 text-left text-[14px] font-medium text-slate-800 shadow-sm transition hover:border-slate-300"
+                  className="w-full min-h-[84px] rounded-2xl border border-slate-200 bg-white px-3 py-3 text-left text-[14px] font-medium text-slate-800 shadow-sm transition hover:border-slate-300 sm:min-h-[92px] sm:px-4 sm:py-4 md:h-[92px] md:w-[150px] md:py-5"
                 >
                   {label}
                 </button>
@@ -68,14 +68,14 @@ const HomeLandingPage = () => {
             </button>
           </div>
 
-          <div className="mb-0 md:mb-[-70px] w-full max-w-3xl px-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="mt-3 mb-[-8px] w-full max-w-3xl px-4 md:mt-0 md:mb-[-70px]">
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
               <input
                 className="w-full border-none bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-300"
                 placeholder="Ask anything, use @ to tag cases and users"
               />
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <div className="flex flex-1 flex-wrap items-center gap-3 text-xs font-medium text-slate-500">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -109,7 +109,7 @@ const HomeLandingPage = () => {
                     Browse Prompts
                   </button>
                 </div>
-                <button className="flex h-8 w-8 items-center justify-center rounded-full  text-slate-400">
+                <button className="shrink-0 flex h-8 w-8 items-center justify-center rounded-full text-slate-400">
 
                   <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="25" height="25.3333" rx="12.5" fill="#ECEDF0" />
