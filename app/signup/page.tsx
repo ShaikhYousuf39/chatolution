@@ -177,7 +177,7 @@ export default function SignUpPage() {
                                     <div className=" mt-2 aspect-[4/3] w-full max-h-[72px] overflow-hidden rounded-lg bg-slate-50 p-2 sm:mt-6  sm:max-h-[160px]">
                                         <img src="/assetes/portfolio.png" alt="portfolio" className="h-full w-full object-contain" />
                                     </div>
-                                    <p className="mt-2 max-h-[52px] overflow-hidden text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:max-h-none sm:text-sm">
+                                    <p className="mt-2 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-sm">
                                         Showcase your work with an interactive portfolio site. Add your services, projects, and contact information.
                                     </p>
                                 </button>
@@ -197,7 +197,7 @@ export default function SignUpPage() {
                                     <div className="mt-2 aspect-[4/3] w-full max-h-[72px] overflow-hidden rounded-lg bg-slate-50 p-2 sm:mt-6 sm:p-4 sm:max-h-[160px]">
                                         <img src="/assetes/e-commerce.png" alt="ecommerce" className="h-full w-full object-contain" />
                                     </div>
-                                    <p className="mt-2 max-h-[52px] overflow-hidden text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:max-h-none sm:text-sm">Set up an online store to sell your products. Add and manage your products to start selling online.</p>
+                                    <p className="mt-2 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-sm">Set up an online store to sell your products. Add and manage your products to start selling online.</p>
                                 </button>
                             </div>
                         </div>
