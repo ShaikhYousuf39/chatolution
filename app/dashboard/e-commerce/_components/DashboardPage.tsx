@@ -478,9 +478,11 @@ const DashboardPage = () => {
   const editorRef = useRef<HTMLDivElement | null>(null)
   const returnsPolicyRef = useRef<HTMLDivElement | null>(null)
   const refundsPolicyRef = useRef<HTMLDivElement | null>(null)
+  const productDescriptionRef = useRef<HTMLDivElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [returnsPolicyContent, setReturnsPolicyContent] = useState('')
   const [refundsPolicyContent, setRefundsPolicyContent] = useState('')
+  const [productDescriptionContent, setProductDescriptionContent] = useState('')
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
     'Welcome message': [],
     'About': [],
@@ -1844,27 +1846,81 @@ const DashboardPage = () => {
                         <div>
                           <label className="text-sm font-semibold text-slate-600">Description</label>
                           <div className="mt-2 rounded-lg border border-slate-200 bg-white">
-                            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 px-3 py-2 text-[11px] text-slate-500">
-                              <select className="h-7 rounded border border-slate-200 bg-white px-2 text-[11px] text-slate-600">
+                            <div className="relative flex flex-wrap items-center gap-1 border-b border-slate-200 text-slate-600">
+                              <select
+                                className="cursor-pointer bg-white px-2 py-1 text-[16px]"
+                                onChange={(event) =>
+                                  handleFontSizeChangeFor(productDescriptionRef, event.target.value)
+                                }
+                              >
                                 <option>16</option>
                                 <option>18</option>
                                 <option>20</option>
                               </select>
-                              <button className="rounded border border-slate-200 px-2 py-0.5 font-semibold">A</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5 font-semibold">B</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5 italic">I</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5 underline">U</button>
-                              <div className="h-4 w-px bg-slate-200" />
-                              <button className="rounded border border-slate-200 px-2 py-0.5">L</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5">C</button>
-                              <div className="h-4 w-px bg-slate-200" />
-                              <button className="rounded border border-slate-200 px-2 py-0.5">Img</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5">T</button>
-                              <button className="rounded border border-slate-200 px-2 py-0.5">Tags</button>
+                              <div className="mx h-10 w-px bg-slate-200" />
+                              <ToolButton
+                                icon={<BoldIcon className="h-4 w-4" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'bold')}
+                              />
+                              <ToolButton
+                                icon={<ItalicIcon className="h-4 w-4" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'italic')}
+                              />
+                              <ToolButton
+                                icon={<UnderlineIcon className="h-4 w-4" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'underline')}
+                              />
+                              <ToolButton
+                                icon={<OverlineIcon className="h-4 w-4" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'strikeThrough')}
+                              />
+                              <div className="mx-2 h-10 w-px bg-slate-200" />
+                              <ToolButton
+                                icon={<AlignLeftIcon className="h-5 w-5" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'justifyLeft')}
+                              />
+                              <ToolButton
+                                icon={<AlignCenterIcon className="h-5 w-5" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'justifyCenter')}
+                              />
+                              <ToolButton
+                                icon={<AlignRightIcon className="h-5 w-5" />}
+                                onClick={() => runEditorCommandFor(productDescriptionRef, 'justifyRight')}
+                              />
+                              <div className="mx-2 h-10 w-px bg-slate-200" />
+                              <ToolButton
+                                icon={<NumberListIcon className="h-4 w-4" />}
+                                onClick={() =>
+                                  runEditorCommandFor(productDescriptionRef, 'insertOrderedList')
+                                }
+                              />
+                              <ToolButton
+                                icon={<DotListIcon className="h-4 w-4" />}
+                                onClick={() =>
+                                  runEditorCommandFor(productDescriptionRef, 'insertUnorderedList')
+                                }
+                              />
+                              <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
+                              <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
+                              <ToolButton icon={<TextToolbarIcon className="h-4 w-4" />} />
+                              <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
+                                <span className="inline-flex items-center gap-2">
+                                  <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
+                                  Tags
+                                </span>
+                              </button>
                             </div>
-                            <textarea
-                              placeholder="Enter product description..."
-                              className="h-40 w-full resize-none rounded-b-lg px-3 py-2 text-sm text-slate-600 outline-none"
+                            <div
+                              ref={productDescriptionRef}
+                              contentEditable
+                              suppressContentEditableWarning
+                              className="min-h-55 px-4 py-4 text-sm text-slate-700 outline-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+                              onInput={() =>
+                                handlePolicyInput(
+                                  productDescriptionRef,
+                                  setProductDescriptionContent
+                                )
+                              }
                             />
                           </div>
                         </div>
@@ -1903,8 +1959,8 @@ const DashboardPage = () => {
                                         className="max-h-full max-w-full object-contain "
                                       />
                                       {index === 1 && (
-                                        <div className="absolute inset-0 grid place-items-center">
-                                          <div className="rounded-full bg-black/60 p-1.5">
+                                        <div className="mt-[-25px] absolute inset-0 grid place-items-center">
+                                          <div className="rounded-full bg-black/60 ">
                                             <svg
                                               width="31"
                                               height="31"
@@ -1958,8 +2014,8 @@ const DashboardPage = () => {
                   </div>
 
                   <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="text-sm font-semibold text-slate-900">Price, Stock & Variants</h3>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <h3 className="text-lg font-semibold text-slate-900">Price, Stock & Variants</h3>
+                    <p className="mt-1 text-sm text-slate-500">
                       You can add variants to a product that has more than one option, such as size or color.
                     </p>
 
@@ -1968,7 +2024,7 @@ const DashboardPage = () => {
                         <h4 className="text-xs font-semibold text-slate-700">
                           Variants 1 <span className="text-red-500">*</span>
                         </h4>
-                        <button className="text-xs text-blue-600">Add size</button>
+                        {/* <button className="text-xs text-blue-600">Add size</button> */}
                       </div>
                       <div className="mt-3">
                         <label className="text-xs text-slate-600">
