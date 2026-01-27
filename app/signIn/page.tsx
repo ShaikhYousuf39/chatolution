@@ -12,10 +12,10 @@ export default function SignInPage() {
   };
   return (
     <main className="min-h-screen bg-white overflow-hidden">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1450px] items-stretch">
+      <div className="mx-auto flex min-h-screen w-full items-stretch">
         {/* LEFT: Sign in form */}
         {/* LEFT: Sign in form */}
-        <section className="flex w-full flex-col px-6 py-12 lg:w-[50%] lg:px-10 items-center">
+        <section className="flex w-full flex-col px-6 py-4  lg:w-[50%] lg:px-37 items-center">
           {/* Logo at top-left of the container */}
           <div className="relative w-full h-full">
             <div className="absolute top-[-7px] left-0 mb-auto flex items-center gap-2">
@@ -30,7 +30,7 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <div className="py-10 w-full max-w-md flex flex-col h-full">
+          <div className="py-0 w-full max-w-md flex flex-col h-full">
             <div className="w-full flex-1 flex flex-col justify-center">
               <h1 className="text-2xl font-semibold text-slate-900">
                 Welcome back
@@ -39,7 +39,7 @@ export default function SignInPage() {
                 Sign in to your account.
               </p>
 
-              <form className="mt-8 space-y-4">
+              <form className="mt-2 space-y-4 sm:mt-8">
                 {/* Email */}
                 <div className="space-y-2">
                   <label
@@ -164,7 +164,7 @@ export default function SignInPage() {
         </section>
 
         {/* RIGHT: iPhone mock + background */}
-        <section className="relative my-4 mr-4 hidden w-[50%] overflow-hidden lg:flex items-center justify-center rounded-lg">
+        <section className="relative my-4 mr-5 hidden w-[60%] overflow-hidden lg:flex items-center justify-center rounded-lg">
           <div className="relative w-full h-full rounded-lg">
             {/* Background */}
             <div className="absolute inset-0 bg-[#fbfbfd] rounded-lg"></div>

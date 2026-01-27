@@ -125,15 +125,15 @@ export default function SignUpPage() {
                                     </div>
 
                                     {/* Terms */}
-                                    <div className="flex items-start gap-3 sm:items-center sm:gap-2">
+                                    <div className="rounded-xl  bg-[#F4F4F4] py-3 px-3 flex items-start gap-3 sm:items-center sm:gap-2">
                                         <input
                                             type="checkbox"
                                             id="terms"
                                             checked={termsAccepted}
                                             onChange={(e) => setTermsAccepted(e.target.checked)}
-                                            className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className=" h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
-                                        <label htmlFor="terms" className="text-sm text-slate-600 sm:whitespace-nowrap">
+                                        <label htmlFor="terms" className="text-[10px] sm:text-[12px] text-slate-600 sm:whitespace-nowrap">
                                             I agree to the <a href="#" className="font-medium text-blue-600 hover:underline">Services Agreement</a> and the <a href="#" className="font-medium text-blue-600 hover:underline">Privacy Policy</a>
                                         </label>
                                     </div>
@@ -160,7 +160,7 @@ export default function SignUpPage() {
                     </section>
 
                     {/* RIGHT: Selection Cards */}
-                    <section className="relative mx-0 my-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-1 py-4 order-1 md:min-h-[88vh] lg:order-2 lg:mx-0 lg:my-0 lg:mr-4 lg:h-full lg:px-0 lg:pt-30 lg:pb-12 lg:justify-start sm:w-full">
+                    <section className="lg:w-[60%] relative mx-0 my-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-1 py-4 order-1 md:min-h-[88vh] lg:order-2 lg:mx-0 lg:my-0 lg:mr-4 lg:h-full lg:px-0 lg:pt-30 lg:pb-12 lg:justify-start sm:w-full">
 
                         {/* Background Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F5] to-[#F9F6FA]" />
@@ -173,7 +173,7 @@ export default function SignUpPage() {
                                 {/* Card 1 */}
                                 <button
                                     onClick={() => setSelectedOption('portfolio')}
-                                    className={`group relative flex w-full min-w-0 flex-col items-center rounded-2xl border-2 p-2 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
+                                    className={`group relative flex w-full min-w-0 flex-col items-center rounded-2xl border-2 p-3 shadow-sm transition hover:shadow-md sm:w-full sm:max-w-[330px] sm:p-6 ${selectedOption === 'portfolio' ? 'border-blue-500 bg-white ring-1 ring-blue-500' : 'border-white bg-white/60 hover:bg-white'}`}
                                 >
                                     {selectedOption === 'portfolio' && (
                                         <div className="absolute right-4 top-6 flex h-6 w-6 items-center justify-center   text-white ">
