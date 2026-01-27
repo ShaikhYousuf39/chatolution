@@ -18,20 +18,28 @@ export default function SignUpPage() {
     };
 
     return (
-        <main className="min-h-screen bg-white overflow-x-hidden">
-            <div className="mx-auto flex min-h-screen w-full max-w-[1450px] flex-col items-stretch">
-                <div className="w-[30%] flex items-center px-6 pt-8 lg:px-10">
-                    <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
-                        <Link href={"/"}>
-                            <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
-                        </Link>
+        <main className="min-h-screen bg-white overflow-x-hidden lg:h-screen lg:overflow-hidden">
+            <div className="mx-auto flex min-h-screen w-full  flex-col items-stretch lg:h-full">
+               
+                <div className="p-5 flex flex-1 flex-col items-stretch lg:flex-row">
+                    <div className="mb-4 flex lg:hidden">
+                        <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
+                            <Link href={"/"}>
+                                <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                            </Link>
+                        </div>
                     </div>
-                </div>
-                <div className="flex flex-col items-stretch lg:flex-row">
                     {/* LEFT: Sign Up Form */}
-                    <section className="flex w-full flex-col px-6 pb-12 pt-6 lg:w-[40%] lg:px-10 lg:pt-12 items-center order-2 lg:order-1">
+                    <section className="flex w-full flex-col px-0 py-7 lg:w-[40%] lg:px-10 lg:py-12 items-center order-2 lg:order-1 lg:h-full">
                         <div className="w-full max-w-sm flex flex-col h-full">
-                            <div className="w-full flex-1 flex flex-col justify-center">
+                            <div className="mb-6 hidden lg:flex">
+                                <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
+                                    <Link href={"/"}>
+                                        <img src="/assetes/Group.svg" alt="Logo" className="h-full w-full object-contain" />
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="w-full flex-1 flex flex-col justify-start">
                                 <h1 className="text-2xl font-bold text-slate-900">
                                     You're almost there!
                                 </h1>
@@ -152,7 +160,7 @@ export default function SignUpPage() {
                     </section>
 
                     {/* RIGHT: Selection Cards */}
-                    <section className="relative mx-4 my-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-4 py-4 order-1 md:min-h-[88vh] lg:order-2 lg:mx-0 lg:mr-4 lg:py-2 lg:px-0 lg:pt-1 lg:pb-2 sm:w-full">
+                    <section className="relative mx-0 my-4 flex w-auto flex-col items-center justify-center overflow-hidden rounded-3xl bg-[#FFF5F5] px-1 py-4 order-1 md:min-h-[88vh] lg:order-2 lg:mx-0 lg:my-0 lg:mr-4 lg:h-full lg:px-0 lg:pt-30 lg:pb-12 lg:justify-start sm:w-full">
 
                         {/* Background Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-br from-[#FFF5F5] to-[#F9F6FA]" />
@@ -175,7 +183,7 @@ export default function SignUpPage() {
                                     <h3 className="text-[12px] font-semibold text-slate-900 sm:text-lg"> Portfolio Site</h3>
 
                                     <div className=" mt-2 aspect-[4/3] w-full max-h-[72px] overflow-hidden rounded-lg bg-slate-50 p-2 sm:mt-6  sm:max-h-[160px]">
-                                        <img src="/assetes/portfolio.png" alt="portfolio" className="h-full w-full object-contain" />
+                                        <img src="/assetes/portfolio.png" alt="portfolio" className=" h-full w-full object-contain" />
                                     </div>
                                     <p className="mt-2 text-center text-[10px] leading-4 text-slate-500 sm:mt-4 sm:text-sm">
                                         Showcase your work with an interactive portfolio site. Add your services, projects, and contact information.
