@@ -116,8 +116,8 @@ type ResourceData = {
 
 type SidebarLink = {
   label: string
-  icon: ({ className }: { className?: string }) => JSX.Element
-  activeIcon?: ({ className }: { className?: string }) => JSX.Element
+  icon: ({ className }: { className?: string }) => React.ReactElement
+  activeIcon?: ({ className }: { className?: string }) => React.ReactElement
 }
 
 type DashboardSidebarProps = {
@@ -608,7 +608,7 @@ const DashboardPage = () => {
   }
 
   const handlePolicyInput = (
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
     setValue: React.Dispatch<React.SetStateAction<string>>
   ) => {
     if (!ref.current) return
@@ -638,7 +638,7 @@ const DashboardPage = () => {
     handleEditorInput()
   }
 
-  const ensureEditorSelectionFor = (ref: React.RefObject<HTMLDivElement>) => {
+  const ensureEditorSelectionFor = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (!ref.current) return
     const selection = window.getSelection()
     if (!selection) return
@@ -654,7 +654,7 @@ const DashboardPage = () => {
   }
 
   const runEditorCommandFor = (
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
     command: string,
     value?: string
   ) => {
@@ -670,7 +670,7 @@ const DashboardPage = () => {
   }
 
   const handleFontSizeChangeFor = (
-    ref: React.RefObject<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
     value: string
   ) => {
     const sizeMap: Record<string, string> = { '16': '3', '18': '4', '20': '5' }

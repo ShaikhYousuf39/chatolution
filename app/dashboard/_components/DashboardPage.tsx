@@ -115,8 +115,8 @@ type ResourceData = {
 
 type SidebarLink = {
   label: string
-  icon: ({ className }: { className?: string }) => JSX.Element
-  activeIcon?: ({ className }: { className?: string }) => JSX.Element
+  icon: ({ className }: { className?: string }) => React.ReactElement
+  activeIcon?: ({ className }: { className?: string }) => React.ReactElement
 }
 
 type DashboardSidebarProps = {
