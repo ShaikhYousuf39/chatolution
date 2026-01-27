@@ -31,7 +31,7 @@ export default function SignUpPage() {
                     </div>
                     {/* LEFT: Sign Up Form */}
                     <section className="flex w-full flex-col px-0 py-7 lg:w-[40%] lg:px-10 lg:py-12 items-center order-2 lg:order-1 lg:h-full">
-                        <div className="w-full max-w-sm flex flex-col h-full">
+                        <div className="w-full  flex flex-col h-full">
                             <div className="mb-6 hidden lg:flex">
                                 <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
                                     <Link href={"/"}>
@@ -125,7 +125,7 @@ export default function SignUpPage() {
                                     </div>
 
                                     {/* Terms */}
-                                    <div className="rounded-xl  bg-[#F4F4F4] py-3 px-3 flex items-start gap-3 sm:items-center sm:gap-2">
+                                    <div className="rounded-xl  bg-[#F4F4F4] py-3 px-3 lg:px-[60px] flex items-start gap-3 sm:items-center sm:gap-2">
                                         <input
                                             type="checkbox"
                                             id="terms"

@@ -18,7 +18,7 @@ export default function SignInPage() {
         <section className="flex w-full flex-col px-6 py-4  lg:w-[50%] lg:px-37 items-center">
           {/* Logo at top-left of the container */}
           <div className="relative w-full h-full">
-            <div className="absolute top-[-7px] left-0 mb-auto flex items-center gap-2">
+            <div className="absolute top-[30px] left-0 mb-auto flex items-center gap-2">
               <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
                 <Link href={"/"}>
 
@@ -39,7 +39,7 @@ export default function SignInPage() {
                 Sign in to your account.
               </p>
 
-              <form className="mt-2 space-y-4 sm:mt-8">
+              <form className="mt-2 space-y-2 sm:mt-8">
                 {/* Email */}
                 <div className="space-y-2">
                   <label

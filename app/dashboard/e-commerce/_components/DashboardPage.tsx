@@ -125,6 +125,7 @@ type DashboardSidebarProps = {
   activeTab: string
   contentTabs: string[]
   contentRoute: string
+  currentPath?: string
   onNavigate: (route: string) => void
   onTabSelect?: (tab: string) => void
   onTabEditStart?: (tab: string) => void
@@ -138,11 +139,17 @@ type DashboardSidebarProps = {
   showTabEdit?: boolean
 }
 
+const productSubItems = [
+  { label: 'All Products', route: '/dashboard/e-commerce/products' },
+  { label: 'Add new product', route: '/dashboard/e-commerce/products/new' },
+]
+
 export const DashboardSidebar = ({
   activeSidebarSection,
   activeTab,
   contentTabs,
   contentRoute,
+  currentPath,
   onNavigate,
   onTabSelect,
   onTabEditStart,
@@ -163,10 +170,20 @@ export const DashboardSidebar = ({
     if (stored === 'false') return false
     return true
   })
+  const [productOpen, setProductOpen] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const stored = window.localStorage.getItem('dashboardProductOpen')
+    if (stored === 'true') return true
+    if (stored === 'false') return false
+    return true
+  })
 
   useEffect(() => {
     window.localStorage.setItem('dashboardContentOpen', String(contentOpen))
   }, [contentOpen])
+  useEffect(() => {
+    window.localStorage.setItem('dashboardProductOpen', String(productOpen))
+  }, [productOpen])
 
   return (
     <aside
@@ -286,6 +303,50 @@ export const DashboardSidebar = ({
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        <button
+          onClick={() => {
+            setProductOpen((prev) => !prev)
+          }}
+          className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-1.5 text-sm font-semibold transition ${activeSidebarSection === 'Product'
+            ? 'bg-blue-50 text-blue-600'
+            : 'bg-white text-slate-500 hover:bg-slate-50'
+            }`}
+        >
+          <span className="flex items-center gap-2">
+            <ProductIcon className="h-5 w-5" />
+            {sidebarOpen && 'Product'}
+          </span>
+          {sidebarOpen && (
+            <ChevronIcon
+              className={`h-6 w-6 transition ${productOpen ? '' : '-rotate-90'}`}
+            />
+          )}
+        </button>
+
+        {sidebarOpen && productOpen && (
+          <div className="rounded-xl border border-slate-200 bg-white px-2 py-1.5">
+            {productSubItems.map((item) => {
+              const isNewRoute = currentPath?.startsWith('/dashboard/e-commerce/products/new')
+              const isActive =
+                item.route.endsWith('/new')
+                  ? isNewRoute
+                  : !isNewRoute && currentPath?.startsWith(item.route)
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => onNavigate(item.route)}
+                  className={`flex w-full items-center rounded-lg px-2 py-1 text-left text-sm font-medium transition hover:bg-slate-50 ${isActive
+                    ? 'text-blue-600'
+                    : 'text-slate-500'
+                    }`}
+                >
+                  {item.label}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
@@ -459,6 +520,7 @@ const DashboardPage = () => {
   const [saveStatus, setSaveStatus] = useState('')
 
   const activeSidebarSection = (() => {
+    if (pathname?.startsWith('/dashboard/e-commerce/products')) return 'Product'
     if (pathname?.startsWith('/dashboard/e-commerce/accreditation')) return 'Accreditation'
     if (pathname?.startsWith('/dashboard/e-commerce/testimonials')) return 'Testimonials'
     if (pathname?.startsWith('/dashboard/e-commerce/forms')) return 'Forms'
@@ -471,6 +533,40 @@ const DashboardPage = () => {
     Testimonials: '/dashboard/e-commerce/testimonials',
     Forms: '/dashboard/e-commerce/forms',
     Contact: '/dashboard/e-commerce/contact',
+  }
+
+  const isProductNew = pathname?.startsWith('/dashboard/e-commerce/products/new')
+  const [productRows, setProductRows] = useState([
+    {
+      name: 'Green hoodie',
+      sku: 'SKHOODIE123',
+      price: '$49.99',
+      category: 'Men',
+      stock: 145,
+      date: 'January 26, 2026',
+      status: 'Published',
+      imageUrl: '/assetes/green-hoodie.png',
+      imageAlt: 'Green hoodie',
+    },
+    {
+      name: 'Black hoodie',
+      sku: 'SKHOODIE124',
+      price: '$59.99',
+      category: 'Men',
+      stock: 518,
+      date: 'January 26, 2026',
+      status: 'Published',
+      imageUrl: null,
+      imageAlt: 'Black hoodie',
+    },
+  ])
+
+  const handleProductEdit = (sku: string) => {
+    router.push(`/dashboard/e-commerce/products/new?sku=${encodeURIComponent(sku)}`)
+  }
+
+  const handleProductDelete = (sku: string) => {
+    setProductRows((prev) => prev.filter((row) => row.sku !== sku))
   }
 
   // Accreditation state
@@ -1012,6 +1108,7 @@ const DashboardPage = () => {
           activeTab={activeTab}
           contentTabs={contentTabs}
           contentRoute="/dashboard/e-commerce/content"
+          currentPath={pathname ?? undefined}
           onNavigate={(route) => router.push(route)}
           onTabSelect={(tab) => router.push(`/dashboard/e-commerce/content?tab=${encodeURIComponent(tab)}`)}
           onTabEditStart={handleStartEdit}
@@ -1695,6 +1792,481 @@ const DashboardPage = () => {
             </>
           )}
 
+          {activeSidebarSection === 'Product' && (
+            <div className="space-y-6">
+              {!isProductNew && (
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-xl font-semibold text-slate-900">Products</h1>
+                    <div className="mt-2 flex items-center gap-4 text-sm text-slate-500">
+                      <button
+                        className={`rounded-md px-2 py-1 text-sm font-medium ${!isProductNew ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                        onClick={() => router.push('/dashboard/e-commerce/products')}
+                      >
+                        All (2)
+                      </button>
+                      <button className="text-sm text-slate-500 hover:text-slate-700">
+                        Published (2)
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => router.push('/dashboard/e-commerce/products/new')}
+                    className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                  >
+                    Add new Product
+                  </button>
+                </div>
+              )}
+
+              {isProductNew ? (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-900">Add Product</h2>
+                      <p className=" mt-5 text-lg font-semibold text-slate-900">Product Information</p>
+                    </div>
+                    <button className="rounded-md bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white mt-[-45px]">
+                      Preview
+                    </button>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+                      <div className="space-y-5">
+                        <div>
+                          <label className="text-sm font-semibold text-slate-600">Product Name</label>
+                          <input
+                            placeholder="Green hoodie"
+                            className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-semibold text-slate-600">Description</label>
+                          <div className="mt-2 rounded-lg border border-slate-200 bg-white">
+                            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 px-3 py-2 text-[11px] text-slate-500">
+                              <select className="h-7 rounded border border-slate-200 bg-white px-2 text-[11px] text-slate-600">
+                                <option>16</option>
+                                <option>18</option>
+                                <option>20</option>
+                              </select>
+                              <button className="rounded border border-slate-200 px-2 py-0.5 font-semibold">A</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5 font-semibold">B</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5 italic">I</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5 underline">U</button>
+                              <div className="h-4 w-px bg-slate-200" />
+                              <button className="rounded border border-slate-200 px-2 py-0.5">L</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5">C</button>
+                              <div className="h-4 w-px bg-slate-200" />
+                              <button className="rounded border border-slate-200 px-2 py-0.5">Img</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5">T</button>
+                              <button className="rounded border border-slate-200 px-2 py-0.5">Tags</button>
+                            </div>
+                            <textarea
+                              placeholder="Enter product description..."
+                              className="h-40 w-full resize-none rounded-b-lg px-3 py-2 text-sm text-slate-600 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-5">
+                        <div>
+                          <label className="text-sm font-semibold text-slate-600">Product Images</label>
+                          <div className="mt-2 rounded-lg border border-slate-200 bg-[#ECEDF0] p-4 text-center">
+                            <div className="mx-auto grid h-24 w-24 place-items-center rounded-lg bg-white bg-slate-50">
+                              <img
+                                src="/assetes/hoodie.png"
+                                alt="Green hoodie"
+                                className="h-20 w-20 object-contain"
+                              />
+                            </div>
+                            <p className="mt-3 text-[11px] text-slate-600">
+                              Upload up to 4 images or videos (max 5MB each, 1000 x 1000 pixels).
+                            </p>
+                            <button className="mt-3 rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white">
+                              Upload
+                            </button>
+                          </div>
+                          <div className="mt-3 grid grid-cols-3 gap-2">
+                            {['/assetes/men-hoodie.png', '/assetes/women-hoodie.png', null].map(
+                              (src, index) => (
+                                <div
+                                  key={`thumb-${index}`}
+                                  className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
+                                >
+                                  {src ? (
+                                    <div className="relative flex h-full w-full items-center justify-center">
+                                      <img
+                                        src={src}
+                                        alt="Thumbnail"
+                                        className="max-h-full max-w-full object-contain "
+                                      />
+                                      {index === 1 && (
+                                        <div className="absolute inset-0 grid place-items-center">
+                                          <div className="rounded-full bg-black/60 p-1.5">
+                                            <svg
+                                              width="31"
+                                              height="31"
+                                              viewBox="0 0 31 31"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M15.5002 2.5835C8.37016 2.5835 2.5835 8.37016 2.5835 15.5002C2.5835 22.6302 8.37016 28.4168 15.5002 28.4168C22.6302 28.4168 28.4168 22.6302 28.4168 15.5002C28.4168 8.37016 22.6302 2.5835 15.5002 2.5835ZM18.936 17.7347L17.2827 18.6906L15.6293 19.6464C13.4981 20.8735 11.7543 19.866 11.7543 17.4118V15.5002V13.5885C11.7543 11.1214 13.4981 10.1268 15.6293 11.3539L17.2827 12.3097L18.936 13.2656C21.0672 14.4927 21.0672 16.5077 18.936 17.7347Z"
+                                                fill="white"
+                                              />
+                                            </svg>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <svg
+                                      width="35"
+                                      height="35"
+                                      viewBox="0 0 35 35"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M17.4998 2.9165C9.46442 2.9165 2.9165 9.46442 2.9165 17.4998C2.9165 25.5353 9.46442 32.0832 17.4998 32.0832C25.5353 32.0832 32.0832 25.5353 32.0832 17.4998C32.0832 9.46442 25.5353 2.9165 17.4998 2.9165ZM23.3332 18.5936H18.5936V23.3332C18.5936 23.9311 18.0978 24.4269 17.4998 24.4269C16.9019 24.4269 16.4061 23.9311 16.4061 23.3332V18.5936H11.6665C11.0686 18.5936 10.5728 18.0978 10.5728 17.4998C10.5728 16.9019 11.0686 16.4061 11.6665 16.4061H16.4061V11.6665C16.4061 11.0686 16.9019 10.5728 17.4998 10.5728C18.0978 10.5728 18.5936 11.0686 18.5936 11.6665V16.4061H23.3332C23.9311 16.4061 24.4269 16.9019 24.4269 17.4998C24.4269 18.0978 23.9311 18.5936 23.3332 18.5936Z"
+                                        fill="#566273"
+                                      />
+                                    </svg>
+                                  )}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-semibold text-slate-600">Product Categories</label>
+                          <div className="mt-2 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
+                            {['Men', 'Women', 'Kids'].map((item) => (
+                              <label key={item} className="flex items-center gap-2 py-1">
+                                <input type="checkbox" className="h-3.5 w-3.5 rounded border-slate-300" />
+                                {item}
+                              </label>
+                            ))}
+                            <button className="mt-1 text-xs text-blue-600">+ Add new category</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-slate-900">Price, Stock & Variants</h3>
+                    <p className="mt-1 text-xs text-slate-500">
+                      You can add variants to a product that has more than one option, such as size or color.
+                    </p>
+
+                    <div className="mt-5 rounded-lg border border-slate-200 bg-white p-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-semibold text-slate-700">
+                          Variants 1 <span className="text-red-500">*</span>
+                        </h4>
+                        <button className="text-xs text-blue-600">Add size</button>
+                      </div>
+                      <div className="mt-3">
+                        <label className="text-xs text-slate-600">
+                          Variants Name <span className="text-slate-400">(It can be size, color etc)</span>
+                        </label>
+                        <div className="mt-2 flex items-center gap-2">
+                          <input
+                            placeholder="Size"
+                            className="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <button className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500">
+                            <EditIcon className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <label className="text-xs text-slate-600">Total Variants</label>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {['10-14 yrs', '18-24 yrs'].map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] text-slate-600"
+                            >
+                              {tag} x
+                            </span>
+                          ))}
+                          <button className="inline-flex items-center gap-1 text-[11px] text-blue-600">
+                            Add size
+                            <span className="grid h-4 w-4 place-items-center rounded bg-blue-600 text-white">
+                              +
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 rounded-lg border border-slate-200 bg-white p-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-semibold text-slate-700">
+                          Variants 2 <span className="text-red-500">*</span>
+                        </h4>
+                      </div>
+                      <div className="mt-3">
+                        <label className="text-xs text-slate-600">
+                          Variants Name <span className="text-slate-400">(It can be size, color etc)</span>
+                        </label>
+                        <div className="mt-2 flex items-center gap-2">
+                          <input
+                            placeholder="Color Family"
+                            className="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <button className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500">
+                            <EditIcon className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-slate-600">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" className="h-3.5 w-3.5" defaultChecked />
+                          Add Image <span className="text-[10px] text-slate-400">Max 4 images for each variant.</span>
+                        </label>
+                      </div>
+                      <div className="mt-3 space-y-2">
+                        {['Green', 'Black'].map((color) => (
+                          <div
+                            key={color}
+                            className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                          >
+                            <input
+                              defaultValue={color}
+                              className="h-9 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                            />
+                            <div className="flex items-center gap-2">
+                              <button className="grid h-9 w-9 place-items-center rounded-md border border-blue-500 text-blue-600">
+                                +
+                              </button>
+                              <button className="rounded-md border border-slate-200 px-3 py-2 text-[11px] text-slate-600">
+                                Upload Image
+                              </button>
+                            </div>
+                            <button className="ml-auto grid h-8 w-8 place-items-center rounded-md border border-red-200 text-red-500">
+                              <TrashIcon className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                        <div className="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-400">
+                          Please type or select
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Price & Stock <span className="text-red-500">*</span>
+                    </h3>
+                    <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+                      <table className="w-full text-left text-xs text-slate-600">
+                        <thead className="bg-slate-50 text-slate-700">
+                          <tr className="border-b border-slate-200">
+                            <th className="px-3 py-2">Color Family</th>
+                            <th className="px-3 py-2">Size</th>
+                            <th className="px-3 py-2">Price</th>
+                            <th className="px-3 py-2">Stock</th>
+                            <th className="px-3 py-2">Seller SKU</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { color: 'Green', size: '10-14 yrs', price: '49.99', stock: '145', sku: 'HOODIE123' },
+                            { color: 'Green', size: '20-24 yrs', price: '59.99', stock: '518', sku: 'HOODIE124' },
+                            { color: 'Black', size: '10-14 yrs', price: '', stock: '', sku: '' },
+                            { color: 'Black', size: '20-24 yrs', price: '', stock: '', sku: '' },
+                          ].map((row, index) => (
+                            <tr key={`${row.color}-${row.size}-${index}`} className="border-t border-slate-200">
+                              <td className="px-3 py-2">
+                                <div className="flex items-center gap-2">
+                                  {row.color === 'Green' && (
+                                    <img
+                                      src="/assetes/green-hoodie.png"
+                                      alt="Green hoodie"
+                                      className="h-8 w-8 rounded bg-slate-50 object-contain"
+                                    />
+                                  )}
+                                  {row.color}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">{row.size}</td>
+                              <td className="px-3 py-2">
+                                <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-1">
+                                  <span className="text-slate-400">$</span>
+                                  <input
+                                    defaultValue={row.price}
+                                    placeholder="."
+                                    className="w-16 bg-transparent text-xs text-slate-700 outline-none"
+                                  />
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">
+                                <input
+                                  defaultValue={row.stock}
+                                  className="h-8 w-20 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                <input
+                                  defaultValue={row.sku}
+                                  placeholder="Seller SKU"
+                                  className="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
+                                />
+                                <div className="mt-1 text-[10px] text-slate-400">9/100</div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">Shipping</h3>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Configure the shipping details for your product. You can specify shipping methods, shipping rates,
+                      and set restrictions based on quantity, weight, or destination.
+                    </p>
+                    <div className="mt-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                      <div>
+                        <label className="text-xs font-semibold text-slate-600">Weight (g)</label>
+                        <input
+                          defaultValue="0"
+                          className="mt-2 h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <label className="text-xs font-semibold text-slate-600">Dimensions (cm)</label>
+                        <div className="mt-2 grid grid-cols-3 gap-3">
+                          <input
+                            placeholder="Length"
+                            className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <input
+                            placeholder="Width"
+                            className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <input
+                            placeholder="Height"
+                            className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button className="rounded-xl bg-slate-900 px-6 py-2 text-sm font-semibold text-white shadow">
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <div className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
+                      <SearchIcon className="h-4 w-4" />
+                      <input
+                        placeholder="Search..."
+                        className="w-40 bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-400"
+                      />
+                    </div>
+                    <button className="h-9 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm">
+                      Search Products
+                    </button>
+                    <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 pl-2 text-sm text-slate-400">
+                      <option>Select a category</option>
+                    </select>
+                    <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
+                      <option>Filter by stock status</option>
+                    </select>
+                    <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
+                      <option>Filter by brand</option>
+                    </select>
+                    <button className="ml-2 text-sm text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline">
+                      Reset
+                    </button>
+                    <button className="ml-auto flex h-9 items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm">
+                      Filter <FilterIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="p-4">
+                      <div className="overflow-x-auto rounded-lg border border-slate-200">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-slate-100 text-xs font-semibold text-slate-700">
+                          <tr>
+                            <th className="px-4 py-3">Image</th>
+                            <th className="px-4 py-3">Name</th>
+                            <th className="px-4 py-3">SKU</th>
+                            <th className="px-4 py-3">Price</th>
+                            <th className="px-4 py-3">Categories</th>
+                            <th className="px-4 py-3">Stock</th>
+                            <th className="px-4 py-3">Date</th>
+                            <th className="px-4 py-3">Action</th>
+                          </tr>
+                          </thead>
+                          <tbody className="text-slate-600">
+                            {productRows.map((row) => (
+                              <tr key={row.sku} className="border-t border-slate-200">
+                                <td className="px-4 py-3">
+                                  <div className="grid h-10 w-10 place-items-center  rounded-lg bg-slate-100">
+                                    {row.imageUrl ? (
+                                      <img
+                                        src={row.imageUrl}
+                                        alt={row.imageAlt ?? row.name}
+                                        className="h-full w-full object-cover"
+                                      />
+                                    ) : (
+                                      <ImageIcon className="h-5 w-5" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
+                                <td className="px-4 py-3">{row.sku}</td>
+                                <td className="px-4 py-3">{row.price}</td>
+                                <td className="px-4 py-3">{row.category}</td>
+                                <td className="px-4 py-3">{row.stock}</td>
+                                <td className="px-4 py-3">
+                                  <div className="text-xs text-slate-500">{row.date}</div>
+                                  <div className="text-xs text-slate-400">{row.status}</div>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1">
+                                    <button
+                                      onClick={() => handleProductEdit(row.sku)}
+                                      className="grid h-7 w-7 place-items-center rounded-md  text-slate-500 transition "
+                                    >
+                                      <EditIcon className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => handleProductDelete(row.sku)}
+                                      className="grid h-7 w-7 place-items-center rounded-md   text-red-500 transition "
+                                    >
+                                      <TrashIcon className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           {activeSidebarSection === 'Accreditation' && (
             <div className="">
               <h1 className="text-xl font-medium">Accreditation</h1>
@@ -2203,21 +2775,23 @@ const DashboardPage = () => {
             </div>
           )}
 
-          <div className="mt-auto flex justify-end pt-12">
-            <div className="flex items-center gap-4">
-              {saveStatus && (
-                <span className="text-xs font-semibold text-green-600">
-                  {saveStatus}
-                </span>
-              )}
-              <button
-                onClick={handleSave}
-                className="cursor-pointer rounded-2xl bg-black px-10 py-4 text-lg text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
-              >
-                Save Content
-              </button>
+          {activeSidebarSection !== 'Product' && activeTab !== 'Returns & Refunds' && (
+            <div className="mt-auto flex justify-end pt-12">
+              <div className="flex items-center gap-4">
+                {saveStatus && (
+                  <span className="text-xs font-semibold text-green-600">
+                    {saveStatus}
+                  </span>
+                )}
+                <button
+                  onClick={handleSave}
+                  className=" cursor-pointer rounded-2xl bg-black px-10 py-4 text-lg text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
+                >
+                  Save Content
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
       {deleteTarget && (
@@ -2887,6 +3461,38 @@ const SettingsIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const SearchIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className}>
+    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+)
+
+const FilterIcon = ({ className }: { className?: string }) => (
+  
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.6667 3.8335C14.9429 3.8335 15.1667 4.05735 15.1667 4.3335C15.1667 4.60964 14.9429 4.8335 14.6667 4.8335H10.6667C10.3906 4.8335 10.1667 4.60964 10.1667 4.3335C10.1667 4.05735 10.3906 3.8335 10.6667 3.8335H14.6667Z" fill="white"/>
+<path d="M3.99992 3.8335C4.27606 3.8335 4.49992 4.05735 4.49992 4.3335C4.49992 4.60964 4.27606 4.8335 3.99992 4.8335H1.33325C1.05711 4.8335 0.833252 4.60964 0.833252 4.3335C0.833252 4.05735 1.05711 3.8335 1.33325 3.8335H3.99992Z" fill="white"/>
+<path d="M8.49992 4.33333C8.49992 3.32081 7.67911 2.5 6.66659 2.5C5.65406 2.5 4.83325 3.32081 4.83325 4.33333C4.83325 5.34586 5.65406 6.16667 6.66659 6.16667C7.67911 6.16667 8.49992 5.34586 8.49992 4.33333ZM9.49992 4.33333C9.49992 5.89814 8.23139 7.16667 6.66659 7.16667C5.10178 7.16667 3.83325 5.89814 3.83325 4.33333C3.83325 2.76853 5.10178 1.5 6.66659 1.5C8.23139 1.5 9.49992 2.76853 9.49992 4.33333Z" fill="white"/>
+<path d="M14.6667 11.1665C14.9428 11.1665 15.1667 11.3904 15.1667 11.6665C15.1667 11.9426 14.9428 12.1665 14.6667 12.1665H12C11.7239 12.1665 11.5 11.9426 11.5 11.6665C11.5 11.3904 11.7239 11.1665 12 11.1665H14.6667Z" fill="white"/>
+<path d="M5.33325 11.1665C5.60939 11.1665 5.83325 11.3904 5.83325 11.6665C5.83325 11.9426 5.60939 12.1665 5.33325 12.1665H1.33325C1.05711 12.1665 0.833252 11.9426 0.833252 11.6665C0.833252 11.3904 1.05711 11.1665 1.33325 11.1665H5.33325Z" fill="white"/>
+<path d="M11.1667 11.6668C11.1667 10.6543 10.3459 9.8335 9.33333 9.8335C8.32081 9.8335 7.5 10.6543 7.5 11.6668C7.5 12.6794 8.32081 13.5002 9.33333 13.5002C10.3459 13.5002 11.1667 12.6794 11.1667 11.6668ZM12.1667 11.6668C12.1667 13.2316 10.8981 14.5002 9.33333 14.5002C7.76853 14.5002 6.5 13.2316 6.5 11.6668C6.5 10.102 7.76853 8.8335 9.33333 8.8335C10.8981 8.8335 12.1667 10.102 12.1667 11.6668Z" fill="white"/>
+</svg>
+
+)
+
+const TrashIcon = ({ className }: { className?: string }) => (
+  
+<svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.7794 5.33417C13.1057 5.35399 13.3531 5.61848 13.3322 5.92538L12.8195 13.4058L12.8187 13.4087C12.7977 13.6919 12.7754 14.0051 12.7131 14.2959C12.6497 14.5924 12.538 14.9054 12.3114 15.1831C11.8368 15.7645 11.0283 15.9999 9.8673 15.9999H4.79865C3.63776 15.9998 2.8299 15.7644 2.3553 15.1831C2.12866 14.9054 2.01708 14.5924 1.95361 14.2959C1.89136 14.0051 1.8683 13.6919 1.84721 13.4087V13.4058L1.33448 5.92538C1.31361 5.61847 1.56106 5.35399 1.8873 5.33417C2.2135 5.31454 2.49462 5.54735 2.51568 5.85429L3.02917 13.3311L3.0631 13.738C3.07615 13.861 3.09257 13.9724 3.11475 14.0761C3.15783 14.2772 3.21724 14.4095 3.2944 14.5041C3.42768 14.6673 3.75715 14.8856 4.79865 14.8856H9.8673C10.909 14.8856 11.2382 14.6673 11.3716 14.5041C11.4488 14.4094 11.5089 14.2774 11.552 14.0761C11.5963 13.8689 11.6152 13.631 11.6376 13.3311L12.1503 5.85429C12.1713 5.5473 12.4532 5.31445 12.7794 5.33417Z" fill="#C53434"/>
+<path d="M8.36051 0C9.09379 0 9.66072 0.122492 10.0303 0.446217C10.3647 0.739263 10.4341 1.12601 10.4861 1.36894L10.6584 2.14429C10.7127 2.38791 10.497 2.61918 10.1766 2.66041C9.85637 2.70156 9.55296 2.53699 9.49876 2.29342L9.32564 1.51807V1.51574C9.26004 1.20972 9.21802 1.09961 9.14181 1.03282C9.09942 0.995746 8.9518 0.894765 8.36051 0.894765H6.30616C5.70526 0.894765 5.56208 0.99307 5.52409 1.02583C5.45191 1.08815 5.41164 1.19285 5.34102 1.51166L5.16791 2.29283C5.11411 2.53646 4.81113 2.70124 4.49079 2.66041C4.17038 2.61949 3.95441 2.38854 4.00822 2.14487L4.18057 1.3637V1.36312C4.23537 1.11562 4.30426 0.72502 4.64169 0.433984C5.01352 0.113316 5.58148 0 6.30616 0H8.36051Z" fill="#C53434"/>
+<path d="M10.0515 8C10.3914 8 10.6669 8.29848 10.6669 8.66668C10.6669 9.03488 10.3914 9.33336 10.0515 9.33336H5.94889C5.60902 9.33336 5.3335 9.03488 5.3335 8.66668C5.3335 8.29848 5.60902 8 5.94889 8H10.0515Z" fill="#C53434"/>
+<path d="M8.71245 10.667C9.05546 10.667 9.33357 10.9655 9.33357 11.3337C9.33357 11.7018 9.05546 12.0003 8.71245 12.0004H5.95462C5.61158 12.0004 5.3335 11.7019 5.3335 11.3337C5.3335 10.9655 5.61158 10.667 5.95462 10.667H8.71245Z" fill="#C53434"/>
+<path d="M6.56658 2.6665C9.09779 2.66651 11.6362 2.78089 14.1588 3.00248C14.4687 3.02981 14.6949 3.27465 14.6641 3.54942C14.6333 3.82415 14.3571 4.02461 14.0471 3.99739C11.5606 3.77896 9.05955 3.66663 6.56658 3.66662C5.09632 3.66662 3.62549 3.73224 2.15494 3.86391L2.15347 3.86456L0.619014 3.99739C0.308966 4.02433 0.0331695 3.82359 0.00273493 3.54877C-0.0276619 3.27393 0.198797 3.02946 0.508833 3.00248L2.04182 2.86965V2.869C3.5498 2.73398 5.05831 2.6665 6.56658 2.6665Z" fill="#C53434"/>
+</svg>
+
+)
+
 const AlignLeftIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 20 24" fill="none" className={className}>
     <path d="M5 7h14M5 12h10M5 17h14" stroke="currentColor" strokeWidth="1.5" />
@@ -3026,7 +3632,6 @@ const CategoriesIcon = ({ className }: { className?: string }) => (
 )
 
 export const dashboardSidebarLinks = [
-  { label: 'Product', icon: ProductIcon, activeIcon: ProductIcon },
   { label: 'Categories', icon: CategoriesIcon, activeIcon: CategoriesIcon },
   { label: 'Accreditation', icon: AwardIcon, activeIcon: AccreditationActiveIcon },
   { label: 'Testimonials', icon: QuoteIcon, activeIcon: TestimonialActiveIcon },
