@@ -2811,30 +2811,30 @@ const DashboardPage = () => {
               </div>
 
               <h2 className="mt-10 text-lg font-semibold">Create Accreditation Cards</h2>
-              <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-                <div className="space-y-6">
-                  {accreditationCards.map((card) => (
-                    <CardForm
-                      key={card.id}
-                      titleLabel="Accreditation title"
-                      descLabel="Accreditation description"
-                      card={card}
-                      onTitleChange={(value) =>
-                        updateAccreditationCard(card.id, { title: value })
-                      }
-                      onDescriptionChange={(value) =>
-                        updateAccreditationCard(card.id, { description: value })
-                      }
-                      onImageChange={(event) =>
-                        handleAccreditationCardImageChange(card.id, event)
-                      }
-                    />
-                  ))}
+              <div className="mt-4 grid gap-6 lg:grid-cols-[2fr_1fr]">
+                {accreditationCards.map((card) => (
+                  <CardForm
+                    key={card.id}
+                    titleLabel="Accreditation title"
+                    descLabel="Accreditation description"
+                    card={card}
+                    onTitleChange={(value) =>
+                      updateAccreditationCard(card.id, { title: value })
+                    }
+                    onDescriptionChange={(value) =>
+                      updateAccreditationCard(card.id, { description: value })
+                    }
+                    onImageChange={(event) =>
+                      handleAccreditationCardImageChange(card.id, event)
+                    }
+                  />
+                ))}
+                <div className="w-full self-start">
+                  <AddCard
+                    onAdd={addAccreditationCard}
+                    text="Want to showcase more? Add another Accreditation!"
+                  />
                 </div>
-                <AddCard
-                  onAdd={addAccreditationCard}
-                  text="Want to showcase more? Add another Accreditation!"
-                />
               </div>
             </div>
           )}
@@ -3516,7 +3516,7 @@ const AddCard = ({ onAdd, text = 'Add another project!' }: { onAdd: () => void; 
   <button
     type="button"
     onClick={onAdd}
-    className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40"
+    className="flex w-full min-h-[320px] cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40"
   >
     <div className="flex h-20 w-20 items-center justify-center rounded-2xl text-blue-600">
       <AddFileIcon className="h-8 w-8" />
