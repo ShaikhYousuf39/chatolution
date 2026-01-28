@@ -175,12 +175,12 @@ export default function SignInPage() {
               className="object-cover opacity-60 rounded-lg"
               style={{ position: 'absolute', height: '100%', width: '100%', left: 0, top: 0, right: 0, bottom: 0, color: 'transparent' }}
               sizes="100vw"
-              srcSet="/_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=640&amp;q=75 640w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=750&amp;q=75 750w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=828&amp;q=75 828w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=1080&amp;q=75 1080w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=1200&amp;q=75 1200w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=1920&amp;q=75 1920w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=2048&amp;q=75 2048w, /_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=3840&amp;q=75 3840w"
-              src="/_next/image?url=%2Fassetes%2FSign-In-bg.png&amp;w=3840&amp;q=75"
-            />
+              src="/assetes/Sign-In-bg.png" />
+
+
 
             {/* Overlay grid effect */}
-            <div className="absolute inset-0 opacity-[0.35]" style={{ backgroundImage: 'linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+            {/* <div className="absolute inset-0 opacity-[0.35]" style={{ backgroundImage: 'linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div> */}
 
             {/* Circle behind iPhone */}
             <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full "></div>
@@ -195,9 +195,7 @@ export default function SignInPage() {
                   className="object-contain drop-shadow-[0_40px_70px_rgba(0,0,0,0.25)] rounded-lg"
                   style={{ position: 'absolute', height: '100%', width: '100%', left: 0, top: 0, right: 0, bottom: 0, color: 'transparent' }}
                   sizes="100vw"
-                  srcSet="/_next/image?url=%2Fassetes%2Fiphone.png&amp;w=640&amp;q=75 640w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=750&amp;q=75 750w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=828&amp;q=75 828w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=1080&amp;q=75 1080w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=1200&amp;q=75 1200w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=1920&amp;q=75 1920w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=2048&amp;q=75 2048w, /_next/image?url=%2Fassetes%2Fiphone.png&amp;w=3840&amp;q=75 3840w"
-                  src="/_next/image?url=%2Fassetes%2Fiphone.png&amp;w=3840&amp;q=75"
-                />
+                  src="/assetes/iphone.png" />
               </div>
             </div>
           </div>

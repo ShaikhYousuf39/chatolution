@@ -475,10 +475,15 @@ const DashboardPage = () => {
   const [editResourceFileUrl, setEditResourceFileUrl] = useState<string | null>(null)
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
+  const [productImages, setProductImages] = useState<{ file: File; url: string }[]>([])
+  const [productCategories, setProductCategories] = useState(['Men', 'Women', 'Kids'])
+  const [showAddCategory, setShowAddCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
   const editorRef = useRef<HTMLDivElement | null>(null)
   const returnsPolicyRef = useRef<HTMLDivElement | null>(null)
   const refundsPolicyRef = useRef<HTMLDivElement | null>(null)
   const productDescriptionRef = useRef<HTMLDivElement | null>(null)
+  const productImagesInputRef = useRef<HTMLInputElement | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [returnsPolicyContent, setReturnsPolicyContent] = useState('')
   const [refundsPolicyContent, setRefundsPolicyContent] = useState('')
@@ -569,6 +574,19 @@ const DashboardPage = () => {
 
   const handleProductDelete = (sku: string) => {
     setProductRows((prev) => prev.filter((row) => row.sku !== sku))
+  }
+
+  const handleProductImagesUpload = (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setProductImages((prev) => {
+      const remainingSlots = Math.max(0, 4 - prev.length)
+      const selected = Array.from(files).slice(0, remainingSlots)
+      const next = selected.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+      }))
+      return [...prev, ...next]
+    })
   }
 
   // Accreditation state
@@ -1191,7 +1209,7 @@ const DashboardPage = () => {
                         <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
                         <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
                         <ToolButton icon={<TextToolbarIcon className="h-4 w-4" />} />
-                        
+
                         <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
                           <span className="inline-flex items-center gap-2">
                             <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
@@ -1932,7 +1950,7 @@ const DashboardPage = () => {
                           <div className="mt-2 rounded-lg border border-slate-200 bg-[#ECEDF0] p-4 text-center">
                             <div className="mx-auto grid h-24 w-24 place-items-center rounded-lg bg-white bg-slate-50">
                               <img
-                                src="/assetes/hoodie.png"
+                                src={productImages[0]?.url ?? '/assetes/hoodie.png'}
                                 alt="Green hoodie"
                                 className="h-20 w-20 object-contain"
                               />
@@ -1940,59 +1958,57 @@ const DashboardPage = () => {
                             <p className="mt-3 text-[11px] text-slate-600">
                               Upload up to 4 images or videos (max 5MB each, 1000 x 1000 pixels).
                             </p>
-                            <button className="mt-3 rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white">
+                            <input
+                              ref={productImagesInputRef}
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={(event) => {
+                                handleProductImagesUpload(event.target.files)
+                                event.currentTarget.value = ''
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => productImagesInputRef.current?.click()}
+                              className="mt-3 rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white"
+                            >
                               Upload
                             </button>
                           </div>
                           <div className="mt-3 grid grid-cols-3 gap-2">
-                            {['/assetes/men-hoodie.png', '/assetes/women-hoodie.png', null].map(
-                              (src, index) => (
-                                <div
-                                  key={`thumb-${index}`}
-                                  className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
+                            {productImages.slice(0, 3).map((image, index) => (
+                              <div
+                                key={`thumb-${index}`}
+                                className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
+                              >
+                                <img
+                                  src={image.url}
+                                  alt="Thumbnail"
+                                  className="max-h-full max-w-full object-contain"
+                                />
+                              </div>
+                            ))}
+                            {productImages.length < 3 && (
+                              <button
+                                type="button"
+                                onClick={() => productImagesInputRef.current?.click()}
+                                className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
+                              >
+                                <svg
+                                  width="35"
+                                  height="35"
+                                  viewBox="0 0 35 35"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
                                 >
-                                  {src ? (
-                                    <div className="relative flex h-full w-full items-center justify-center">
-                                      <img
-                                        src={src}
-                                        alt="Thumbnail"
-                                        className="max-h-full max-w-full object-contain "
-                                      />
-                                      {index === 1 && (
-                                        <div className="mt-[-25px] absolute inset-0 grid place-items-center">
-                                          <div className="rounded-full bg-black/60 ">
-                                            <svg
-                                              width="31"
-                                              height="31"
-                                              viewBox="0 0 31 31"
-                                              fill="none"
-                                              xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                              <path
-                                                d="M15.5002 2.5835C8.37016 2.5835 2.5835 8.37016 2.5835 15.5002C2.5835 22.6302 8.37016 28.4168 15.5002 28.4168C22.6302 28.4168 28.4168 22.6302 28.4168 15.5002C28.4168 8.37016 22.6302 2.5835 15.5002 2.5835ZM18.936 17.7347L17.2827 18.6906L15.6293 19.6464C13.4981 20.8735 11.7543 19.866 11.7543 17.4118V15.5002V13.5885C11.7543 11.1214 13.4981 10.1268 15.6293 11.3539L17.2827 12.3097L18.936 13.2656C21.0672 14.4927 21.0672 16.5077 18.936 17.7347Z"
-                                                fill="white"
-                                              />
-                                            </svg>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <svg
-                                      width="35"
-                                      height="35"
-                                      viewBox="0 0 35 35"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M17.4998 2.9165C9.46442 2.9165 2.9165 9.46442 2.9165 17.4998C2.9165 25.5353 9.46442 32.0832 17.4998 32.0832C25.5353 32.0832 32.0832 25.5353 32.0832 17.4998C32.0832 9.46442 25.5353 2.9165 17.4998 2.9165ZM23.3332 18.5936H18.5936V23.3332C18.5936 23.9311 18.0978 24.4269 17.4998 24.4269C16.9019 24.4269 16.4061 23.9311 16.4061 23.3332V18.5936H11.6665C11.0686 18.5936 10.5728 18.0978 10.5728 17.4998C10.5728 16.9019 11.0686 16.4061 11.6665 16.4061H16.4061V11.6665C16.4061 11.0686 16.9019 10.5728 17.4998 10.5728C18.0978 10.5728 18.5936 11.0686 18.5936 11.6665V16.4061H23.3332C23.9311 16.4061 24.4269 16.9019 24.4269 17.4998C24.4269 18.0978 23.9311 18.5936 23.3332 18.5936Z"
-                                        fill="#566273"
-                                      />
-                                    </svg>
-                                  )}
-                                </div>
-                              )
+                                  <path
+                                    d="M17.4998 2.9165C9.46442 2.9165 2.9165 9.46442 2.9165 17.4998C2.9165 25.5353 9.46442 32.0832 17.4998 32.0832C25.5353 32.0832 32.0832 25.5353 32.0832 17.4998C32.0832 9.46442 25.5353 2.9165 17.4998 2.9165ZM23.3332 18.5936H18.5936V23.3332C18.5936 23.9311 18.0978 24.4269 17.4998 24.4269C16.9019 24.4269 16.4061 23.9311 16.4061 23.3332V18.5936H11.6665C11.0686 18.5936 10.5728 18.0978 10.5728 17.4998C10.5728 16.9019 11.0686 16.4061 11.6665 16.4061H16.4061V11.6665C16.4061 11.0686 16.9019 10.5728 17.4998 10.5728C18.0978 10.5728 18.5936 11.0686 18.5936 11.6665V16.4061H23.3332C23.9311 16.4061 24.4269 16.9019 24.4269 17.4998C24.4269 18.0978 23.9311 18.5936 23.3332 18.5936Z"
+                                    fill="#566273"
+                                  />
+                                </svg>
+                              </button>
                             )}
                           </div>
                         </div>
@@ -2000,13 +2016,55 @@ const DashboardPage = () => {
                         <div>
                           <label className="text-sm font-semibold text-slate-600">Product Categories</label>
                           <div className="mt-2 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
-                            {['Men', 'Women', 'Kids'].map((item) => (
+                            {productCategories.map((item) => (
                               <label key={item} className="flex items-center gap-2 py-1">
                                 <input type="checkbox" className="h-3.5 w-3.5 rounded border-slate-300" />
                                 {item}
                               </label>
                             ))}
-                            <button className="mt-1 text-xs text-blue-600">+ Add new category</button>
+                            {showAddCategory ? (
+                              <div className="mt-2 flex items-center gap-2">
+                                <input
+                                  value={newCategoryName}
+                                  onChange={(event) => setNewCategoryName(event.target.value)}
+                                  placeholder="Category name"
+                                  className="h-8 flex-1 rounded-md border border-slate-200 px-2 text-xs text-slate-700"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const trimmed = newCategoryName.trim()
+                                    if (!trimmed) return
+                                    setProductCategories((prev) =>
+                                      prev.includes(trimmed) ? prev : [...prev, trimmed]
+                                    )
+                                    setNewCategoryName('')
+                                    setShowAddCategory(false)
+                                  }}
+                                  className="h-8 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white"
+                                >
+                                  Add
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setNewCategoryName('')
+                                    setShowAddCategory(false)
+                                  }}
+                                  className="h-8 rounded-md border border-slate-200 px-3 text-xs text-slate-600"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setShowAddCategory(true)}
+                                className="mt-1 text-xs text-blue-600"
+                              >
+                                + Add new category
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -2021,19 +2079,19 @@ const DashboardPage = () => {
 
                     <div className="mt-5 rounded-lg border border-slate-200 bg-white p-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-semibold text-slate-700">
+                        <h4 className="text-xs font-semibold text-slate-900">
                           Variants 1 <span className="text-red-500">*</span>
                         </h4>
                         {/* <button className="text-xs text-blue-600">Add size</button> */}
                       </div>
                       <div className="mt-3">
-                        <label className="text-xs text-slate-600">
+                        <label className="text-xs text-slate-900">
                           Variants Name <span className="text-slate-400">(It can be size, color etc)</span>
                         </label>
                         <div className="mt-2 flex items-center gap-2">
                           <input
                             placeholder="Size"
-                            className="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                            className="h-9 w-[40%] rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
                           />
                           <button className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500">
                             <EditIcon className="h-3.5 w-3.5" />
@@ -2041,12 +2099,12 @@ const DashboardPage = () => {
                         </div>
                       </div>
                       <div className="mt-3">
-                        <label className="text-xs text-slate-600">Total Variants</label>
+                        <label className="text-xs text-slate-900">Total Variants</label>
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                           {['10-14 yrs', '18-24 yrs'].map((tag) => (
                             <span
                               key={tag}
-                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] text-slate-600"
+                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] text-slate-900"
                             >
                               {tag} x
                             </span>
@@ -2063,55 +2121,81 @@ const DashboardPage = () => {
 
                     <div className="mt-5 rounded-lg border border-slate-200 bg-white p-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-semibold text-slate-700">
+                        <h4 className="text-xs font-semibold text-slate-900">
                           Variants 2 <span className="text-red-500">*</span>
                         </h4>
                       </div>
                       <div className="mt-3">
-                        <label className="text-xs text-slate-600">
+                        <label className="text-xs font-medium text-slate-900">
                           Variants Name <span className="text-slate-400">(It can be size, color etc)</span>
                         </label>
-                        <div className="mt-2 flex items-center gap-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
                           <input
                             placeholder="Color Family"
-                            className="h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                            className="h-10 w-[40%] min-w-[240px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400"
                           />
-                          <button className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500">
+                          <button className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50">
                             <EditIcon className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </div>
-                      <div className="mt-3 text-xs text-slate-600">
+                      <div className="mt-4">
+                        <label className="text-xs font-semibold text-slate-900">Total Variants</label>
+                      </div>
+                      <div className="mt-2 text-sm text-slate-700">
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" className="h-3.5 w-3.5" defaultChecked />
-                          Add Image <span className="text-[10px] text-slate-400">Max 4 images for each variant.</span>
+                          <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-blue-600" defaultChecked />
+                          <span>
+                            Add Image{' '}
+                            <span className="text-xs text-slate-400">Max 4 images for each variant.</span>
+                          </span>
                         </label>
                       </div>
-                      <div className="mt-3 space-y-2">
+                      <div className="mt-4 space-y-3">
                         {['Green', 'Black'].map((color) => (
                           <div
                             key={color}
-                            className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                            className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
                           >
                             <input
                               defaultValue={color}
-                              className="h-9 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                              className="h-9 w-[40%] min-w-[220px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700"
                             />
                             <div className="flex items-center gap-2">
-                              <button className="grid h-9 w-9 place-items-center rounded-md border border-blue-500 text-blue-600">
+                              <label
+                                htmlFor={`variant-upload-${color.toLowerCase()}`}
+                                className="grid h-9 w-9 cursor-pointer place-items-center rounded-lg border border-blue-500 text-blue-600"
+                              >
                                 +
+                              </label>
+                              <input
+                                id={`variant-upload-${color.toLowerCase()}`}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                              />
+                              {color === 'Green' && (
+                                <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white">
+                                  <img src="/assetes/green-hoodie.png" alt="Green hoodie" className="h-7 w-7 object-cover" />
+                                </div>
+                              )}
+                              <span className="text-sm font-medium text-slate-800">Upload Image</span>
+                            </div>
+                            <div className="ml-auto flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1">
+                              <button className="grid h-8 w-8 place-items-center rounded-lg text-red-500 hover:bg-red-50">
+                                <TrashIcon className="h-3.5 w-3.5" />
                               </button>
-                              <button className="rounded-md border border-slate-200 px-3 py-2 text-[11px] text-slate-600">
-                                Upload Image
+                              <button className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-50">
+                                <DragIcon className="h-4 w-4" />
                               </button>
                             </div>
-                            <button className="ml-auto grid h-8 w-8 place-items-center rounded-md border border-red-200 text-red-500">
-                              <TrashIcon className="h-3.5 w-3.5" />
-                            </button>
                           </div>
                         ))}
-                        <div className="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-400">
-                          Please type or select
+                        <div className="rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-3">
+                          <input
+                            placeholder="Please type or select"
+                            className="h-9 w-[40%] min-w-[220px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400"
+                          />
                         </div>
                       </div>
                     </div>
@@ -2121,72 +2205,93 @@ const DashboardPage = () => {
                     <h3 className="text-sm font-semibold text-slate-900">
                       Price & Stock <span className="text-red-500">*</span>
                     </h3>
-                    <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200">
-                      <table className="w-full text-left text-xs text-slate-600">
-                        <thead className="bg-slate-50 text-slate-700">
-                          <tr className="border-b border-slate-200">
-                            <th className="px-3 py-2">Color Family</th>
-                            <th className="px-3 py-2">Size</th>
-                            <th className="px-3 py-2">Price</th>
-                            <th className="px-3 py-2">Stock</th>
-                            <th className="px-3 py-2">Seller SKU</th>
+                    <div className="mt-4 overflow-x-auto rounded-lg border bg-[#F6F6F6] border-slate-200">
+                      <table className="w-full border-separate border-spacing-0 text-left text-xs text-slate-700">
+                        <thead className="bg-slate-50 text-slate-800">
+                          <tr className="border border-slate-200">
+                            <th className="border border-slate-200 px-4 py-2 text-center font-semibold">Color Family</th>
+                            <th className="border border-slate-200 px-4 py-2 text-center font-semibold">Size</th>
+                            <th className="border border-slate-200 px-4 py-2 text-center font-semibold">Price</th>
+                            <th className="border border-slate-200 px-4 py-2 text-center font-semibold">Stock</th>
+                            <th className="px-4 py-2 text-center font-semibold">Seller SKU</th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="bg-white">
                           {[
-                            { color: 'Green', size: '10-14 yrs', price: '49.99', stock: '145', sku: 'HOODIE123' },
-                            { color: 'Green', size: '20-24 yrs', price: '59.99', stock: '518', sku: 'HOODIE124' },
-                            { color: 'Black', size: '10-14 yrs', price: '', stock: '', sku: '' },
-                            { color: 'Black', size: '20-24 yrs', price: '', stock: '', sku: '' },
-                          ].map((row, index) => (
-                            <tr key={`${row.color}-${row.size}-${index}`} className="border-t border-slate-200">
-                              <td className="px-3 py-2">
-                                <div className="flex items-center gap-2">
-                                  {row.color === 'Green' && (
-                                    <img
-                                      src="/assetes/green-hoodie.png"
-                                      alt="Green hoodie"
-                                      className="h-8 w-8 rounded bg-slate-50 object-contain"
+                            {
+                              color: 'Green',
+                              image: '/assetes/green-hoodie.png',
+                              rows: [
+                                { size: '10-14 yrs', price: '49.99', stock: '145', sku: 'HOODIE123' },
+                                { size: '20-24 yrs', price: '59.99', stock: '518', sku: 'HOODIE124' },
+                              ],
+                            },
+                            {
+                              color: 'Black',
+                              image: null,
+                              rows: [
+                                { size: '10-14 yrs', price: '', stock: '', sku: '' },
+                                { size: '20-24 yrs', price: '', stock: '', sku: '' },
+                              ],
+                            },
+                          ].map((group) =>
+                            group.rows.map((row, rowIndex) => (
+                              <tr key={`${group.color}-${row.size}`} className="border border-slate-100">
+                                {rowIndex === 0 && (
+                                  <td
+                                    rowSpan={group.rows.length}
+                                    className="border border-slate-100 px-4 py-3 align-middle text-center"
+                                  >
+                                    <div className="flex items-center justify-center gap-2">
+                                      {group.image && (
+                                        <img
+                                          src={group.image}
+                                          alt={`${group.color} hoodie`}
+                                          className="h-8 w-8 rounded bg-slate-50 object-contain"
+                                        />
+                                      )}
+                                      <span className="font-medium text-slate-800">{group.color}</span>
+                                    </div>
+                                  </td>
+                                )}
+                                <td className="border border-slate-100 px-4 py-3 text-center">{row.size}</td>
+                                <td className="border border-slate-100 px-4 py-3 text-center">
+                                  <div className="mx-auto flex h-7 w-28 items-center gap-1 rounded-md border border-slate-200 bg-white px-2">
+                                    <span className="text-slate-400">$</span>
+                                    <input
+                                      defaultValue={row.price}
+                                      placeholder="."
+                                      className="w-full bg-transparent text-xs text-slate-700 outline-none"
                                     />
-                                  )}
-                                  {row.color}
-                                </div>
-                              </td>
-                              <td className="px-3 py-2">{row.size}</td>
-                              <td className="px-3 py-2">
-                                <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-1">
-                                  <span className="text-slate-400">$</span>
+                                  </div>
+                                </td>
+                                <td className="border border-slate-100 px-4 py-3 text-center">
                                   <input
-                                    defaultValue={row.price}
-                                    placeholder="."
-                                    className="w-16 bg-transparent text-xs text-slate-700 outline-none"
+                                    defaultValue={row.stock}
+                                    className="mx-auto h-7 w-24 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
                                   />
-                                </div>
-                              </td>
-                              <td className="px-3 py-2">
-                                <input
-                                  defaultValue={row.stock}
-                                  className="h-8 w-20 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <input
-                                  defaultValue={row.sku}
-                                  placeholder="Seller SKU"
-                                  className="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
-                                />
-                                <div className="mt-1 text-[10px] text-slate-400">9/100</div>
-                              </td>
-                            </tr>
-                          ))}
+                                </td>
+                                <td className="border border-slate-100 px-4 py-3 text-center">
+                                  <div className="mx-auto flex w-40 items-center gap-2 rounded-md border border-slate-200 bg-white px-2">
+                                    <input
+                                      defaultValue={row.sku}
+                                      placeholder="Seller SKU"
+                                      className="h-7 w-full bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
+                                    />
+                                    <span className="text-[10px] text-slate-400">9/100</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
                         </tbody>
                       </table>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">Shipping</h3>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <h3 className="text-md font-semibold text-slate-900">Shipping</h3>
+                    <p className="mt-1 text-sm text-slate-500">
                       Configure the shipping details for your product. You can specify shipping methods, shipping rates,
                       and set restrictions based on quantity, weight, or destination.
                     </p>
@@ -2259,16 +2364,16 @@ const DashboardPage = () => {
                       <div className="overflow-x-auto rounded-lg border border-slate-200">
                         <table className="w-full text-left text-sm">
                           <thead className="bg-slate-100 text-xs font-semibold text-slate-700">
-                          <tr>
-                            <th className="px-4 py-3">Image</th>
-                            <th className="px-4 py-3">Name</th>
-                            <th className="px-4 py-3">SKU</th>
-                            <th className="px-4 py-3">Price</th>
-                            <th className="px-4 py-3">Categories</th>
-                            <th className="px-4 py-3">Stock</th>
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Action</th>
-                          </tr>
+                            <tr>
+                              <th className="px-4 py-3">Image</th>
+                              <th className="px-4 py-3">Name</th>
+                              <th className="px-4 py-3">SKU</th>
+                              <th className="px-4 py-3">Price</th>
+                              <th className="px-4 py-3">Categories</th>
+                              <th className="px-4 py-3">Stock</th>
+                              <th className="px-4 py-3">Date</th>
+                              <th className="px-4 py-3">Action</th>
+                            </tr>
                           </thead>
                           <tbody className="text-slate-600">
                             {productRows.map((row) => (
@@ -3525,27 +3630,46 @@ const SearchIcon = ({ className }: { className?: string }) => (
 )
 
 const FilterIcon = ({ className }: { className?: string }) => (
-  
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M14.6667 3.8335C14.9429 3.8335 15.1667 4.05735 15.1667 4.3335C15.1667 4.60964 14.9429 4.8335 14.6667 4.8335H10.6667C10.3906 4.8335 10.1667 4.60964 10.1667 4.3335C10.1667 4.05735 10.3906 3.8335 10.6667 3.8335H14.6667Z" fill="white"/>
-<path d="M3.99992 3.8335C4.27606 3.8335 4.49992 4.05735 4.49992 4.3335C4.49992 4.60964 4.27606 4.8335 3.99992 4.8335H1.33325C1.05711 4.8335 0.833252 4.60964 0.833252 4.3335C0.833252 4.05735 1.05711 3.8335 1.33325 3.8335H3.99992Z" fill="white"/>
-<path d="M8.49992 4.33333C8.49992 3.32081 7.67911 2.5 6.66659 2.5C5.65406 2.5 4.83325 3.32081 4.83325 4.33333C4.83325 5.34586 5.65406 6.16667 6.66659 6.16667C7.67911 6.16667 8.49992 5.34586 8.49992 4.33333ZM9.49992 4.33333C9.49992 5.89814 8.23139 7.16667 6.66659 7.16667C5.10178 7.16667 3.83325 5.89814 3.83325 4.33333C3.83325 2.76853 5.10178 1.5 6.66659 1.5C8.23139 1.5 9.49992 2.76853 9.49992 4.33333Z" fill="white"/>
-<path d="M14.6667 11.1665C14.9428 11.1665 15.1667 11.3904 15.1667 11.6665C15.1667 11.9426 14.9428 12.1665 14.6667 12.1665H12C11.7239 12.1665 11.5 11.9426 11.5 11.6665C11.5 11.3904 11.7239 11.1665 12 11.1665H14.6667Z" fill="white"/>
-<path d="M5.33325 11.1665C5.60939 11.1665 5.83325 11.3904 5.83325 11.6665C5.83325 11.9426 5.60939 12.1665 5.33325 12.1665H1.33325C1.05711 12.1665 0.833252 11.9426 0.833252 11.6665C0.833252 11.3904 1.05711 11.1665 1.33325 11.1665H5.33325Z" fill="white"/>
-<path d="M11.1667 11.6668C11.1667 10.6543 10.3459 9.8335 9.33333 9.8335C8.32081 9.8335 7.5 10.6543 7.5 11.6668C7.5 12.6794 8.32081 13.5002 9.33333 13.5002C10.3459 13.5002 11.1667 12.6794 11.1667 11.6668ZM12.1667 11.6668C12.1667 13.2316 10.8981 14.5002 9.33333 14.5002C7.76853 14.5002 6.5 13.2316 6.5 11.6668C6.5 10.102 7.76853 8.8335 9.33333 8.8335C10.8981 8.8335 12.1667 10.102 12.1667 11.6668Z" fill="white"/>
-</svg>
+
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14.6667 3.8335C14.9429 3.8335 15.1667 4.05735 15.1667 4.3335C15.1667 4.60964 14.9429 4.8335 14.6667 4.8335H10.6667C10.3906 4.8335 10.1667 4.60964 10.1667 4.3335C10.1667 4.05735 10.3906 3.8335 10.6667 3.8335H14.6667Z" fill="white" />
+    <path d="M3.99992 3.8335C4.27606 3.8335 4.49992 4.05735 4.49992 4.3335C4.49992 4.60964 4.27606 4.8335 3.99992 4.8335H1.33325C1.05711 4.8335 0.833252 4.60964 0.833252 4.3335C0.833252 4.05735 1.05711 3.8335 1.33325 3.8335H3.99992Z" fill="white" />
+    <path d="M8.49992 4.33333C8.49992 3.32081 7.67911 2.5 6.66659 2.5C5.65406 2.5 4.83325 3.32081 4.83325 4.33333C4.83325 5.34586 5.65406 6.16667 6.66659 6.16667C7.67911 6.16667 8.49992 5.34586 8.49992 4.33333ZM9.49992 4.33333C9.49992 5.89814 8.23139 7.16667 6.66659 7.16667C5.10178 7.16667 3.83325 5.89814 3.83325 4.33333C3.83325 2.76853 5.10178 1.5 6.66659 1.5C8.23139 1.5 9.49992 2.76853 9.49992 4.33333Z" fill="white" />
+    <path d="M14.6667 11.1665C14.9428 11.1665 15.1667 11.3904 15.1667 11.6665C15.1667 11.9426 14.9428 12.1665 14.6667 12.1665H12C11.7239 12.1665 11.5 11.9426 11.5 11.6665C11.5 11.3904 11.7239 11.1665 12 11.1665H14.6667Z" fill="white" />
+    <path d="M5.33325 11.1665C5.60939 11.1665 5.83325 11.3904 5.83325 11.6665C5.83325 11.9426 5.60939 12.1665 5.33325 12.1665H1.33325C1.05711 12.1665 0.833252 11.9426 0.833252 11.6665C0.833252 11.3904 1.05711 11.1665 1.33325 11.1665H5.33325Z" fill="white" />
+    <path d="M11.1667 11.6668C11.1667 10.6543 10.3459 9.8335 9.33333 9.8335C8.32081 9.8335 7.5 10.6543 7.5 11.6668C7.5 12.6794 8.32081 13.5002 9.33333 13.5002C10.3459 13.5002 11.1667 12.6794 11.1667 11.6668ZM12.1667 11.6668C12.1667 13.2316 10.8981 14.5002 9.33333 14.5002C7.76853 14.5002 6.5 13.2316 6.5 11.6668C6.5 10.102 7.76853 8.8335 9.33333 8.8335C10.8981 8.8335 12.1667 10.102 12.1667 11.6668Z" fill="white" />
+  </svg>
 
 )
 
 const TrashIcon = ({ className }: { className?: string }) => (
-  
-<svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.7794 5.33417C13.1057 5.35399 13.3531 5.61848 13.3322 5.92538L12.8195 13.4058L12.8187 13.4087C12.7977 13.6919 12.7754 14.0051 12.7131 14.2959C12.6497 14.5924 12.538 14.9054 12.3114 15.1831C11.8368 15.7645 11.0283 15.9999 9.8673 15.9999H4.79865C3.63776 15.9998 2.8299 15.7644 2.3553 15.1831C2.12866 14.9054 2.01708 14.5924 1.95361 14.2959C1.89136 14.0051 1.8683 13.6919 1.84721 13.4087V13.4058L1.33448 5.92538C1.31361 5.61847 1.56106 5.35399 1.8873 5.33417C2.2135 5.31454 2.49462 5.54735 2.51568 5.85429L3.02917 13.3311L3.0631 13.738C3.07615 13.861 3.09257 13.9724 3.11475 14.0761C3.15783 14.2772 3.21724 14.4095 3.2944 14.5041C3.42768 14.6673 3.75715 14.8856 4.79865 14.8856H9.8673C10.909 14.8856 11.2382 14.6673 11.3716 14.5041C11.4488 14.4094 11.5089 14.2774 11.552 14.0761C11.5963 13.8689 11.6152 13.631 11.6376 13.3311L12.1503 5.85429C12.1713 5.5473 12.4532 5.31445 12.7794 5.33417Z" fill="#C53434"/>
-<path d="M8.36051 0C9.09379 0 9.66072 0.122492 10.0303 0.446217C10.3647 0.739263 10.4341 1.12601 10.4861 1.36894L10.6584 2.14429C10.7127 2.38791 10.497 2.61918 10.1766 2.66041C9.85637 2.70156 9.55296 2.53699 9.49876 2.29342L9.32564 1.51807V1.51574C9.26004 1.20972 9.21802 1.09961 9.14181 1.03282C9.09942 0.995746 8.9518 0.894765 8.36051 0.894765H6.30616C5.70526 0.894765 5.56208 0.99307 5.52409 1.02583C5.45191 1.08815 5.41164 1.19285 5.34102 1.51166L5.16791 2.29283C5.11411 2.53646 4.81113 2.70124 4.49079 2.66041C4.17038 2.61949 3.95441 2.38854 4.00822 2.14487L4.18057 1.3637V1.36312C4.23537 1.11562 4.30426 0.72502 4.64169 0.433984C5.01352 0.113316 5.58148 0 6.30616 0H8.36051Z" fill="#C53434"/>
-<path d="M10.0515 8C10.3914 8 10.6669 8.29848 10.6669 8.66668C10.6669 9.03488 10.3914 9.33336 10.0515 9.33336H5.94889C5.60902 9.33336 5.3335 9.03488 5.3335 8.66668C5.3335 8.29848 5.60902 8 5.94889 8H10.0515Z" fill="#C53434"/>
-<path d="M8.71245 10.667C9.05546 10.667 9.33357 10.9655 9.33357 11.3337C9.33357 11.7018 9.05546 12.0003 8.71245 12.0004H5.95462C5.61158 12.0004 5.3335 11.7019 5.3335 11.3337C5.3335 10.9655 5.61158 10.667 5.95462 10.667H8.71245Z" fill="#C53434"/>
-<path d="M6.56658 2.6665C9.09779 2.66651 11.6362 2.78089 14.1588 3.00248C14.4687 3.02981 14.6949 3.27465 14.6641 3.54942C14.6333 3.82415 14.3571 4.02461 14.0471 3.99739C11.5606 3.77896 9.05955 3.66663 6.56658 3.66662C5.09632 3.66662 3.62549 3.73224 2.15494 3.86391L2.15347 3.86456L0.619014 3.99739C0.308966 4.02433 0.0331695 3.82359 0.00273493 3.54877C-0.0276619 3.27393 0.198797 3.02946 0.508833 3.00248L2.04182 2.86965V2.869C3.5498 2.73398 5.05831 2.6665 6.56658 2.6665Z" fill="#C53434"/>
-</svg>
+
+  <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12.7794 5.33417C13.1057 5.35399 13.3531 5.61848 13.3322 5.92538L12.8195 13.4058L12.8187 13.4087C12.7977 13.6919 12.7754 14.0051 12.7131 14.2959C12.6497 14.5924 12.538 14.9054 12.3114 15.1831C11.8368 15.7645 11.0283 15.9999 9.8673 15.9999H4.79865C3.63776 15.9998 2.8299 15.7644 2.3553 15.1831C2.12866 14.9054 2.01708 14.5924 1.95361 14.2959C1.89136 14.0051 1.8683 13.6919 1.84721 13.4087V13.4058L1.33448 5.92538C1.31361 5.61847 1.56106 5.35399 1.8873 5.33417C2.2135 5.31454 2.49462 5.54735 2.51568 5.85429L3.02917 13.3311L3.0631 13.738C3.07615 13.861 3.09257 13.9724 3.11475 14.0761C3.15783 14.2772 3.21724 14.4095 3.2944 14.5041C3.42768 14.6673 3.75715 14.8856 4.79865 14.8856H9.8673C10.909 14.8856 11.2382 14.6673 11.3716 14.5041C11.4488 14.4094 11.5089 14.2774 11.552 14.0761C11.5963 13.8689 11.6152 13.631 11.6376 13.3311L12.1503 5.85429C12.1713 5.5473 12.4532 5.31445 12.7794 5.33417Z" fill="#C53434" />
+    <path d="M8.36051 0C9.09379 0 9.66072 0.122492 10.0303 0.446217C10.3647 0.739263 10.4341 1.12601 10.4861 1.36894L10.6584 2.14429C10.7127 2.38791 10.497 2.61918 10.1766 2.66041C9.85637 2.70156 9.55296 2.53699 9.49876 2.29342L9.32564 1.51807V1.51574C9.26004 1.20972 9.21802 1.09961 9.14181 1.03282C9.09942 0.995746 8.9518 0.894765 8.36051 0.894765H6.30616C5.70526 0.894765 5.56208 0.99307 5.52409 1.02583C5.45191 1.08815 5.41164 1.19285 5.34102 1.51166L5.16791 2.29283C5.11411 2.53646 4.81113 2.70124 4.49079 2.66041C4.17038 2.61949 3.95441 2.38854 4.00822 2.14487L4.18057 1.3637V1.36312C4.23537 1.11562 4.30426 0.72502 4.64169 0.433984C5.01352 0.113316 5.58148 0 6.30616 0H8.36051Z" fill="#C53434" />
+    <path d="M10.0515 8C10.3914 8 10.6669 8.29848 10.6669 8.66668C10.6669 9.03488 10.3914 9.33336 10.0515 9.33336H5.94889C5.60902 9.33336 5.3335 9.03488 5.3335 8.66668C5.3335 8.29848 5.60902 8 5.94889 8H10.0515Z" fill="#C53434" />
+    <path d="M8.71245 10.667C9.05546 10.667 9.33357 10.9655 9.33357 11.3337C9.33357 11.7018 9.05546 12.0003 8.71245 12.0004H5.95462C5.61158 12.0004 5.3335 11.7019 5.3335 11.3337C5.3335 10.9655 5.61158 10.667 5.95462 10.667H8.71245Z" fill="#C53434" />
+    <path d="M6.56658 2.6665C9.09779 2.66651 11.6362 2.78089 14.1588 3.00248C14.4687 3.02981 14.6949 3.27465 14.6641 3.54942C14.6333 3.82415 14.3571 4.02461 14.0471 3.99739C11.5606 3.77896 9.05955 3.66663 6.56658 3.66662C5.09632 3.66662 3.62549 3.73224 2.15494 3.86391L2.15347 3.86456L0.619014 3.99739C0.308966 4.02433 0.0331695 3.82359 0.00273493 3.54877C-0.0276619 3.27393 0.198797 3.02946 0.508833 3.00248L2.04182 2.86965V2.869C3.5498 2.73398 5.05831 2.6665 6.56658 2.6665Z" fill="#C53434" />
+  </svg>
+
+)
+
+const DragIcon = ({ className }: { className?: string }) => (
+
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_975_5885)">
+      <path d="M10.2225 2.04798L8.30569 0.131142C8.2188 0.0442489 8.1029 -0.000238074 7.98309 2.20835e-05C7.86108 -0.00114863 7.74258 0.0442489 7.65568 0.131142L5.77838 2.00844C5.60252 2.18431 5.60252 2.47022 5.77838 2.64596L6.02046 2.88803C6.19021 3.05779 6.48653 3.05779 6.65642 2.88803L7.3751 2.16779V4.8145C7.3751 4.82257 7.37979 4.8292 7.38122 4.83675C7.40073 5.06738 7.59416 5.24988 7.82999 5.24988H8.1721C8.42068 5.24988 8.62503 5.048 8.62503 4.79941V4.50387C8.62503 4.50257 8.62503 4.50166 8.62503 4.50062V2.20707L9.34398 2.92745C9.51984 3.10332 9.80511 3.10332 9.98084 2.92745L10.2225 2.68563C10.3984 2.50963 10.3984 2.22359 10.2225 2.04798Z" fill="#566273" />
+      <path d="M10.2219 13.3148L9.98 13.0723C9.81024 12.9023 9.51379 12.9023 9.34378 13.0723L8.62484 13.7927V11.5093C8.62484 11.508 8.62484 11.5072 8.62484 11.506V11.2105C8.62484 10.9618 8.42035 10.75 8.17203 10.75H7.82966C7.59409 10.75 7.40066 10.9372 7.38102 11.1681C7.37959 11.1757 7.37491 11.1875 7.37491 11.1954V13.8322L6.65622 13.112C6.48634 12.9421 6.18937 12.9421 6.01949 13.112L5.77754 13.354C5.60193 13.5298 5.60219 13.8158 5.77806 13.9917L7.65549 15.8689C7.74017 15.9538 7.85321 16 7.96989 16H7.9868C8.10764 16 8.22042 15.9539 8.30523 15.8689L10.2219 13.9522C10.3978 13.7764 10.3978 13.4905 10.2219 13.3148Z" fill="#566273" />
+      <path d="M4.78873 7.37508H4.75023H4.49176C4.49085 7.37508 4.48994 7.37508 4.4889 7.37508H2.21642L2.9368 6.6586C3.02174 6.57379 3.06844 6.46244 3.06844 6.34186C3.06844 6.22115 3.02174 6.10889 2.9368 6.02421L2.69472 5.78265C2.51885 5.60678 2.23281 5.60704 2.0572 5.78291L0.14036 7.69962C0.0534676 7.78638 0.00702948 7.90281 0.0093709 8.02222C0.0068994 8.14644 0.0534676 8.26273 0.14036 8.34963L2.01766 10.2271C2.10559 10.315 2.22097 10.359 2.33648 10.359C2.45199 10.359 2.56737 10.315 2.65531 10.2271L2.89725 9.98511C2.98219 9.9003 3.02902 9.787 3.02902 9.66642C3.02902 9.5457 2.98232 9.43123 2.89725 9.34655L2.17714 8.62513H4.80239C4.81032 8.62513 4.82333 8.62318 4.83088 8.62175C5.06164 8.60224 5.25012 8.41141 5.25012 8.17571V7.83308C5.25012 7.58476 5.03731 7.37508 4.78873 7.37508Z" fill="#566273" />
+      <path d="M15.8596 7.69936L13.9428 5.78278C13.7671 5.60691 13.481 5.60691 13.3053 5.78278L13.0635 6.02486C12.9785 6.10954 12.9317 6.22284 12.9317 6.34342C12.9317 6.46413 12.9784 6.5734 13.0635 6.65821L13.7837 7.37469H11.4967C11.4955 7.37469 11.4946 7.37469 11.4935 7.37469H11.1981C10.9495 7.37469 10.75 7.58424 10.75 7.83269V8.17532C10.75 8.41102 10.9309 8.60159 11.1618 8.62123C11.1695 8.62279 11.1751 8.62474 11.1829 8.62474H13.8231L13.1026 9.34603C13.0178 9.43071 12.971 9.54492 12.971 9.66525C12.971 9.78609 13.0177 9.89965 13.1026 9.98446L13.3448 10.2265C13.4326 10.3145 13.548 10.3586 13.6635 10.3586C13.779 10.3586 13.8943 10.3146 13.9822 10.2267L15.8598 8.34924C15.9464 8.2626 15.9928 8.14618 15.9907 8.02664C15.9927 7.90242 15.9463 7.78599 15.8596 7.69936Z" fill="#566273" />
+      <path d="M8.00009 6.74902C7.31054 6.74902 6.74951 7.31005 6.74951 7.99973C6.74951 8.68928 7.31054 9.25044 8.00009 9.25044C8.68964 9.25044 9.2508 8.68928 9.2508 7.99973C9.2508 7.31005 8.68964 6.74902 8.00009 6.74902Z" fill="#566273" />
+    </g>
+    <defs>
+      <clipPath id="clip0_975_5885">
+        <rect width="16" height="16" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
 
 )
 
@@ -3600,34 +3724,34 @@ const UploadIcon = ({ className }: { className?: string }) => (
 )
 
 const ImageToolbarIcon = ({ className }: { className?: string }) => (
- 
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M9.75 8.23438H22.25C22.652 8.23438 23.0371 8.39448 23.3213 8.67871C23.6055 8.96295 23.7656 9.34803 23.7656 9.75V22.25C23.7656 22.652 23.6055 23.0371 23.3213 23.3213C23.0371 23.6055 22.652 23.7656 22.25 23.7656H9.75C9.34803 23.7656 8.96295 23.6055 8.67871 23.3213C8.39448 23.0371 8.23438 22.652 8.23438 22.25V9.75C8.23438 9.34803 8.39448 8.96295 8.67871 8.67871C8.96295 8.39448 9.34803 8.23438 9.75 8.23438ZM10.0156 22.0283L10.0957 21.9492L18.3662 13.6787C18.6504 13.3946 19.0356 13.2344 19.4375 13.2344C19.8394 13.2344 20.2246 13.3946 20.5088 13.6787L21.9043 15.0742L21.9844 15.1533V10.0156H10.0156V22.0283ZM12.9199 12.0996C13.1969 11.9849 13.5019 11.9552 13.7959 12.0137C14.0898 12.0722 14.3594 12.2168 14.5713 12.4287C14.7832 12.6406 14.9278 12.9102 14.9863 13.2041C15.0448 13.4981 15.0151 13.8031 14.9004 14.0801C14.7857 14.357 14.591 14.5932 14.3418 14.7598C14.0926 14.9263 13.7998 15.0156 13.5 15.0156C13.098 15.0156 12.7129 14.8555 12.4287 14.5713C12.1445 14.2871 11.9844 13.902 11.9844 13.5C11.9844 13.2002 12.0737 12.9074 12.2402 12.6582C12.4068 12.409 12.643 12.2143 12.9199 12.0996ZM21.9844 17.6729L19.4375 15.126L12.5791 21.9844H21.9844V17.6729Z" fill="#475569" stroke="#475569" stroke-width="0.09375"/>
-</svg>
+
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.75 8.23438H22.25C22.652 8.23438 23.0371 8.39448 23.3213 8.67871C23.6055 8.96295 23.7656 9.34803 23.7656 9.75V22.25C23.7656 22.652 23.6055 23.0371 23.3213 23.3213C23.0371 23.6055 22.652 23.7656 22.25 23.7656H9.75C9.34803 23.7656 8.96295 23.6055 8.67871 23.3213C8.39448 23.0371 8.23438 22.652 8.23438 22.25V9.75C8.23438 9.34803 8.39448 8.96295 8.67871 8.67871C8.96295 8.39448 9.34803 8.23438 9.75 8.23438ZM10.0156 22.0283L10.0957 21.9492L18.3662 13.6787C18.6504 13.3946 19.0356 13.2344 19.4375 13.2344C19.8394 13.2344 20.2246 13.3946 20.5088 13.6787L21.9043 15.0742L21.9844 15.1533V10.0156H10.0156V22.0283ZM12.9199 12.0996C13.1969 11.9849 13.5019 11.9552 13.7959 12.0137C14.0898 12.0722 14.3594 12.2168 14.5713 12.4287C14.7832 12.6406 14.9278 12.9102 14.9863 13.2041C15.0448 13.4981 15.0151 13.8031 14.9004 14.0801C14.7857 14.357 14.591 14.5932 14.3418 14.7598C14.0926 14.9263 13.7998 15.0156 13.5 15.0156C13.098 15.0156 12.7129 14.8555 12.4287 14.5713C12.1445 14.2871 11.9844 13.902 11.9844 13.5C11.9844 13.2002 12.0737 12.9074 12.2402 12.6582C12.4068 12.409 12.643 12.2143 12.9199 12.0996ZM21.9844 17.6729L19.4375 15.126L12.5791 21.9844H21.9844V17.6729Z" fill="#475569" stroke="#475569" stroke-width="0.09375" />
+  </svg>
 
 )
 
 const UploadToolbarIcon = ({ className }: { className?: string }) => (
 
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.5 15.1094H11.9375C12.1737 15.1094 12.4004 15.2031 12.5674 15.3701C12.7343 15.5371 12.8281 15.7638 12.8281 16C12.8281 16.2361 12.7344 16.4629 12.5674 16.6299C12.4004 16.7968 12.1737 16.8906 11.9375 16.8906H8.76562V21.3594H23.2344V16.8906H20.0625C19.8263 16.8906 19.5996 16.7968 19.4326 16.6299C19.2656 16.4629 19.1719 16.2361 19.1719 16C19.1719 15.7638 19.2657 15.5371 19.4326 15.3701C19.5996 15.2031 19.8263 15.1094 20.0625 15.1094H23.5C23.9018 15.1094 24.2871 15.2687 24.5713 15.5527C24.8555 15.837 25.0156 16.223 25.0156 16.625V21.625C25.0156 22.0269 24.8555 22.4121 24.5713 22.6963C24.2871 22.9805 23.9019 23.1406 23.5 23.1406H8.5C8.09809 23.1406 7.71293 22.9805 7.42871 22.6963C7.14453 22.4121 6.98444 22.0269 6.98438 21.625V16.625C6.98438 16.223 7.14448 15.837 7.42871 15.5527C7.71291 15.2687 8.09821 15.1094 8.5 15.1094ZM20.4531 17.9443C20.6863 17.898 20.9278 17.9227 21.1475 18.0137C21.3672 18.1047 21.5553 18.2584 21.6875 18.4561C21.8197 18.6539 21.8906 18.887 21.8906 19.125C21.8906 19.444 21.7637 19.75 21.5381 19.9756C21.3125 20.2011 21.0065 20.3281 20.6875 20.3281C20.4496 20.3281 20.2173 20.2571 20.0195 20.125C19.8217 19.9928 19.6672 19.8048 19.5762 19.585C19.4851 19.3651 19.4614 19.123 19.5078 18.8896C19.5543 18.6565 19.6688 18.4425 19.8369 18.2744C20.0052 18.1062 20.2197 17.9908 20.4531 17.9443ZM16.001 6.9834C16.1181 6.98342 16.2346 7.00683 16.3428 7.05176C16.4508 7.0967 16.5492 7.16222 16.6318 7.24512L20.3818 10.9951C20.4647 11.078 20.5304 11.1769 20.5752 11.2852C20.6199 11.3932 20.6425 11.509 20.6426 11.626C20.6426 11.7431 20.62 11.8595 20.5752 11.9678C20.5304 12.0759 20.4646 12.174 20.3818 12.2568C20.299 12.3397 20.2 12.4054 20.0918 12.4502C19.9837 12.495 19.868 12.5185 19.751 12.5186C19.6338 12.5186 19.5174 12.495 19.4092 12.4502C19.301 12.4054 19.2029 12.3396 19.1201 12.2568L16.8906 10.0273V16C16.8906 16.2361 16.7969 16.4629 16.6299 16.6299C16.4629 16.7968 16.2362 16.8906 16 16.8906C15.7638 16.8906 15.5371 16.7968 15.3701 16.6299C15.2031 16.4629 15.1094 16.2361 15.1094 16V10.0273L15.0293 10.1074L12.8799 12.2549L12.8525 12.2822C12.6884 12.4329 12.4747 12.5185 12.251 12.5186C12.0143 12.5186 11.7874 12.4242 11.6201 12.2568C11.4528 12.0895 11.3584 11.8626 11.3584 11.626C11.3584 11.509 11.382 11.3933 11.4268 11.2852C11.4716 11.1769 11.5373 11.078 11.6201 10.9951L15.3701 7.24512C15.4528 7.16223 15.5511 7.09667 15.6592 7.05176C15.7674 7.00681 15.8838 6.9834 16.001 6.9834Z" fill="#475569" stroke="#475569" stroke-width="0.09375"/>
-</svg>
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8.5 15.1094H11.9375C12.1737 15.1094 12.4004 15.2031 12.5674 15.3701C12.7343 15.5371 12.8281 15.7638 12.8281 16C12.8281 16.2361 12.7344 16.4629 12.5674 16.6299C12.4004 16.7968 12.1737 16.8906 11.9375 16.8906H8.76562V21.3594H23.2344V16.8906H20.0625C19.8263 16.8906 19.5996 16.7968 19.4326 16.6299C19.2656 16.4629 19.1719 16.2361 19.1719 16C19.1719 15.7638 19.2657 15.5371 19.4326 15.3701C19.5996 15.2031 19.8263 15.1094 20.0625 15.1094H23.5C23.9018 15.1094 24.2871 15.2687 24.5713 15.5527C24.8555 15.837 25.0156 16.223 25.0156 16.625V21.625C25.0156 22.0269 24.8555 22.4121 24.5713 22.6963C24.2871 22.9805 23.9019 23.1406 23.5 23.1406H8.5C8.09809 23.1406 7.71293 22.9805 7.42871 22.6963C7.14453 22.4121 6.98444 22.0269 6.98438 21.625V16.625C6.98438 16.223 7.14448 15.837 7.42871 15.5527C7.71291 15.2687 8.09821 15.1094 8.5 15.1094ZM20.4531 17.9443C20.6863 17.898 20.9278 17.9227 21.1475 18.0137C21.3672 18.1047 21.5553 18.2584 21.6875 18.4561C21.8197 18.6539 21.8906 18.887 21.8906 19.125C21.8906 19.444 21.7637 19.75 21.5381 19.9756C21.3125 20.2011 21.0065 20.3281 20.6875 20.3281C20.4496 20.3281 20.2173 20.2571 20.0195 20.125C19.8217 19.9928 19.6672 19.8048 19.5762 19.585C19.4851 19.3651 19.4614 19.123 19.5078 18.8896C19.5543 18.6565 19.6688 18.4425 19.8369 18.2744C20.0052 18.1062 20.2197 17.9908 20.4531 17.9443ZM16.001 6.9834C16.1181 6.98342 16.2346 7.00683 16.3428 7.05176C16.4508 7.0967 16.5492 7.16222 16.6318 7.24512L20.3818 10.9951C20.4647 11.078 20.5304 11.1769 20.5752 11.2852C20.6199 11.3932 20.6425 11.509 20.6426 11.626C20.6426 11.7431 20.62 11.8595 20.5752 11.9678C20.5304 12.0759 20.4646 12.174 20.3818 12.2568C20.299 12.3397 20.2 12.4054 20.0918 12.4502C19.9837 12.495 19.868 12.5185 19.751 12.5186C19.6338 12.5186 19.5174 12.495 19.4092 12.4502C19.301 12.4054 19.2029 12.3396 19.1201 12.2568L16.8906 10.0273V16C16.8906 16.2361 16.7969 16.4629 16.6299 16.6299C16.4629 16.7968 16.2362 16.8906 16 16.8906C15.7638 16.8906 15.5371 16.7968 15.3701 16.6299C15.2031 16.4629 15.1094 16.2361 15.1094 16V10.0273L15.0293 10.1074L12.8799 12.2549L12.8525 12.2822C12.6884 12.4329 12.4747 12.5185 12.251 12.5186C12.0143 12.5186 11.7874 12.4242 11.6201 12.2568C11.4528 12.0895 11.3584 11.8626 11.3584 11.626C11.3584 11.509 11.382 11.3933 11.4268 11.2852C11.4716 11.1769 11.5373 11.078 11.6201 10.9951L15.3701 7.24512C15.4528 7.16223 15.5511 7.09667 15.6592 7.05176C15.7674 7.00681 15.8838 6.9834 16.001 6.9834Z" fill="#475569" stroke="#475569" stroke-width="0.09375" />
+  </svg>
 
 )
 
 const TextToolbarIcon = ({ className }: { className?: string }) => (
-  
-<svg width="59" height="20" viewBox="0 0 59 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_1010_7680)">
-<path d="M16.5625 4.375V6.875C16.5625 7.12364 16.4637 7.3621 16.2879 7.53791C16.1121 7.71373 15.8736 7.8125 15.625 7.8125C15.3764 7.8125 15.1379 7.71373 14.9621 7.53791C14.7863 7.3621 14.6875 7.12364 14.6875 6.875V5.3125H10.9375V14.6875H12.5C12.7486 14.6875 12.9871 14.7863 13.1629 14.9621C13.3387 15.1379 13.4375 15.3764 13.4375 15.625C13.4375 15.8736 13.3387 16.1121 13.1629 16.2879C12.9871 16.4637 12.7486 16.5625 12.5 16.5625H7.5C7.25136 16.5625 7.0129 16.4637 6.83709 16.2879C6.66127 16.1121 6.5625 15.8736 6.5625 15.625C6.5625 15.3764 6.66127 15.1379 6.83709 14.9621C7.0129 14.7863 7.25136 14.6875 7.5 14.6875H9.0625V5.3125H5.3125V6.875C5.3125 7.12364 5.21373 7.3621 5.03791 7.53791C4.8621 7.71373 4.62364 7.8125 4.375 7.8125C4.12636 7.8125 3.8879 7.71373 3.71209 7.53791C3.53627 7.3621 3.4375 7.12364 3.4375 6.875V4.375C3.4375 4.12636 3.53627 3.8879 3.71209 3.71209C3.8879 3.53627 4.12636 3.4375 4.375 3.4375H15.625C15.8736 3.4375 16.1121 3.53627 16.2879 3.71209C16.4637 3.8879 16.5625 4.12636 16.5625 4.375Z" fill="#475569"/>
-<path d="M30.856 16V7.25H28.154V5.57H35.434V7.25H32.774V16H30.856ZM37.8339 16.168C37.3019 16.168 36.8399 16.0793 36.4479 15.902C36.0559 15.7247 35.7526 15.4727 35.5379 15.146C35.3232 14.81 35.2159 14.4227 35.2159 13.984C35.2159 13.564 35.3092 13.1907 35.4959 12.864C35.6826 12.528 35.9719 12.248 36.3639 12.024C36.7559 11.8 37.2506 11.6413 37.8479 11.548L40.3399 11.142V12.542L38.1979 12.906C37.8339 12.9713 37.5632 13.088 37.3859 13.256C37.2086 13.424 37.1199 13.6433 37.1199 13.914C37.1199 14.1753 37.2179 14.3853 37.4139 14.544C37.6192 14.6933 37.8712 14.768 38.1699 14.768C38.5526 14.768 38.8886 14.6887 39.1779 14.53C39.4766 14.362 39.7052 14.1333 39.8639 13.844C40.0319 13.5547 40.1159 13.2373 40.1159 12.892V10.932C40.1159 10.6053 39.9852 10.3347 39.7239 10.12C39.4719 9.896 39.1359 9.784 38.7159 9.784C38.3239 9.784 37.9739 9.89133 37.6659 10.106C37.3672 10.3113 37.1479 10.5867 37.0079 10.932L35.5099 10.204C35.6592 9.80267 35.8926 9.45733 36.2099 9.168C36.5366 8.86933 36.9192 8.636 37.3579 8.468C37.7966 8.3 38.2726 8.216 38.7859 8.216C39.4112 8.216 39.9619 8.33267 40.4379 8.566C40.9139 8.79 41.2826 9.10733 41.5439 9.518C41.8146 9.91933 41.9499 10.3907 41.9499 10.932V16H40.2139V14.698L40.6059 14.67C40.4099 14.9967 40.1766 15.272 39.9059 15.496C39.6352 15.7107 39.3272 15.8787 38.9819 16C38.6366 16.112 38.2539 16.168 37.8339 16.168ZM47.257 19.08C46.6877 19.08 46.1603 18.9867 45.675 18.8C45.1897 18.6133 44.7697 18.352 44.415 18.016C44.0697 17.6893 43.8177 17.302 43.659 16.854L45.367 16.21C45.479 16.5647 45.6983 16.8493 46.025 17.064C46.361 17.288 46.7717 17.4 47.257 17.4C47.6303 17.4 47.957 17.33 48.237 17.19C48.5263 17.05 48.7503 16.8447 48.909 16.574C49.0677 16.3127 49.147 15.9953 49.147 15.622V13.886L49.497 14.306C49.2357 14.7633 48.8857 15.1087 48.447 15.342C48.0083 15.5753 47.509 15.692 46.949 15.692C46.2397 15.692 45.605 15.5287 45.045 15.202C44.485 14.8753 44.0463 14.4273 43.729 13.858C43.4117 13.2887 43.253 12.6493 43.253 11.94C43.253 11.2213 43.4117 10.582 43.729 10.022C44.0463 9.462 44.4803 9.02333 45.031 8.706C45.5817 8.37933 46.207 8.216 46.907 8.216C47.4763 8.216 47.9757 8.33733 48.405 8.58C48.8437 8.81333 49.2077 9.154 49.497 9.602L49.245 10.064V8.384H50.981V15.622C50.981 16.2847 50.8177 16.8773 50.491 17.4C50.1737 17.9227 49.735 18.3333 49.175 18.632C48.6243 18.9307 47.985 19.08 47.257 19.08ZM47.173 13.998C47.565 13.998 47.9057 13.914 48.195 13.746C48.4937 13.5687 48.727 13.326 48.895 13.018C49.063 12.71 49.147 12.3553 49.147 11.954C49.147 11.562 49.0583 11.212 48.881 10.904C48.713 10.5867 48.4797 10.3393 48.181 10.162C47.8917 9.98467 47.5557 9.896 47.173 9.896C46.7903 9.896 46.445 9.98467 46.137 10.162C45.829 10.3393 45.5863 10.5867 45.409 10.904C45.241 11.212 45.157 11.562 45.157 11.954C45.157 12.346 45.241 12.696 45.409 13.004C45.5863 13.312 45.8243 13.5547 46.123 13.732C46.431 13.9093 46.781 13.998 47.173 13.998ZM55.5078 16.168C54.6958 16.168 53.9865 15.9767 53.3798 15.594C52.7825 15.202 52.3718 14.6747 52.1478 14.012L53.5198 13.354C53.7158 13.7833 53.9865 14.1193 54.3318 14.362C54.6865 14.6047 55.0785 14.726 55.5078 14.726C55.8438 14.726 56.1098 14.6513 56.3058 14.502C56.5018 14.3527 56.5998 14.1567 56.5998 13.914C56.5998 13.7647 56.5578 13.6433 56.4738 13.55C56.3991 13.4473 56.2918 13.3633 56.1518 13.298C56.0211 13.2233 55.8765 13.1627 55.7178 13.116L54.4718 12.766C53.8278 12.5793 53.3378 12.2947 53.0018 11.912C52.6751 11.5293 52.5118 11.0767 52.5118 10.554C52.5118 10.0873 52.6285 9.68133 52.8618 9.336C53.1045 8.98133 53.4358 8.706 53.8558 8.51C54.2851 8.314 54.7751 8.216 55.3258 8.216C56.0445 8.216 56.6791 8.38867 57.2298 8.734C57.7805 9.07933 58.1725 9.56467 58.4058 10.19L57.0058 10.848C56.8751 10.5027 56.6558 10.2273 56.3478 10.022C56.0398 9.81667 55.6945 9.714 55.3118 9.714C55.0038 9.714 54.7611 9.784 54.5838 9.924C54.4065 10.064 54.3178 10.246 54.3178 10.47C54.3178 10.61 54.3551 10.7313 54.4298 10.834C54.5045 10.9367 54.6071 11.0207 54.7378 11.086C54.8778 11.1513 55.0365 11.212 55.2138 11.268L56.4318 11.632C57.0571 11.8187 57.5378 12.0987 57.8738 12.472C58.2191 12.8453 58.3918 13.3027 58.3918 13.844C58.3918 14.3013 58.2705 14.7073 58.0278 15.062C57.7851 15.4073 57.4491 15.678 57.0198 15.874C56.5905 16.07 56.0865 16.168 55.5078 16.168Z" fill="#475569"/>
-</g>
-<defs>
-<clipPath id="clip0_1010_7680">
-<rect width="59" height="20" fill="white"/>
-</clipPath>
-</defs>
-</svg>
+
+  <svg width="59" height="20" viewBox="0 0 59 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_1010_7680)">
+      <path d="M16.5625 4.375V6.875C16.5625 7.12364 16.4637 7.3621 16.2879 7.53791C16.1121 7.71373 15.8736 7.8125 15.625 7.8125C15.3764 7.8125 15.1379 7.71373 14.9621 7.53791C14.7863 7.3621 14.6875 7.12364 14.6875 6.875V5.3125H10.9375V14.6875H12.5C12.7486 14.6875 12.9871 14.7863 13.1629 14.9621C13.3387 15.1379 13.4375 15.3764 13.4375 15.625C13.4375 15.8736 13.3387 16.1121 13.1629 16.2879C12.9871 16.4637 12.7486 16.5625 12.5 16.5625H7.5C7.25136 16.5625 7.0129 16.4637 6.83709 16.2879C6.66127 16.1121 6.5625 15.8736 6.5625 15.625C6.5625 15.3764 6.66127 15.1379 6.83709 14.9621C7.0129 14.7863 7.25136 14.6875 7.5 14.6875H9.0625V5.3125H5.3125V6.875C5.3125 7.12364 5.21373 7.3621 5.03791 7.53791C4.8621 7.71373 4.62364 7.8125 4.375 7.8125C4.12636 7.8125 3.8879 7.71373 3.71209 7.53791C3.53627 7.3621 3.4375 7.12364 3.4375 6.875V4.375C3.4375 4.12636 3.53627 3.8879 3.71209 3.71209C3.8879 3.53627 4.12636 3.4375 4.375 3.4375H15.625C15.8736 3.4375 16.1121 3.53627 16.2879 3.71209C16.4637 3.8879 16.5625 4.12636 16.5625 4.375Z" fill="#475569" />
+      <path d="M30.856 16V7.25H28.154V5.57H35.434V7.25H32.774V16H30.856ZM37.8339 16.168C37.3019 16.168 36.8399 16.0793 36.4479 15.902C36.0559 15.7247 35.7526 15.4727 35.5379 15.146C35.3232 14.81 35.2159 14.4227 35.2159 13.984C35.2159 13.564 35.3092 13.1907 35.4959 12.864C35.6826 12.528 35.9719 12.248 36.3639 12.024C36.7559 11.8 37.2506 11.6413 37.8479 11.548L40.3399 11.142V12.542L38.1979 12.906C37.8339 12.9713 37.5632 13.088 37.3859 13.256C37.2086 13.424 37.1199 13.6433 37.1199 13.914C37.1199 14.1753 37.2179 14.3853 37.4139 14.544C37.6192 14.6933 37.8712 14.768 38.1699 14.768C38.5526 14.768 38.8886 14.6887 39.1779 14.53C39.4766 14.362 39.7052 14.1333 39.8639 13.844C40.0319 13.5547 40.1159 13.2373 40.1159 12.892V10.932C40.1159 10.6053 39.9852 10.3347 39.7239 10.12C39.4719 9.896 39.1359 9.784 38.7159 9.784C38.3239 9.784 37.9739 9.89133 37.6659 10.106C37.3672 10.3113 37.1479 10.5867 37.0079 10.932L35.5099 10.204C35.6592 9.80267 35.8926 9.45733 36.2099 9.168C36.5366 8.86933 36.9192 8.636 37.3579 8.468C37.7966 8.3 38.2726 8.216 38.7859 8.216C39.4112 8.216 39.9619 8.33267 40.4379 8.566C40.9139 8.79 41.2826 9.10733 41.5439 9.518C41.8146 9.91933 41.9499 10.3907 41.9499 10.932V16H40.2139V14.698L40.6059 14.67C40.4099 14.9967 40.1766 15.272 39.9059 15.496C39.6352 15.7107 39.3272 15.8787 38.9819 16C38.6366 16.112 38.2539 16.168 37.8339 16.168ZM47.257 19.08C46.6877 19.08 46.1603 18.9867 45.675 18.8C45.1897 18.6133 44.7697 18.352 44.415 18.016C44.0697 17.6893 43.8177 17.302 43.659 16.854L45.367 16.21C45.479 16.5647 45.6983 16.8493 46.025 17.064C46.361 17.288 46.7717 17.4 47.257 17.4C47.6303 17.4 47.957 17.33 48.237 17.19C48.5263 17.05 48.7503 16.8447 48.909 16.574C49.0677 16.3127 49.147 15.9953 49.147 15.622V13.886L49.497 14.306C49.2357 14.7633 48.8857 15.1087 48.447 15.342C48.0083 15.5753 47.509 15.692 46.949 15.692C46.2397 15.692 45.605 15.5287 45.045 15.202C44.485 14.8753 44.0463 14.4273 43.729 13.858C43.4117 13.2887 43.253 12.6493 43.253 11.94C43.253 11.2213 43.4117 10.582 43.729 10.022C44.0463 9.462 44.4803 9.02333 45.031 8.706C45.5817 8.37933 46.207 8.216 46.907 8.216C47.4763 8.216 47.9757 8.33733 48.405 8.58C48.8437 8.81333 49.2077 9.154 49.497 9.602L49.245 10.064V8.384H50.981V15.622C50.981 16.2847 50.8177 16.8773 50.491 17.4C50.1737 17.9227 49.735 18.3333 49.175 18.632C48.6243 18.9307 47.985 19.08 47.257 19.08ZM47.173 13.998C47.565 13.998 47.9057 13.914 48.195 13.746C48.4937 13.5687 48.727 13.326 48.895 13.018C49.063 12.71 49.147 12.3553 49.147 11.954C49.147 11.562 49.0583 11.212 48.881 10.904C48.713 10.5867 48.4797 10.3393 48.181 10.162C47.8917 9.98467 47.5557 9.896 47.173 9.896C46.7903 9.896 46.445 9.98467 46.137 10.162C45.829 10.3393 45.5863 10.5867 45.409 10.904C45.241 11.212 45.157 11.562 45.157 11.954C45.157 12.346 45.241 12.696 45.409 13.004C45.5863 13.312 45.8243 13.5547 46.123 13.732C46.431 13.9093 46.781 13.998 47.173 13.998ZM55.5078 16.168C54.6958 16.168 53.9865 15.9767 53.3798 15.594C52.7825 15.202 52.3718 14.6747 52.1478 14.012L53.5198 13.354C53.7158 13.7833 53.9865 14.1193 54.3318 14.362C54.6865 14.6047 55.0785 14.726 55.5078 14.726C55.8438 14.726 56.1098 14.6513 56.3058 14.502C56.5018 14.3527 56.5998 14.1567 56.5998 13.914C56.5998 13.7647 56.5578 13.6433 56.4738 13.55C56.3991 13.4473 56.2918 13.3633 56.1518 13.298C56.0211 13.2233 55.8765 13.1627 55.7178 13.116L54.4718 12.766C53.8278 12.5793 53.3378 12.2947 53.0018 11.912C52.6751 11.5293 52.5118 11.0767 52.5118 10.554C52.5118 10.0873 52.6285 9.68133 52.8618 9.336C53.1045 8.98133 53.4358 8.706 53.8558 8.51C54.2851 8.314 54.7751 8.216 55.3258 8.216C56.0445 8.216 56.6791 8.38867 57.2298 8.734C57.7805 9.07933 58.1725 9.56467 58.4058 10.19L57.0058 10.848C56.8751 10.5027 56.6558 10.2273 56.3478 10.022C56.0398 9.81667 55.6945 9.714 55.3118 9.714C55.0038 9.714 54.7611 9.784 54.5838 9.924C54.4065 10.064 54.3178 10.246 54.3178 10.47C54.3178 10.61 54.3551 10.7313 54.4298 10.834C54.5045 10.9367 54.6071 11.0207 54.7378 11.086C54.8778 11.1513 55.0365 11.212 55.2138 11.268L56.4318 11.632C57.0571 11.8187 57.5378 12.0987 57.8738 12.472C58.2191 12.8453 58.3918 13.3027 58.3918 13.844C58.3918 14.3013 58.2705 14.7073 58.0278 15.062C57.7851 15.4073 57.4491 15.678 57.0198 15.874C56.5905 16.07 56.0865 16.168 55.5078 16.168Z" fill="#475569" />
+    </g>
+    <defs>
+      <clipPath id="clip0_1010_7680">
+        <rect width="59" height="20" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
 
 )
 
