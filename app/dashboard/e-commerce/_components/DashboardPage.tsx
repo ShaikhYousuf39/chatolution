@@ -114,6 +114,12 @@ type ResourceData = {
   fileUrl: string | null
 }
 
+type PromptData = {
+  id: string
+  title: string
+  answer: string
+}
+
 type SidebarLink = {
   label: string
   icon: ({ className }: { className?: string }) => React.ReactElement
@@ -453,6 +459,12 @@ const createResource = (): ResourceData => ({
   fileUrl: null,
 })
 
+const createPrompt = (): PromptData => ({
+  id: Math.random().toString(36).slice(2),
+  title: '',
+  answer: '',
+})
+
 const DashboardPage = () => {
   const router = useRouter()
   const pathname = usePathname()
@@ -479,6 +491,33 @@ const DashboardPage = () => {
   const [productCategories, setProductCategories] = useState(['Men', 'Women', 'Kids'])
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
+  const [categoryRows, setCategoryRows] = useState([
+    {
+      name: 'Men',
+      description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      count: 3,
+    },
+    {
+      name: 'Women',
+      description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, labore et dolore magna aliqua.',
+      count: 2,
+    },
+    {
+      name: 'Kids',
+      description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, labore et dolore magna aliqua.',
+      count: 4,
+    },
+  ])
+  const [categoryName, setCategoryName] = useState('')
+  const [categoryDescription, setCategoryDescription] = useState('')
+  const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null)
+  const [readyPrompts, setReadyPrompts] = useState<PromptData[]>([
+    createPrompt(),
+    createPrompt(),
+  ])
   const editorRef = useRef<HTMLDivElement | null>(null)
   const returnsPolicyRef = useRef<HTMLDivElement | null>(null)
   const refundsPolicyRef = useRef<HTMLDivElement | null>(null)
@@ -528,6 +567,7 @@ const DashboardPage = () => {
 
   const activeSidebarSection = (() => {
     if (pathname?.startsWith('/dashboard/e-commerce/products')) return 'Product'
+    if (pathname?.startsWith('/dashboard/e-commerce/categories')) return 'Categories'
     if (pathname?.startsWith('/dashboard/e-commerce/accreditation')) return 'Accreditation'
     if (pathname?.startsWith('/dashboard/e-commerce/testimonials')) return 'Testimonials'
     if (pathname?.startsWith('/dashboard/e-commerce/forms')) return 'Forms'
@@ -536,6 +576,7 @@ const DashboardPage = () => {
   })()
   const sidebarRoutes: Record<string, string> = {
     Content: '/dashboard/e-commerce/content',
+    Categories: '/dashboard/e-commerce/categories',
     Accreditation: '/dashboard/e-commerce/accreditation',
     Testimonials: '/dashboard/e-commerce/testimonials',
     Forms: '/dashboard/e-commerce/forms',
@@ -589,9 +630,17 @@ const DashboardPage = () => {
     })
   }
 
+  const addReadyPrompt = () => {
+    setReadyPrompts((prev) => [...prev, createPrompt()])
+  }
+
+  const updateReadyPrompt = (id: string, updates: Partial<PromptData>) => {
+    setReadyPrompts((prev) => prev.map((prompt) => (prompt.id === id ? { ...prompt, ...updates } : prompt)))
+  }
+
   // Accreditation state
   const [accreditationEditorContent, setAccreditationEditorContent] = useState('')
-  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard(), createCard()])
+  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard()])
 
   // Testimonials state
   const [testimonials, setTestimonials] = useState<TestimonialData[]>([createTestimonial()])
@@ -1141,7 +1190,7 @@ const DashboardPage = () => {
           sidebarRoutes={sidebarRoutes}
         />
 
-        <main className="flex flex-1 flex-col overflow-y-auto px-10 py-6">
+        <main className="flex flex-1 flex-col overflow-y-auto px-10 py-4">
           {activeSidebarSection === 'Content' && (
             <>
               <div className="hidden flex items-center gap-2 text-sm text-slate-600">
@@ -1477,6 +1526,58 @@ const DashboardPage = () => {
                       )}
                     </>
                   )
+                )}
+
+                {(activeTab === 'Welcome message' || activeTab === 'Portfolio') && (
+                  <div className="mt-8">
+                    <h2 className="text-sm font-semibold text-slate-900">Ready Prompt</h2>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Select a ready-made prompt or add a custom one to define your chatbot’s behavior.
+                    </p>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {readyPrompts.map((prompt) => (
+                        <div
+                          key={prompt.id}
+                          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                          <label className="text-xs font-semibold text-slate-600">Prompt title</label>
+                          <input
+                            value={prompt.title}
+                            onChange={(event) =>
+                              updateReadyPrompt(prompt.id, { title: event.target.value })
+                            }
+                            placeholder="Write title..."
+                            className="mt-2 h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <label className="mt-4 block text-xs font-semibold text-slate-600">
+                            Prompt answer
+                          </label>
+                          <textarea
+                            value={prompt.answer}
+                            onChange={(event) =>
+                              updateReadyPrompt(prompt.id, { answer: event.target.value })
+                            }
+                            placeholder="Write answer..."
+                            className="mt-2 min-h-[96px] w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
+                          />
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={addReadyPrompt}
+                        className="flex h-full min-h-[190px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-300 bg-white p-4 text-xs font-semibold text-slate-500 transition hover:bg-blue-50"
+                      >
+                        <div className="grid h-10 w-10 place-items-center rounded-full  text-blue-600">
+                          <AddTabIcon className="h-5 w-5" />
+                        </div>
+                        <span className="text-center text-[11px] font-medium text-slate-500">
+                          Want to showcase more?
+                          <br />
+                          Add another prompt!
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {(activeTab === 'Portfolio' || activeTab === 'Services') && (
@@ -2428,6 +2529,159 @@ const DashboardPage = () => {
             </div>
           )}
 
+          {activeSidebarSection === 'Categories' && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-xl font-semibold text-slate-900">Categories</h1>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-sm font-semibold text-slate-900">Add New Category</h2>
+
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600">
+                      Category Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      value={categoryName}
+                      onChange={(event) => setCategoryName(event.target.value)}
+                      placeholder="Unisex"
+                      className="mt-2 h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600">Description</label>
+                    <textarea
+                      value={categoryDescription}
+                      onChange={(event) => setCategoryDescription(event.target.value)}
+                      placeholder="Add description for this category..."
+                      className="mt-2 min-h-[90px] w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const trimmed = categoryName.trim()
+                        if (!trimmed) return
+                        if (editingCategoryName) {
+                          setCategoryRows((prev) =>
+                            prev.map((row) =>
+                              row.name === editingCategoryName
+                                ? {
+                                  ...row,
+                                  name: trimmed,
+                                  description: categoryDescription.trim(),
+                                }
+                                : row
+                            )
+                          )
+                          setProductCategories((prev) =>
+                            prev.map((item) => (item === editingCategoryName ? trimmed : item))
+                          )
+                          setEditingCategoryName(null)
+                        } else {
+                          setCategoryRows((prev) => [
+                            ...prev,
+                            {
+                              name: trimmed,
+                              description: categoryDescription.trim(),
+                              count: 0,
+                            },
+                          ])
+                          setProductCategories((prev) =>
+                            prev.includes(trimmed) ? prev : [...prev, trimmed]
+                          )
+                        }
+                        setCategoryName('')
+                        setCategoryDescription('')
+                      }}
+                      className="rounded-lg bg-blue-600 px-6 py-2 text-sm font-semibold text-white"
+                    >
+                      {editingCategoryName ? 'Save' : 'Add'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-slate-100 text-xs font-semibold text-slate-700">
+                      <tr>
+                        <th className="px-4 py-3">Name</th>
+                        <th className="px-4 py-3">Description</th>
+                        <th className="px-4 py-3">Count</th>
+                        <th className="px-4 py-3">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-600">
+                      {categoryRows.map((row, index) => (
+                        <tr key={row.name} className="border-t border-slate-200">
+                          <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
+                          <td className="px-4 py-3 text-xs text-slate-500">
+                            <div className="max-w-[360px] whitespace-normal">
+                              {row.description}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">{row.count}</td>
+                          <td className="px-4 py-3">
+                            <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCategoryName(row.name)
+                                  setCategoryDescription(row.description)
+                                  setEditingCategoryName(row.name)
+                                }}
+                                className="grid h-7 w-7 place-items-center rounded-md text-slate-500"
+                              >
+                                <EditIcon className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCategoryRows((prev) => prev.filter((item) => item.name !== row.name))
+                                  setProductCategories((prev) =>
+                                    prev.filter((item) => item !== row.name)
+                                  )
+                                  if (editingCategoryName === row.name) {
+                                    setEditingCategoryName(null)
+                                    setCategoryName('')
+                                    setCategoryDescription('')
+                                  }
+                                }}
+                                className="grid h-7 w-7 place-items-center rounded-md text-red-500"
+                              >
+                                <TrashIcon className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (index === 0) return
+                                  setCategoryRows((prev) => {
+                                    const next = [...prev]
+                                    const [moved] = next.splice(index, 1)
+                                    next.splice(index - 1, 0, moved)
+                                    return next
+                                  })
+                                }}
+                                className="grid h-7 w-7 place-items-center rounded-md text-slate-400"
+                              >
+                                <DragIcon className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeSidebarSection === 'Accreditation' && (
             <div className="">
               <h1 className="text-xl font-medium">Accreditation</h1>
@@ -2558,24 +2812,29 @@ const DashboardPage = () => {
 
               <h2 className="mt-10 text-lg font-semibold">Create Accreditation Cards</h2>
               <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-                {accreditationCards[1] && (
-                  <CardForm
-                    key={accreditationCards[1].id}
-                    titleLabel="Accreditation title"
-                    descLabel="Accreditation description"
-                    card={accreditationCards[1]}
-                    onTitleChange={(value) =>
-                      updateAccreditationCard(accreditationCards[1].id, { title: value })
-                    }
-                    onDescriptionChange={(value) =>
-                      updateAccreditationCard(accreditationCards[1].id, { description: value })
-                    }
-                    onImageChange={(event) =>
-                      handleAccreditationCardImageChange(accreditationCards[1].id, event)
-                    }
-                  />
-                )}
-                <AddCard onAdd={addAccreditationCard} text="Add another Accreditation!" />
+                <div className="space-y-6">
+                  {accreditationCards.map((card) => (
+                    <CardForm
+                      key={card.id}
+                      titleLabel="Accreditation title"
+                      descLabel="Accreditation description"
+                      card={card}
+                      onTitleChange={(value) =>
+                        updateAccreditationCard(card.id, { title: value })
+                      }
+                      onDescriptionChange={(value) =>
+                        updateAccreditationCard(card.id, { description: value })
+                      }
+                      onImageChange={(event) =>
+                        handleAccreditationCardImageChange(card.id, event)
+                      }
+                    />
+                  ))}
+                </div>
+                <AddCard
+                  onAdd={addAccreditationCard}
+                  text="Want to showcase more? Add another Accreditation!"
+                />
               </div>
             </div>
           )}
@@ -2936,23 +3195,25 @@ const DashboardPage = () => {
             </div>
           )}
 
-          {activeSidebarSection !== 'Product' && activeTab !== 'Returns & Refunds' && (
-            <div className="mt-auto flex justify-end pt-12">
-              <div className="flex items-center gap-4">
-                {saveStatus && (
-                  <span className="text-xs font-semibold text-green-600">
-                    {saveStatus}
-                  </span>
-                )}
-                <button
-                  onClick={handleSave}
-                  className=" cursor-pointer rounded-2xl bg-black px-10 py-4 text-lg text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
-                >
-                  Save Content
-                </button>
+          {activeSidebarSection !== 'Product' &&
+            activeSidebarSection !== 'Categories' &&
+            activeTab !== 'Returns & Refunds' && (
+              <div className="mt-auto flex justify-end pt-12">
+                <div className="flex items-center gap-4">
+                  {saveStatus && (
+                    <span className="text-xs font-semibold text-green-600">
+                      {saveStatus}
+                    </span>
+                  )}
+                  <button
+                    onClick={handleSave}
+                    className=" cursor-pointer rounded-2xl bg-black px-10 py-4 text-lg text-white shadow transition hover:bg-slate-800 active:scale-[0.98]"
+                  >
+                    Save Content
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </main>
       </div>
       {deleteTarget && (
@@ -3253,13 +3514,14 @@ const CardForm = ({
 
 const AddCard = ({ onAdd, text = 'Add another project!' }: { onAdd: () => void; text?: string }) => (
   <button
+    type="button"
     onClick={onAdd}
     className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40"
   >
     <div className="flex h-20 w-20 items-center justify-center rounded-2xl text-blue-600">
       <AddFileIcon className="h-8 w-8" />
     </div>
-    <p className="text-sm max-w-42.5 text-slate-400">Want to showcase more? Add another Testimonial!</p>
+    <p className="text-sm max-w-46.5 text-slate-400">{text}</p>
   </button>
 )
 
@@ -3461,10 +3723,20 @@ const DotListIcon = ({ className }: { className?: string }) => (
 )
 
 const AddTabIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" className={className}>
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.5" />
+
+  <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_754_1479)">
+      <path d="M40.625 50H9.375C4.19688 50 0 45.8031 0 40.625V9.375C0 4.19688 4.19688 0 9.375 0H40.625C45.8031 0 50 4.19688 50 9.375V40.625C50 45.8031 45.8031 50 40.625 50Z" fill="#0F67FD" fill-opacity="0.05" />
+      <path d="M27.3437 12.5H15.3641C13.7813 12.5 12.5 13.7813 12.5 15.3641V31.5094C12.5 33.0938 13.7813 34.375 15.3641 34.375H22.2281C21.6656 33.1875 21.3531 31.8641 21.3531 30.4688C21.3531 29.2703 21.5828 28.125 22.0094 27.0734C21.9672 27.0844 21.9266 27.0844 21.8734 27.0844H16.6656C16.0922 27.0844 15.6234 26.6156 15.6234 26.0422C15.6234 25.4688 16.0937 25 16.6672 25H21.875C22.2703 25 22.625 25.2297 22.7922 25.5625C23.4687 24.5109 24.3437 23.6141 25.375 22.9172H16.6672C16.0937 22.9172 15.625 22.4484 15.625 21.875C15.625 21.3016 16.0937 20.8328 16.6672 20.8328H26.0422C26.6156 20.8328 27.0844 21.3016 27.0844 21.875C27.0844 21.9266 27.0844 21.9688 27.0734 22.0109C28.0422 21.6156 29.1047 21.3859 30.2094 21.3656V15.3656C30.2078 13.7812 28.9266 12.5 27.3437 12.5ZM20.8328 18.75H16.6656C16.0938 18.75 15.625 18.2813 15.625 17.7078C15.625 17.1344 16.0937 16.6656 16.6672 16.6656H20.8344C21.4078 16.6656 21.8766 17.1344 21.8766 17.7078C21.8766 18.2813 21.4062 18.75 20.8328 18.75Z" fill="#0F67FD" />
+      <path d="M30.4688 23.4375C26.5922 23.4375 23.4375 26.5922 23.4375 30.4688C23.4375 34.3453 26.5922 37.5 30.4688 37.5C34.3453 37.5 37.5 34.3453 37.5 30.4688C37.5 26.5922 34.3453 23.4375 30.4688 23.4375ZM33.3328 31.5109H31.5094V33.3344C31.5094 33.9094 31.0422 34.3766 30.4672 34.3766C29.8922 34.3766 29.425 33.9094 29.425 33.3344V31.5109H27.6016C27.0297 31.5109 26.5625 31.0437 26.5625 30.4688C26.5625 29.8938 27.0297 29.4266 27.6047 29.4266H29.4281V27.6031C29.4281 27.0281 29.8953 26.5609 30.4703 26.5609C31.0453 26.5609 31.5125 27.0281 31.5125 27.6031V29.4266H33.3359C33.9109 29.4266 34.3781 29.8938 34.3781 30.4688C34.3781 31.0437 33.9094 31.5109 33.3328 31.5109Z" fill="#0F67FD" fill-opacity="0.5" />
+    </g>
+    <defs>
+      <clipPath id="clip0_754_1479">
+        <rect width="50" height="50" fill="white" />
+      </clipPath>
+    </defs>
   </svg>
+
 )
 
 const CheckIcon = ({ className }: { className?: string }) => (

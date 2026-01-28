@@ -113,6 +113,12 @@ type ResourceData = {
   fileUrl: string | null
 }
 
+type PromptData = {
+  id: string
+  title: string
+  answer: string
+}
+
 type SidebarLink = {
   label: string
   icon: ({ className }: { className?: string }) => React.ReactElement
@@ -391,6 +397,12 @@ const createResource = (): ResourceData => ({
   fileUrl: null,
 })
 
+const createPrompt = (): PromptData => ({
+  id: Math.random().toString(36).slice(2),
+  title: '',
+  answer: '',
+})
+
 const DashboardPage = () => {
   const router = useRouter()
   const pathname = usePathname()
@@ -505,6 +517,10 @@ const DashboardPage = () => {
       fileName: '2026-annual-report.docx',
       fileUrl: null,
     }
+  ])
+  const [readyPrompts, setReadyPrompts] = useState<PromptData[]>([
+    createPrompt(),
+    createPrompt(),
   ])
 
   // How It Works state
@@ -931,6 +947,16 @@ const DashboardPage = () => {
     setEditResourceFileUrl(null)
   }
 
+  const addReadyPrompt = () => {
+    setReadyPrompts((prev) => [...prev, createPrompt()])
+  }
+
+  const updateReadyPrompt = (id: string, updates: Partial<PromptData>) => {
+    setReadyPrompts((prev) =>
+      prev.map((prompt) => (prompt.id === id ? { ...prompt, ...updates } : prompt))
+    )
+  }
+
   const handleResourceFileChange = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -1148,6 +1174,58 @@ const DashboardPage = () => {
                       </div>
                     )}
                   </>
+                )}
+
+                {activeTab === 'Welcome message' && (
+                  <div className="mt-8">
+                    <h2 className="text-sm font-semibold text-slate-900">Ready Prompt</h2>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Select a ready-made prompt or add a custom one to define your chatbot’s behavior.
+                    </p>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {readyPrompts.map((prompt) => (
+                        <div
+                          key={prompt.id}
+                          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                        >
+                          <label className="text-xs font-semibold text-slate-600">Prompt title</label>
+                          <input
+                            value={prompt.title}
+                            onChange={(event) =>
+                              updateReadyPrompt(prompt.id, { title: event.target.value })
+                            }
+                            placeholder="Write title..."
+                            className="mt-2 h-9 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                          />
+                          <label className="mt-4 block text-xs font-semibold text-slate-600">
+                            Prompt answer
+                          </label>
+                          <textarea
+                            value={prompt.answer}
+                            onChange={(event) =>
+                              updateReadyPrompt(prompt.id, { answer: event.target.value })
+                            }
+                            placeholder="Write answer..."
+                            className="mt-2 min-h-[96px] w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
+                          />
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={addReadyPrompt}
+                        className="flex h-full min-h-[190px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-300 bg-white p-4 text-xs font-semibold text-slate-500 transition hover:bg-blue-50"
+                      >
+                        <div className="grid h-10 w-10 place-items-center rounded-full border border-blue-200 bg-blue-50 text-blue-600">
+                          <AddTabIcon className="h-5 w-5" />
+                        </div>
+                        <span className="text-center text-[11px] font-medium text-slate-500">
+                          Want to showcase more?
+                          <br />
+                          Add another prompt!
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {(activeTab === 'Portfolio' || activeTab === 'Services') && (
