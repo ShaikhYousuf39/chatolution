@@ -488,6 +488,25 @@ const DashboardPage = () => {
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
   const [productImages, setProductImages] = useState<{ file: File; url: string }[]>([])
+  const [productImageUploadProgress, setProductImageUploadProgress] = useState(0)
+  const [isProductImageUploading, setIsProductImageUploading] = useState(false)
+  const [productImageUploadError, setProductImageUploadError] = useState('')
+  const [productSizes, setProductSizes] = useState(['10-14 yrs', '18-24 yrs'])
+  const [newProductSize, setNewProductSize] = useState('')
+  const [showAddSize, setShowAddSize] = useState(false)
+  const [variantImages, setVariantImages] = useState<Record<string, { file: File; url: string }[]>>({})
+  const [variantImageUploadProgress, setVariantImageUploadProgress] = useState<Record<string, number>>({})
+  const [variantImageUploading, setVariantImageUploading] = useState<Record<string, boolean>>({})
+  const [variantImageUploadError, setVariantImageUploadError] = useState<Record<string, string>>({})
+
+  const [variantColors, setVariantColors] = useState([
+    { id: 'green', name: 'Green' },
+    { id: 'black', name: 'Black' },
+  ])
+  const [variantName1, setVariantName1] = useState('Size')
+  const [variantName2, setVariantName2] = useState('Color Family')
+  const [isEditingVariant1, setIsEditingVariant1] = useState(false)
+  const [isEditingVariant2, setIsEditingVariant2] = useState(false)
   const [productCategories, setProductCategories] = useState(['Men', 'Women', 'Kids'])
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
@@ -523,6 +542,11 @@ const DashboardPage = () => {
   const refundsPolicyRef = useRef<HTMLDivElement | null>(null)
   const productDescriptionRef = useRef<HTMLDivElement | null>(null)
   const productImagesInputRef = useRef<HTMLInputElement | null>(null)
+  const variantName1Ref = useRef<HTMLInputElement | null>(null)
+  const variantName2Ref = useRef<HTMLInputElement | null>(null)
+
+  const allowedImageTypes = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
+  const maxImageSizeBytes = 4 * 1024 * 1024
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [returnsPolicyContent, setReturnsPolicyContent] = useState('')
   const [refundsPolicyContent, setRefundsPolicyContent] = useState('')
@@ -619,15 +643,228 @@ const DashboardPage = () => {
 
   const handleProductImagesUpload = (files: FileList | null) => {
     if (!files || files.length === 0) return
+    setProductImageUploadError('')
     setProductImages((prev) => {
       const remainingSlots = Math.max(0, 4 - prev.length)
+      if (remainingSlots === 0) {
+        setProductImageUploadError('You can upload up to 4 images.')
+        return prev
+      }
+
       const selected = Array.from(files).slice(0, remainingSlots)
-      const next = selected.map((file) => ({
+      const validFiles: File[] = []
+      const errors: string[] = []
+
+      selected.forEach((file) => {
+        if (!allowedImageTypes.has(file.type)) {
+          errors.push(`${file.name} is not a supported format.`)
+          return
+        }
+        if (file.size > maxImageSizeBytes) {
+          errors.push(`${file.name} exceeds 4MB.`)
+          return
+        }
+        validFiles.push(file)
+      })
+
+      if (errors.length) {
+        setProductImageUploadError(errors[0])
+      }
+
+      if (validFiles.length === 0) return prev
+
+      const totalBytes = validFiles.reduce((sum, file) => sum + file.size, 0)
+      const loadedBytes = new Array(validFiles.length).fill(0)
+      setIsProductImageUploading(true)
+      setProductImageUploadProgress(0)
+
+      const readPromises = validFiles.map((file, index) => {
+        return new Promise<void>((resolve) => {
+          const reader = new FileReader()
+          reader.onprogress = (event) => {
+            if (event.lengthComputable) {
+              loadedBytes[index] = event.loaded
+              const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
+              const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
+              setProductImageUploadProgress(percent)
+            }
+          }
+          reader.onloadend = () => {
+            loadedBytes[index] = file.size
+            const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
+            const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
+            setProductImageUploadProgress(percent)
+            resolve()
+          }
+          reader.readAsArrayBuffer(file)
+        })
+      })
+
+      Promise.all(readPromises).then(() => {
+        setIsProductImageUploading(false)
+        setProductImageUploadProgress(0)
+      })
+
+      const next = validFiles.map((file) => ({
         file,
         url: URL.createObjectURL(file),
       }))
       return [...prev, ...next]
     })
+  }
+
+  const handleAddProductSize = () => {
+    const trimmed = newProductSize.trim()
+    if (!trimmed) return
+    setProductSizes((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]))
+    setNewProductSize('')
+    setShowAddSize(false)
+  }
+
+  const handleRemoveProductSize = (size: string) => {
+    setProductSizes((prev) => prev.filter((item) => item !== size))
+  }
+
+  const handleVariantImagesUpload = (color: string, files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setVariantImageUploadError((prev) => ({ ...prev, [color]: '' }))
+
+    // Get current images for this color to calculate remaining slots
+    const currentImages = variantImages[color] || []
+    const remainingSlots = Math.max(0, 4 - currentImages.length)
+
+    if (remainingSlots === 0) {
+      setVariantImageUploadError((errors) => ({
+        ...errors,
+        [color]: 'You can upload up to 4 images.',
+      }))
+      return
+    }
+
+    const selected = Array.from(files).slice(0, remainingSlots)
+    const validFiles: File[] = []
+    const errors: string[] = []
+
+    selected.forEach((file) => {
+      if (!allowedImageTypes.has(file.type)) {
+        errors.push(`${file.name} is not a supported format.`)
+        return
+      }
+      if (file.size > maxImageSizeBytes) {
+        errors.push(`${file.name} exceeds 4MB.`)
+        return
+      }
+      validFiles.push(file)
+    })
+
+    if (errors.length) {
+      setVariantImageUploadError((prevErrors) => ({
+        ...prevErrors,
+        [color]: errors[0],
+      }))
+    }
+
+    if (validFiles.length === 0) return
+
+    // Side effects: Progress simulation
+    const totalBytes = validFiles.reduce((sum, file) => sum + file.size, 0)
+    const loadedBytes = new Array(validFiles.length).fill(0)
+    setVariantImageUploading((prevUploading) => ({ ...prevUploading, [color]: true }))
+    setVariantImageUploadProgress((prevProgress) => ({ ...prevProgress, [color]: 0 }))
+
+    const readPromises = validFiles.map((file, index) => {
+      return new Promise<void>((resolve) => {
+        const reader = new FileReader()
+        reader.onprogress = (event) => {
+          if (event.lengthComputable) {
+            loadedBytes[index] = event.loaded
+            const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
+            const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
+            setVariantImageUploadProgress((prevProgress) => ({
+              ...prevProgress,
+              [color]: percent,
+            }))
+          }
+        }
+        reader.onloadend = () => {
+          loadedBytes[index] = file.size
+          const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
+          const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
+          setVariantImageUploadProgress((prevProgress) => ({
+            ...prevProgress,
+            [color]: percent,
+          }))
+          resolve()
+        }
+        reader.readAsArrayBuffer(file)
+      })
+    })
+
+    Promise.all(readPromises).then(() => {
+      setVariantImageUploading((prevUploading) => ({ ...prevUploading, [color]: false }))
+      setVariantImageUploadProgress((prevProgress) => ({ ...prevProgress, [color]: 0 }))
+    })
+
+    // State update: Add images
+    const next = validFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }))
+
+    setVariantImages((prev) => ({
+      ...prev,
+      [color]: [...(prev[color] || []), ...next],
+    }))
+  }
+
+  const handleVariantColorNameChange = (id: string, value: string) => {
+    setVariantColors((prev) => prev.map((item) => (item.id === id ? { ...item, name: value } : item)))
+  }
+
+  const handleDeleteVariantColor = (id: string) => {
+    setVariantColors((prev) => prev.filter((item) => item.id !== id))
+    setVariantImages((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+    setVariantImageUploadError((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+    setVariantImageUploading((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+    setVariantImageUploadProgress((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+  }
+
+  const handleMoveVariantColor = (id: string) => {
+    setVariantColors((prev) => {
+      const index = prev.findIndex((item) => item.id === id)
+      if (index <= 0) return prev
+      const next = [...prev]
+      const [moved] = next.splice(index, 1)
+      next.splice(index - 1, 0, moved)
+      return next
+    })
+  }
+
+  const sizeDefaultsByColor: Record<string, Record<string, { price: string; stock: string; sku: string }>> = {
+    Green: {
+      '10-14 yrs': { price: '49.99', stock: '145', sku: 'HOODIE123' },
+      '18-24 yrs': { price: '59.99', stock: '518', sku: 'HOODIE124' },
+    },
+    Black: {
+      '10-14 yrs': { price: '', stock: '', sku: '' },
+      '18-24 yrs': { price: '', stock: '', sku: '' },
+    },
   }
 
   const addReadyPrompt = () => {
@@ -2050,19 +2287,28 @@ const DashboardPage = () => {
                           <label className="text-sm font-semibold text-slate-600">Product Images</label>
                           <div className="mt-2 rounded-lg border border-slate-200 bg-[#ECEDF0] p-4 text-center">
                             <div className="mx-auto grid h-24 w-24 place-items-center rounded-lg bg-white bg-slate-50">
-                              <img
-                                src={productImages[0]?.url ?? '/assetes/hoodie.png'}
-                                alt="Green hoodie"
-                                className="h-20 w-20 object-contain"
-                              />
+                              {productImages[0]?.file.type.startsWith('video/') ? (
+                                <video
+                                  src={productImages[0].url}
+                                  className="h-20 w-20 object-contain"
+                                  muted
+                                  playsInline
+                                />
+                              ) : (
+                                <img
+                                  src={productImages[0]?.url ?? '/assetes/hoodie.png'}
+                                  alt="Green hoodie"
+                                  className="h-20 w-20 object-contain"
+                                />
+                              )}
                             </div>
                             <p className="mt-3 text-[11px] text-slate-600">
-                              Upload up to 4 images or videos (max 5MB each, 1000 x 1000 pixels).
+                              Upload up to 4 images (JPEG, PNG, WEBP, max 4MB each, 1000 x 1000 pixels).
                             </p>
                             <input
                               ref={productImagesInputRef}
                               type="file"
-                              accept="image/*"
+                              accept="image/jpeg,image/png,image/webp"
                               multiple
                               className="hidden"
                               onChange={(event) => {
@@ -2073,29 +2319,54 @@ const DashboardPage = () => {
                             <button
                               type="button"
                               onClick={() => productImagesInputRef.current?.click()}
-                              className="mt-3 rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white"
+                              className="mt-3 rounded-md bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:cursor-pointer"
                             >
                               Upload
                             </button>
+                            {isProductImageUploading && (
+                              <div className="mt-3">
+                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                                  <div
+                                    className="h-full bg-blue-600 transition-[width] duration-200"
+                                    style={{ width: `${productImageUploadProgress}%` }}
+                                  />
+                                </div>
+                                <p className="mt-1 text-[10px] text-slate-500">
+                                  Uploading... {productImageUploadProgress}%
+                                </p>
+                              </div>
+                            )}
+                            {productImageUploadError && (
+                              <p className="mt-2 text-[11px] text-red-500">{productImageUploadError}</p>
+                            )}
                           </div>
-                          <div className="mt-3 grid grid-cols-3 gap-2">
-                            {productImages.slice(0, 3).map((image, index) => (
+                          <div className="mt-3 grid grid-cols-4 gap-2">
+                            {productImages.slice(0, 4).map((image, index) => (
                               <div
                                 key={`thumb-${index}`}
                                 className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
                               >
-                                <img
-                                  src={image.url}
-                                  alt="Thumbnail"
-                                  className="max-h-full max-w-full object-contain"
-                                />
+                                {image.file.type.startsWith('video/') ? (
+                                  <video
+                                    src={image.url}
+                                    className="max-h-full max-w-full object-contain"
+                                    muted
+                                    playsInline
+                                  />
+                                ) : (
+                                  <img
+                                    src={image.url}
+                                    alt="Thumbnail"
+                                    className="max-h-full max-w-full object-contain"
+                                  />
+                                )}
                               </div>
                             ))}
-                            {productImages.length < 3 && (
+                            {productImages.length < 4 && (
                               <button
                                 type="button"
                                 onClick={() => productImagesInputRef.current?.click()}
-                                className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
+                                className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 hover:cursor-pointer"
                               >
                                 <svg
                                   width="35"
@@ -2124,12 +2395,12 @@ const DashboardPage = () => {
                               </label>
                             ))}
                             {showAddCategory ? (
-                              <div className="mt-2 flex items-center gap-2">
+                              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                                 <input
                                   value={newCategoryName}
                                   onChange={(event) => setNewCategoryName(event.target.value)}
                                   placeholder="Category name"
-                                  className="h-8 flex-1 rounded-md border border-slate-200 px-2 text-xs text-slate-700"
+                                  className="h-8 w-full rounded-md border border-slate-200 px-2 text-xs text-slate-700"
                                 />
                                 <button
                                   type="button"
@@ -2161,7 +2432,7 @@ const DashboardPage = () => {
                               <button
                                 type="button"
                                 onClick={() => setShowAddCategory(true)}
-                                className="mt-1 text-xs text-blue-600"
+                                className="mt-1 text-xs text-blue-600 hover:cursor-pointer"
                               >
                                 + Add new category
                               </button>
@@ -2191,10 +2462,22 @@ const DashboardPage = () => {
                         </label>
                         <div className="mt-2 flex items-center gap-2">
                           <input
-                            placeholder="Size"
-                            className="h-9 w-[40%] rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700"
+                            ref={variantName1Ref}
+                            value={variantName1}
+                            onChange={(event) => setVariantName1(event.target.value)}
+                            disabled={!isEditingVariant1}
+                            className="h-9 w-[40%] rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 disabled:cursor-not-allowed disabled:text-slate-400"
                           />
-                          <button className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEditingVariant1((prev) => !prev)
+                              if (!isEditingVariant1) {
+                                setTimeout(() => variantName1Ref.current?.focus(), 0)
+                              }
+                            }}
+                            className="grid h-8 w-8 place-items-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50"
+                          >
                             <EditIcon className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -2202,20 +2485,61 @@ const DashboardPage = () => {
                       <div className="mt-3">
                         <label className="text-xs text-slate-900">Total Variants</label>
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          {['10-14 yrs', '18-24 yrs'].map((tag) => (
-                            <span
+                          {productSizes.map((tag) => (
+                            <button
                               key={tag}
-                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] text-slate-900"
+                              type="button"
+                              onClick={() => handleRemoveProductSize(tag)}
+                              className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[11px] text-slate-900"
                             >
-                              {tag} x
-                            </span>
+                              {tag}
+                              <span className="text-slate-500">x</span>
+                            </button>
                           ))}
-                          <button className="inline-flex items-center gap-1 text-[11px] text-blue-600">
-                            Add size
-                            <span className="grid h-4 w-4 place-items-center rounded bg-blue-600 text-white">
-                              +
-                            </span>
-                          </button>
+                          {showAddSize ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <input
+                                value={newProductSize}
+                                onChange={(event) => setNewProductSize(event.target.value)}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter') {
+                                    event.preventDefault()
+                                    handleAddProductSize()
+                                  }
+                                }}
+                                placeholder="Add size"
+                                className="h-7 w-28 rounded-md border border-slate-200 bg-white px-2 text-[11px] text-slate-700"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleAddProductSize}
+                                className="h-7 rounded-md bg-blue-600 px-2 text-[11px] font-semibold text-white"
+                              >
+                                Add
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNewProductSize('')
+                                  setShowAddSize(false)
+                                }}
+                                className="h-7 rounded-md border border-slate-200 px-2 text-[11px] text-slate-600"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setShowAddSize(true)}
+                              className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:cursor-pointer"
+                            >
+                              Add size
+                              <span className="grid h-4 w-4 place-items-center rounded bg-blue-600 text-white">
+                                +
+                              </span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -2232,10 +2556,22 @@ const DashboardPage = () => {
                         </label>
                         <div className="mt-2 flex flex-wrap items-center gap-3">
                           <input
-                            placeholder="Color Family"
-                            className="h-10 w-[40%] min-w-[240px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400"
+                            ref={variantName2Ref}
+                            value={variantName2}
+                            onChange={(event) => setVariantName2(event.target.value)}
+                            disabled={!isEditingVariant2}
+                            className="h-10 w-[40%] min-w-[240px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 disabled:cursor-not-allowed disabled:text-slate-400"
                           />
-                          <button className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEditingVariant2((prev) => !prev)
+                              if (!isEditingVariant2) {
+                                setTimeout(() => variantName2Ref.current?.focus(), 0)
+                              }
+                            }}
+                            className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                          >
                             <EditIcon className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -2248,56 +2584,103 @@ const DashboardPage = () => {
                           <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-blue-600" defaultChecked />
                           <span>
                             Add Image{' '}
-                            <span className="text-xs text-slate-400">Max 4 images for each variant.</span>
+                            <span className="text-xs text-slate-400">
+                              Max 4 images for each variant (JPEG, PNG, WEBP, max 4MB each).
+                            </span>
                           </span>
                         </label>
                       </div>
                       <div className="mt-4 space-y-3">
-                        {['Green', 'Black'].map((color) => (
-                          <div
-                            key={color}
-                            className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
-                          >
-                            <input
-                              defaultValue={color}
-                              className="h-9 w-[40%] min-w-[220px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700"
-                            />
-                            <div className="flex items-center gap-2">
-                              <label
-                                htmlFor={`variant-upload-${color.toLowerCase()}`}
-                                className="grid h-9 w-9 cursor-pointer place-items-center rounded-lg border border-blue-500 text-blue-600"
-                              >
-                                +
-                              </label>
+                        {variantColors.map((color) => {
+                          const images = variantImages[color.id] ?? []
+                          const isUploading = variantImageUploading[color.id]
+                          const uploadProgress = variantImageUploadProgress[color.id] ?? 0
+                          const uploadError = variantImageUploadError[color.id]
+                          return (
+                            <div
+                              key={color.id}
+                              className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
+                            >
                               <input
-                                id={`variant-upload-${color.toLowerCase()}`}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
+                                value={color.name}
+                                onChange={(event) => handleVariantColorNameChange(color.id, event.target.value)}
+                                className="h-9 w-[40%] min-w-[220px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700"
                               />
-                              {color === 'Green' && (
-                                <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white">
-                                  <img src="/assetes/green-hoodie.png" alt="Green hoodie" className="h-7 w-7 object-cover" />
+                              <div className="flex flex-wrap items-center gap-2">
+                                {images.length > 0 && (
+                                  <div className="flex items-center gap-2">
+                                    {images.slice(0, 4).map((image, index) => (
+                                      <div
+                                        key={`${color.id}-${index}`}
+                                        className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white"
+                                      >
+                                        <img
+                                          src={image.url}
+                                          alt={`${color.name} variant ${index + 1}`}
+                                          className="h-7 w-7 object-cover  rounded-md"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                <label className="grid h-9 w-9 cursor-pointer place-items-center rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50">
+                                  <input
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                                    multiple
+                                    className="hidden"
+                                    onChange={(event) => {
+                                      handleVariantImagesUpload(color.id, event.target.files)
+                                      event.target.value = ''
+                                    }}
+                                  />
+                                  +
+                                </label>
+                                <span className="text-sm font-medium text-slate-800">Upload Image</span>
+                                <span className="text-xs text-slate-400">Max 4</span>
+                              </div>
+                              {isUploading && (
+                                <div className="w-full">
+                                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                                    <div
+                                      className="h-full bg-blue-600 transition-[width] duration-200"
+                                      style={{ width: `${uploadProgress}%` }}
+                                    />
+                                  </div>
+                                  <p className="mt-1 text-[10px] text-slate-500">
+                                    Uploading... {uploadProgress}%
+                                  </p>
                                 </div>
                               )}
-                              <span className="text-sm font-medium text-slate-800">Upload Image</span>
+                              {uploadError && (
+                                <p className="w-full text-[11px] text-red-500">{uploadError}</p>
+                              )}
+                              <div className="ml-auto flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteVariantColor(color.id)}
+                                  className="grid h-8 w-8 place-items-center rounded-lg text-red-500 hover:bg-red-50"
+                                >
+                                  <TrashIcon className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveVariantColor(color.id)}
+                                  className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-50"
+                                >
+                                  <DragIcon className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
-                            <div className="ml-auto flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1">
-                              <button className="grid h-8 w-8 place-items-center rounded-lg text-red-500 hover:bg-red-50">
-                                <TrashIcon className="h-3.5 w-3.5" />
-                              </button>
-                              <button className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-50">
-                                <DragIcon className="h-4 w-4" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                         <div className="rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-3">
                           <input
                             placeholder="Please type or select"
                             className="h-9 w-[40%] min-w-[220px] rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400"
                           />
                         </div>
+
                       </div>
                     </div>
                   </div>
@@ -2322,18 +2705,22 @@ const DashboardPage = () => {
                             {
                               color: 'Green',
                               image: '/assetes/green-hoodie.png',
-                              rows: [
-                                { size: '10-14 yrs', price: '49.99', stock: '145', sku: 'HOODIE123' },
-                                { size: '20-24 yrs', price: '59.99', stock: '518', sku: 'HOODIE124' },
-                              ],
+                              rows: productSizes.map((size) => ({
+                                size,
+                                price: sizeDefaultsByColor.Green?.[size]?.price ?? '',
+                                stock: sizeDefaultsByColor.Green?.[size]?.stock ?? '',
+                                sku: sizeDefaultsByColor.Green?.[size]?.sku ?? '',
+                              })),
                             },
                             {
                               color: 'Black',
                               image: null,
-                              rows: [
-                                { size: '10-14 yrs', price: '', stock: '', sku: '' },
-                                { size: '20-24 yrs', price: '', stock: '', sku: '' },
-                              ],
+                              rows: productSizes.map((size) => ({
+                                size,
+                                price: sizeDefaultsByColor.Black?.[size]?.price ?? '',
+                                stock: sizeDefaultsByColor.Black?.[size]?.stock ?? '',
+                                sku: sizeDefaultsByColor.Black?.[size]?.sku ?? '',
+                              })),
                             },
                           ].map((group) =>
                             group.rows.map((row, rowIndex) => (

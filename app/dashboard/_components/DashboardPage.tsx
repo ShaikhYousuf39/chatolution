@@ -479,7 +479,7 @@ const DashboardPage = () => {
 
   // Accreditation state
   const [accreditationEditorContent, setAccreditationEditorContent] = useState('')
-  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard(), createCard()])
+  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard()])
 
   // Testimonials state
   const [testimonials, setTestimonials] = useState<TestimonialData[]>([createTestimonial()])
@@ -1215,7 +1215,7 @@ const DashboardPage = () => {
                         onClick={addReadyPrompt}
                         className="flex h-full min-h-[190px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-blue-300 bg-white p-4 text-xs font-semibold text-slate-500 transition hover:bg-blue-50"
                       >
-                        <div className="grid h-10 w-10 place-items-center rounded-full border border-blue-200 bg-blue-50 text-blue-600">
+                        <div className="grid h-10 w-10 place-items-center rounded-full  text-blue-600">
                           <AddTabIcon className="h-5 w-5" />
                         </div>
                         <span className="text-center text-[11px] font-medium text-slate-500">
@@ -1690,25 +1690,26 @@ const DashboardPage = () => {
               </div>
 
               <h2 className="mt-10 text-lg font-semibold">Create Accreditation Cards</h2>
-              <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-                {accreditationCards[1] && (
+              <div className="mt-4 grid gap-6 lg:grid-cols-[2fr_1fr]">
+                {accreditationCards.map((card) => (
                   <CardForm
-                    key={accreditationCards[1].id}
+                    key={card.id}
                     titleLabel="Accreditation title"
                     descLabel="Accreditation description"
-                    card={accreditationCards[1]}
-                    onTitleChange={(value) =>
-                      updateAccreditationCard(accreditationCards[1].id, { title: value })
-                    }
+                    card={card}
+                    onTitleChange={(value) => updateAccreditationCard(card.id, { title: value })}
                     onDescriptionChange={(value) =>
-                      updateAccreditationCard(accreditationCards[1].id, { description: value })
+                      updateAccreditationCard(card.id, { description: value })
                     }
-                    onImageChange={(event) =>
-                      handleAccreditationCardImageChange(accreditationCards[1].id, event)
-                    }
+                    onImageChange={(event) => handleAccreditationCardImageChange(card.id, event)}
                   />
-                )}
-                <AddCard onAdd={addAccreditationCard} text="Add another Accreditation!" />
+                ))}
+                <div className="w-full self-start">
+                  <AddCard
+                    onAdd={addAccreditationCard}
+                    text="Want to showcase more? Add another Accreditation!"
+                  />
+                </div>
               </div>
             </div>
           )}
