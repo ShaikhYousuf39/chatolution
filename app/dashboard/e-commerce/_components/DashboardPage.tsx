@@ -644,73 +644,75 @@ const DashboardPage = () => {
   const handleProductImagesUpload = (files: FileList | null) => {
     if (!files || files.length === 0) return
     setProductImageUploadError('')
-    setProductImages((prev) => {
-      const remainingSlots = Math.max(0, 4 - prev.length)
-      if (remainingSlots === 0) {
-        setProductImageUploadError('You can upload up to 4 images.')
-        return prev
+
+    const remainingSlots = Math.max(0, 4 - productImages.length)
+    if (remainingSlots === 0) {
+      setProductImageUploadError('You can upload up to 4 images.')
+      return
+    }
+
+    const selected = Array.from(files).slice(0, remainingSlots)
+    const validFiles: File[] = []
+    const errors: string[] = []
+
+    selected.forEach((file) => {
+      if (!allowedImageTypes.has(file.type) && !file.type.startsWith('video/')) {
+        errors.push(`${file.name} is not a supported format.`)
+        return
       }
-
-      const selected = Array.from(files).slice(0, remainingSlots)
-      const validFiles: File[] = []
-      const errors: string[] = []
-
-      selected.forEach((file) => {
-        if (!allowedImageTypes.has(file.type)) {
-          errors.push(`${file.name} is not a supported format.`)
-          return
-        }
-        if (file.size > maxImageSizeBytes) {
-          errors.push(`${file.name} exceeds 4MB.`)
-          return
-        }
-        validFiles.push(file)
-      })
-
-      if (errors.length) {
-        setProductImageUploadError(errors[0])
+      if (file.size > maxImageSizeBytes) {
+        errors.push(`${file.name} exceeds 4MB.`)
+        return
       }
+      validFiles.push(file)
+    })
 
-      if (validFiles.length === 0) return prev
+    if (errors.length) {
+      setProductImageUploadError(errors[0])
+    }
+    if (validFiles.length === 0) return
 
-      const totalBytes = validFiles.reduce((sum, file) => sum + file.size, 0)
-      const loadedBytes = new Array(validFiles.length).fill(0)
-      setIsProductImageUploading(true)
-      setProductImageUploadProgress(0)
+    const totalBytes = validFiles.reduce((sum, file) => sum + file.size, 0)
+    const loadedBytes = new Array(validFiles.length).fill(0)
+    setIsProductImageUploading(true)
+    setProductImageUploadProgress(0)
 
-      const readPromises = validFiles.map((file, index) => {
-        return new Promise<void>((resolve) => {
-          const reader = new FileReader()
-          reader.onprogress = (event) => {
-            if (event.lengthComputable) {
-              loadedBytes[index] = event.loaded
-              const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
-              const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
-              setProductImageUploadProgress(percent)
-            }
-          }
-          reader.onloadend = () => {
-            loadedBytes[index] = file.size
+    const readPromises = validFiles.map((file, index) => {
+      return new Promise<void>((resolve) => {
+        const reader = new FileReader()
+        reader.onprogress = (event) => {
+          if (event.lengthComputable) {
+            loadedBytes[index] = event.loaded
             const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
             const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
             setProductImageUploadProgress(percent)
-            resolve()
           }
-          reader.readAsArrayBuffer(file)
-        })
+        }
+        reader.onloadend = () => {
+          loadedBytes[index] = file.size
+          const totalLoaded = loadedBytes.reduce((sum, value) => sum + value, 0)
+          const percent = Math.min(100, Math.round((totalLoaded / totalBytes) * 100))
+          setProductImageUploadProgress(percent)
+          resolve()
+        }
+        reader.readAsArrayBuffer(file)
       })
-
-      Promise.all(readPromises).then(() => {
-        setIsProductImageUploading(false)
-        setProductImageUploadProgress(0)
-      })
-
-      const next = validFiles.map((file) => ({
-        file,
-        url: URL.createObjectURL(file),
-      }))
-      return [...prev, ...next]
     })
+
+    Promise.all(readPromises).then(() => {
+      setIsProductImageUploading(false)
+      setProductImageUploadProgress(0)
+    })
+
+    const next = validFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }))
+    setProductImages((prev) => [...prev, ...next])
+  }
+
+  const handleDeleteProductImage = (index: number) => {
+    setProductImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleAddProductSize = () => {
@@ -815,6 +817,14 @@ const DashboardPage = () => {
       ...prev,
       [color]: [...(prev[color] || []), ...next],
     }))
+  }
+
+  const handleDeleteVariantImage = (color: string, index: number) => {
+    setVariantImages((prev) => {
+      const currentImages = prev[color] ?? []
+      const nextImages = currentImages.filter((_, i) => i !== index)
+      return { ...prev, [color]: nextImages }
+    })
   }
 
   const handleVariantColorNameChange = (id: string, value: string) => {
@@ -2356,12 +2366,12 @@ const DashboardPage = () => {
                             {productImages.slice(0, 4).map((image, index) => (
                               <div
                                 key={`thumb-${index}`}
-                                className="grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
+                                className="group relative grid h-14 w-full place-items-center overflow-hidden rounded-lg border-2 border-dashed border-slate-200 bg-slate-50"
                               >
                                 {image.file.type.startsWith('video/') ? (
                                   <video
                                     src={image.url}
-                                    className="max-h-full max-w-full object-contain"
+                                    className="max-h-full max-w-full object-contain p-1"
                                     muted
                                     playsInline
                                   />
@@ -2369,9 +2379,16 @@ const DashboardPage = () => {
                                   <img
                                     src={image.url}
                                     alt="Thumbnail"
-                                    className="max-h-full max-w-full object-contain"
+                                    className="max-h-full max-w-full object-contain p-1"
                                   />
                                 )}
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteProductImage(index)}
+                                  className="absolute inset-0 hidden place-items-center bg-black/40 text-white group-hover:grid"
+                                >
+                                  <TrashIcon className="h-5 w-5" />
+                                </button>
                               </div>
                             ))}
                             {productImages.length < 4 && (
@@ -2629,13 +2646,20 @@ const DashboardPage = () => {
                                     {images.slice(0, 4).map((image, index) => (
                                       <div
                                         key={`${color.id}-${index}`}
-                                        className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white"
+                                        className="group relative grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white"
                                       >
                                         <img
                                           src={image.url}
                                           alt={`${color.name} variant ${index + 1}`}
-                                          className="h-7 w-7 object-cover rounded-md"
+                                          className="h-7 w-7 rounded-md object-cover"
                                         />
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteVariantImage(color.id, index)}
+                                          className="absolute inset-0 hidden place-items-center bg-black/40 text-white group-hover:grid"
+                                        >
+                                          <TrashIcon className="h-4 w-4" />
+                                        </button>
                                       </div>
                                     ))}
                                   </div>
