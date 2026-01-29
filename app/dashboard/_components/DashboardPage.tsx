@@ -426,6 +426,8 @@ const DashboardPage = () => {
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
   const editorRef = useRef<HTMLDivElement | null>(null)
+  const faqDragItem = useRef<number | null>(null)
+  const faqDragOver = useRef<number | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
     'Welcome message': [],
@@ -816,6 +818,18 @@ const DashboardPage = () => {
 
   const addFAQ = () => {
     setFaqs((prev) => [...prev, createFAQ()])
+  }
+
+  const handleFAQSort = () => {
+    if (faqDragItem.current === null || faqDragOver.current === null) return
+    setFaqs((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(faqDragItem.current!, 1)
+      next.splice(faqDragOver.current!, 0, moved)
+      return next
+    })
+    faqDragItem.current = null
+    faqDragOver.current = null
   }
 
   const handleAddFAQFromModal = () => {

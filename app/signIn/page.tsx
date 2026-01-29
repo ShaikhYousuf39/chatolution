@@ -30,7 +30,7 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <div className="py-0 w-full max-w-md flex flex-col h-full">
+          <div className="py-15 w-full max-w-md flex flex-col h-full">
             <div className="w-full flex-1 flex flex-col justify-center">
               <h1 className="text-2xl font-semibold text-slate-900">
                 Welcome back
@@ -141,22 +141,13 @@ export default function SignInPage() {
                     <img
                       src="/assetes/google-logo.png"
                       alt="Google"
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain "
                     />
                   </SocialButton>
                   <SocialButton label="Log in with Microsoft">
                     <MicrosoftIcon />
                   </SocialButton>
-                  <SocialButton label="Log in with Apple">
-                    <img
-                      src="/assetes/Apple.png"
-                      alt="Apple"
-                      className="h-full w-full object-contain"
-                    />
-                  </SocialButton>
-                  <SocialButton label="Log in with Phone">
-                    <PhoneIcon />
-                  </SocialButton>
+
                 </div>
               </form>
             </div>
@@ -241,13 +232,4 @@ function MicrosoftIcon() {
 
 
 
-function PhoneIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path
-        d="M6.6 10.8c1.2 2.3 3.1 4.2 5.4 5.4l1.8-1.8c.2-.2.6-.3.9-.2 1 .3 2.1.5 3.2.5.5 0 .9.4.9.9V20c0 .5-.4.9-.9.9C10.5 20.9 3.1 13.5 3.1 4.9c0-.5.4-.9.9-.9h3.6c.5 0 .9.4.9.9 0 1.1.2 2.2.5 3.2.1.3 0 .7-.2.9l-1.8 1.9Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
+

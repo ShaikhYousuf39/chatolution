@@ -20,7 +20,7 @@ export default function SignUpPage() {
     return (
         <main className="min-h-screen bg-white overflow-x-hidden lg:h-screen lg:overflow-hidden">
             <div className="mx-auto flex min-h-screen w-full  flex-col items-stretch lg:h-full">
-               
+
                 <div className="p-5 flex flex-1 flex-col items-stretch lg:flex-row">
                     <div className="mb-4 flex lg:hidden">
                         <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
@@ -30,7 +30,7 @@ export default function SignUpPage() {
                         </div>
                     </div>
                     {/* LEFT: Sign Up Form */}
-                    <section className="flex w-full flex-col px-0 py-7 lg:w-[40%] lg:px-10 lg:py-12 items-center order-2 lg:order-1 lg:h-full">
+                    <section className="flex w-full flex-col px-0 py-7 lg:w-[40%] lg:px-10 lg:py-2 items-center order-2 lg:order-1 lg:h-full">
                         <div className="w-full  flex flex-col h-full">
                             <div className="mb-6 hidden lg:flex">
                                 <div className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200">
@@ -152,6 +152,27 @@ export default function SignUpPage() {
                                         <Link href="/signIn" className="text-sm font-semibold text-slate-900 hover:underline">Sign In</Link>
                                     </div>
 
+                                    <div className="mt-6 flex gap-3">
+                                        <button
+                                            type="button"
+                                            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                        >
+                                            <img
+                                                src="/assetes/google-logo.png"
+                                                alt="Google"
+                                                className="h-5 w-5 object-contain"
+                                            />
+                                            Google
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                        >
+                                            <MicrosoftIcon />
+                                            Microsoft
+                                        </button>
+                                    </div>
+
                                 </form>
                             </div>
 
@@ -213,5 +234,16 @@ export default function SignUpPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+function MicrosoftIcon() {
+    return (
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="#F25022" d="M2 2h9v9H2z" />
+            <path fill="#7FBA00" d="M13 2h9v9h-9z" />
+            <path fill="#00A4EF" d="M2 13h9v9H2z" />
+            <path fill="#FFB900" d="M13 13h9v9h-9z" />
+        </svg>
     );
 }

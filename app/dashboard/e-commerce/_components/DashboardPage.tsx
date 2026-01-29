@@ -344,7 +344,7 @@ export const DashboardSidebar = ({
                 <button
                   key={item.label}
                   onClick={() => onNavigate(item.route)}
-                  className={`flex w-full items-center rounded-lg px-2 py-1 text-left text-sm font-medium transition hover:bg-slate-50 ${isActive
+                  className={`flex w-full items-center rounded-lg px-2 py-1 text-left text-sm font-medium transition hover:bg-slate-50 cursor-pointer ${isActive
                     ? 'text-blue-600'
                     : 'text-slate-500'
                     }`}
@@ -2385,9 +2385,9 @@ const DashboardPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteProductImage(index)}
-                                  className="absolute inset-0 hidden place-items-center bg-black/40 text-white group-hover:grid"
+                                  className="absolute right-1 top-1 hidden h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white group-hover:flex"
                                 >
-                                  <TrashIcon className="h-5 w-5" />
+                                  <XIcon className="h-4 w-4" />
                                 </button>
                               </div>
                             ))}
@@ -2656,9 +2656,9 @@ const DashboardPage = () => {
                                         <button
                                           type="button"
                                           onClick={() => handleDeleteVariantImage(color.id, index)}
-                                          className="absolute inset-0 hidden place-items-center bg-black/40 text-white group-hover:grid"
+                                          className="absolute right-0.5 top-0.5 hidden h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white group-hover:flex"
                                         >
-                                          <TrashIcon className="h-4 w-4" />
+                                          <XIcon className="h-3 w-3" />
                                         </button>
                                       </div>
                                     ))}
@@ -3374,7 +3374,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Name</label>
                       <input
-                        readOnly
                         placeholder="John Doe"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -3383,7 +3382,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Email</label>
                       <input
-                        readOnly
                         placeholder="johndoe@gmail.com"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -3392,7 +3390,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Message</label>
                       <textarea
-                        readOnly
                         placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                         className="min-h-16 w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -3442,7 +3439,6 @@ const DashboardPage = () => {
                                 <input
                                   type={field.type === 'checkboxes' ? 'checkbox' : 'radio'}
                                   className="h-4 w-4 text-blue-600"
-                                  disabled
                                 />
                                 <input
                                   value={option}
@@ -3459,7 +3455,6 @@ const DashboardPage = () => {
                             type="number"
                             placeholder="Enter number"
                             className="w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                            disabled
                           />
                         )}
 
@@ -3467,7 +3462,6 @@ const DashboardPage = () => {
                           <textarea
                             placeholder="Enter address"
                             className="min-h-24 w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                            disabled
                           />
                         )}
                       </div>
@@ -3534,15 +3528,6 @@ const DashboardPage = () => {
                             <path d="M10.5042 1.04175C13.987 1.04399 17.5355 3.00018 18.4731 6.94507C19.5606 11.5202 16.562 15.3205 14.105 17.5676C12.0913 19.4174 8.9075 19.4156 6.88709 17.5676L6.88623 17.5668C4.4382 15.3198 1.44096 11.5115 2.52832 6.93693V6.93612C3.47076 2.99129 7.02122 1.03953 10.5042 1.04175ZM10.5033 2.29175C7.51402 2.28983 4.58949 3.94146 3.8075 7.212L3.80835 7.21281C2.88333 11.1044 5.41455 14.4796 7.79627 16.6659C9.31043 18.0509 11.6911 18.0491 13.1949 16.6667L13.1958 16.6659C15.5862 14.4798 18.1179 11.1131 17.1931 7.22176C16.4157 3.95022 13.4931 2.29367 10.5033 2.29175Z" fill="#566273" />
                           </svg>
                           Address Field
-                        </button>
-                        <div className=" "></div>
-                        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M5.20833 9.99998C5.20833 9.42849 4.73816 8.95831 4.16667 8.95831C3.59518 8.95831 3.125 9.42849 3.125 9.99998C3.125 10.5715 3.59518 11.0416 4.16667 11.0416C4.73816 11.0416 5.20833 10.5715 5.20833 9.99998ZM6.45833 9.99998C6.45833 11.2618 5.42851 12.2916 4.16667 12.2916C2.90482 12.2916 1.875 11.2618 1.875 9.99998C1.875 8.73814 2.90482 7.70831 4.16667 7.70831C5.42851 7.70831 6.45833 8.73814 6.45833 9.99998Z" fill="#566273" />
-                            <path d="M16.8763 9.99992C16.8763 9.42843 16.4061 8.95825 15.8346 8.95825C15.2631 8.95825 14.793 9.42843 14.793 9.99992C14.793 10.5714 15.2631 11.0416 15.8346 11.0416C16.4061 11.0416 16.8763 10.5714 16.8763 9.99992ZM18.1263 9.99992C18.1263 11.2618 17.0965 12.2916 15.8346 12.2916C14.5728 12.2916 13.543 11.2618 13.543 9.99992C13.543 8.73807 14.5728 7.70825 15.8346 7.70825C17.0965 7.70825 18.1263 8.73807 18.1263 9.99992Z" fill="#566273" />
-                            <path d="M11.0404 9.99992C11.0404 9.42843 10.5702 8.95825 9.9987 8.95825C9.42721 8.95825 8.95703 9.42843 8.95703 9.99992C8.95703 10.5714 9.42721 11.0416 9.9987 11.0416C10.5702 11.0416 11.0404 10.5714 11.0404 9.99992ZM12.2904 9.99992C12.2904 11.2618 11.2605 12.2916 9.9987 12.2916C8.73685 12.2916 7.70703 11.2618 7.70703 9.99992C7.70703 8.73807 8.73685 7.70825 9.9987 7.70825C11.2605 7.70825 12.2904 8.73807 12.2904 9.99992Z" fill="#566273" />
-                          </svg>
-                          More
                         </button>
                       </div>
                     )}
@@ -4348,6 +4333,18 @@ const TrashIcon = ({ className }: { className?: string }) => (
     <path d="M6.56658 2.6665C9.09779 2.66651 11.6362 2.78089 14.1588 3.00248C14.4687 3.02981 14.6949 3.27465 14.6641 3.54942C14.6333 3.82415 14.3571 4.02461 14.0471 3.99739C11.5606 3.77896 9.05955 3.66663 6.56658 3.66662C5.09632 3.66662 3.62549 3.73224 2.15494 3.86391L2.15347 3.86456L0.619014 3.99739C0.308966 4.02433 0.0331695 3.82359 0.00273493 3.54877C-0.0276619 3.27393 0.198797 3.02946 0.508833 3.00248L2.04182 2.86965V2.869C3.5498 2.73398 5.05831 2.6665 6.56658 2.6665Z" fill="#C53434" />
   </svg>
 
+)
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className}>
+    <path
+      d="M6 6L18 18M18 6L6 18"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
 )
 
 const DragIcon = ({ className }: { className?: string }) => (
