@@ -1292,8 +1292,16 @@ const DashboardPage = () => {
                 {activeTab === 'FAQs' && (
                   <div className="mt-6">
                     <div className="space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
-                      {faqs.map((faq) => (
-                        <div key={faq.id} className="rounded-xl border border-slate-200 bg-white p-6">
+                      {faqs.map((faq, index) => (
+                        <div
+                          key={faq.id}
+                          draggable
+                          onDragStart={() => (faqDragItem.current = index)}
+                          onDragEnter={() => (faqDragOver.current = index)}
+                          onDragEnd={handleFAQSort}
+                          onDragOver={(event) => event.preventDefault()}
+                          className="rounded-xl border border-slate-200 bg-white p-6 hover:cursor-grab active:cursor-grabbing"
+                        >
                           <div className="flex items-start gap-4">
                             <div className="shrink-0 mt-1">
                               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
