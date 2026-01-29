@@ -845,15 +845,27 @@ const DashboardPage = () => {
     })
   }
 
-  const handleMoveVariantColor = (id: string) => {
-    setVariantColors((prev) => {
-      const index = prev.findIndex((item) => item.id === id)
-      if (index <= 0) return prev
-      const next = [...prev]
-      const [moved] = next.splice(index, 1)
-      next.splice(index - 1, 0, moved)
-      return next
-    })
+  const dragItem = useRef<number | null>(null)
+  const dragOverItem = useRef<number | null>(null)
+
+  const handleSort = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return
+    const _variantColors = [...variantColors]
+    const draggedItemContent = _variantColors.splice(dragItem.current, 1)[0]
+    _variantColors.splice(dragOverItem.current, 0, draggedItemContent)
+    dragItem.current = null
+    dragOverItem.current = null
+    setVariantColors(_variantColors)
+  }
+
+  const handleCategorySort = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return
+    const _categoryRows = [...categoryRows]
+    const draggedItemContent = _categoryRows.splice(dragItem.current, 1)[0]
+    _categoryRows.splice(dragOverItem.current, 0, draggedItemContent)
+    dragItem.current = null
+    dragOverItem.current = null
+    setCategoryRows(_categoryRows)
   }
 
   const sizeDefaultsByColor: Record<string, Record<string, { price: string; stock: string; sku: string }>> = {
@@ -2591,7 +2603,7 @@ const DashboardPage = () => {
                         </label>
                       </div>
                       <div className="mt-4 space-y-3">
-                        {variantColors.map((color) => {
+                        {variantColors.map((color, index) => {
                           const images = variantImages[color.id] ?? []
                           const isUploading = variantImageUploading[color.id]
                           const uploadProgress = variantImageUploadProgress[color.id] ?? 0
@@ -2599,7 +2611,12 @@ const DashboardPage = () => {
                           return (
                             <div
                               key={color.id}
-                              className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2"
+                              draggable
+                              onDragStart={() => (dragItem.current = index)}
+                              onDragEnter={() => (dragOverItem.current = index)}
+                              onDragEnd={handleSort}
+                              onDragOver={(e) => e.preventDefault()}
+                              className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 transition-all duration-200 hover:shadow-sm"
                             >
                               <input
                                 value={color.name}
@@ -2617,7 +2634,7 @@ const DashboardPage = () => {
                                         <img
                                           src={image.url}
                                           alt={`${color.name} variant ${index + 1}`}
-                                          className="h-7 w-7 object-cover  rounded-md"
+                                          className="h-7 w-7 object-cover rounded-md"
                                         />
                                       </div>
                                     ))}
@@ -2663,13 +2680,11 @@ const DashboardPage = () => {
                                 >
                                   <TrashIcon className="h-3.5 w-3.5" />
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleMoveVariantColor(color.id)}
-                                  className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-50"
+                                <div
+                                  className="grid h-8 w-8 cursor-grab place-items-center rounded-lg text-slate-400 hover:bg-slate-50 active:cursor-grabbing"
                                 >
                                   <DragIcon className="h-4 w-4" />
-                                </button>
+                                </div>
                               </div>
                             </div>
                           )
@@ -3005,7 +3020,15 @@ const DashboardPage = () => {
                     </thead>
                     <tbody className="text-slate-600">
                       {categoryRows.map((row, index) => (
-                        <tr key={row.name} className="border-t border-slate-200">
+                        <tr
+                          key={row.name}
+                          draggable
+                          onDragStart={() => (dragItem.current = index)}
+                          onDragEnter={() => (dragOverItem.current = index)}
+                          onDragEnd={handleCategorySort}
+                          onDragOver={(e) => e.preventDefault()}
+                          className="border-t border-slate-200"
+                        >
                           <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
                           <td className="px-4 py-3 text-xs text-slate-500">
                             <div className="max-w-[360px] whitespace-normal">
@@ -3039,25 +3062,15 @@ const DashboardPage = () => {
                                     setCategoryDescription('')
                                   }
                                 }}
-                                className="grid h-7 w-7 place-items-center rounded-md text-red-500"
+                                className="grid h-7 w-7 place-items-center rounded-md text-red-500 hover:bg-red-50"
                               >
                                 <TrashIcon className="h-3.5 w-3.5" />
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (index === 0) return
-                                  setCategoryRows((prev) => {
-                                    const next = [...prev]
-                                    const [moved] = next.splice(index, 1)
-                                    next.splice(index - 1, 0, moved)
-                                    return next
-                                  })
-                                }}
-                                className="grid h-7 w-7 place-items-center rounded-md text-slate-400"
+                              <div
+                                className="grid h-7 w-7 cursor-grab place-items-center rounded-md text-slate-400 hover:bg-slate-50 active:cursor-grabbing"
                               >
                                 <DragIcon className="h-3.5 w-3.5" />
-                              </button>
+                              </div>
                             </div>
                           </td>
                         </tr>
