@@ -4,4 +4,4 @@ const DashboardIndexPage = () => {
   redirect('/dashboard/portfolio/content')
 }
 
-export default DashboardIndexPage   
+export default DashboardIndexPage

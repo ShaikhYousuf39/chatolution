@@ -161,6 +161,8 @@ export const DashboardSidebar = ({
   showTabEdit = true,
 }: DashboardSidebarProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement | null>(null)
   const [contentOpen, setContentOpen] = useState(() => {
     if (typeof window === 'undefined') return true
     const stored = window.localStorage.getItem('dashboardContentOpen')
@@ -172,6 +174,18 @@ export const DashboardSidebar = ({
   useEffect(() => {
     window.localStorage.setItem('dashboardContentOpen', String(contentOpen))
   }, [contentOpen])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!profileMenuRef.current) return
+      if (!profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <aside
@@ -328,17 +342,55 @@ export const DashboardSidebar = ({
 
       <div className="mt-auto space-y-3 pt-4 text-sm text-slate-500">
         <button
-          onClick={() => onNavigate('/dashboard/settings/general')}
+          onClick={() => onNavigate('/dashboard/portfolio/settings/general')}
           className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
         >
           <SettingsIcon className="h-4 w-4 text-slate-400" />
           {sidebarOpen && 'Settings'}
         </button>
-        <div className="flex items-center gap-3 px-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C7E3EC] text-xs font-semibold text-[#1C7089]">
-            j
-          </div>
-          {sidebarOpen && 'Joel'}
+        <div ref={profileMenuRef} className="relative">
+          <button
+            onClick={() => setProfileMenuOpen((prev) => !prev)}
+            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
+            type="button"
+          >
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C7E3EC] text-xs font-semibold text-[#1C7089]">
+              j
+            </div>
+            {sidebarOpen && 'Joel'}
+          </button>
+          {profileMenuOpen && (
+            <div
+              className={`absolute bottom-full mb-2 w-44 rounded-xl border border-slate-200 bg-white p-1 shadow-lg ${sidebarOpen ? 'left-0' : 'left-1/2 -translate-x-1/2'
+                }`}
+            >
+              <button
+                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-50"
+                type="button"
+              >
+
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13.5443 5.83317C13.5443 3.87716 11.9586 2.2915 10.0026 2.2915C8.0466 2.2915 6.46094 3.87716 6.46094 5.83317C6.46094 7.78918 8.0466 9.37484 10.0026 9.37484C11.9586 9.37484 13.5443 7.78918 13.5443 5.83317ZM14.7943 5.83317C14.7943 8.47953 12.649 10.6248 10.0026 10.6248C7.35624 10.6248 5.21094 8.47953 5.21094 5.83317C5.21094 3.18681 7.35624 1.0415 10.0026 1.0415C12.649 1.0415 14.7943 3.18681 14.7943 5.83317Z" fill="#566273" />
+                  <path d="M16.5352 18.3333C16.5352 15.5674 13.7329 13.125 10.002 13.125C6.27108 13.1251 3.46875 15.5674 3.46875 18.3333C3.46875 18.6785 3.18893 18.9583 2.84375 18.9583C2.49857 18.9583 2.21875 18.6785 2.21875 18.3333C2.21875 14.6493 5.83294 11.8751 10.002 11.875C14.171 11.875 17.7852 14.6493 17.7852 18.3333C17.7852 18.6785 17.5053 18.9583 17.1602 18.9583C16.8151 18.9582 16.5352 18.6784 16.5352 18.3333Z" fill="#566273" />
+                </svg>
+
+                My Profile
+              </button>
+              <button
+                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-rose-600 transition hover:bg-rose-50"
+                type="button"
+              >
+
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.2925 12.7254V7.29167C17.2925 5.49132 16.9286 4.3929 16.2647 3.72884C15.6006 3.06478 14.5017 2.7002 12.7011 2.7002H12.5928C10.9626 2.7002 9.90612 2.99972 9.23019 3.54818C8.57164 4.08265 8.16153 4.94761 8.04041 6.35417C8.01062 6.69789 7.70793 6.95262 7.36415 6.92301C7.02033 6.89337 6.76578 6.59056 6.7953 6.24674C6.93249 4.65355 7.42208 3.40535 8.44243 2.57731C9.44567 1.76327 10.8481 1.4502 12.5928 1.4502H12.7011C14.6254 1.4502 16.1355 1.83203 17.1485 2.84505C18.1613 3.85804 18.5425 5.3676 18.5425 7.29167V12.7254C18.5425 14.6495 18.1613 16.1591 17.1485 17.172C16.1355 18.1851 14.6254 18.5669 12.7011 18.5669H12.5928C10.8608 18.5669 9.46722 18.2578 8.46603 17.4569C7.44679 16.6415 6.95064 15.4115 6.80425 13.8411C6.77242 13.4976 7.02465 13.1936 7.36821 13.1616C7.7119 13.1296 8.01651 13.3819 8.04855 13.7256C8.17716 15.1051 8.58872 15.9549 9.24647 16.4811C9.92236 17.0218 10.9749 17.3169 12.5928 17.3169H12.7011C14.5017 17.3169 15.6006 16.9523 16.2647 16.2882C16.9286 15.6242 17.2925 14.5258 17.2925 12.7254Z" fill="#566273" />
+                  <path d="M12.4012 9.375C12.7464 9.375 13.0262 9.65482 13.0262 10C13.0262 10.3452 12.7464 10.625 12.4012 10.625H1.66797C1.32279 10.625 1.04297 10.3452 1.04297 10C1.04297 9.65482 1.32279 9.375 1.66797 9.375H12.4012Z" fill="#566273" />
+                  <path d="M10.101 6.76655C10.3451 6.52248 10.7407 6.52248 10.9848 6.76655L13.7762 9.5579C14.0202 9.80197 14.0202 10.1976 13.7762 10.4417L10.9848 13.2338C10.7408 13.4778 10.3451 13.4778 10.101 13.2338C9.85698 12.9898 9.85703 12.5941 10.101 12.3501L12.4505 9.99979L10.101 7.65034C9.85695 7.40627 9.85695 7.01063 10.101 6.76655Z" fill="#566273" />
+                </svg>
+
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </aside>
@@ -425,9 +477,12 @@ const DashboardPage = () => {
   const [editResourceFileUrl, setEditResourceFileUrl] = useState<string | null>(null)
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
+  const [draggedResourceIndex, setDraggedResourceIndex] = useState<number | null>(null)
   const editorRef = useRef<HTMLDivElement | null>(null)
   const faqDragItem = useRef<number | null>(null)
   const faqDragOver = useRef<number | null>(null)
+  const resourceDragItem = useRef<number | null>(null)
+  const resourceDragOver = useRef<number | null>(null)
   const [editorContent, setEditorContent] = useState(defaultEditorContent)
   const [sectionFiles, setSectionFiles] = useState<Record<string, File[]>>({
     'Welcome message': [],
@@ -440,22 +495,22 @@ const DashboardPage = () => {
     'Privacy': [],
     'T&C': [],
   })
-  const [sectionPreview, setSectionPreview] = useState<Record<string, string | null>>({
-    'Welcome message': null,
-    'About': null,
-    'Portfolio': null,
-    'Services': null,
-    'How It Works': null,
-    'FAQs': null,
-    'Resources': null,
-    'Privacy': null,
-    'T&C': null,
+  const [sectionPreview, setSectionPreview] = useState<Record<string, string[]>>({
+    'Welcome message': [],
+    'About': [],
+    'Portfolio': [],
+    'Services': [],
+    'How It Works': [],
+    'FAQs': [],
+    'Resources': [],
+    'Privacy': [],
+    'T&C': [],
   })
   const [cardsByTab, setCardsByTab] = useState<Record<string, CardData[]>>({
     'Welcome message': [],
     'About': [],
-    'Portfolio': [createCard(), createCard()],
-    'Services': [createCard(), createCard()],
+    'Portfolio': [],
+    'Services': [],
     'How It Works': [],
     'FAQs': [],
     'Resources': [],
@@ -465,26 +520,26 @@ const DashboardPage = () => {
   const [saveStatus, setSaveStatus] = useState('')
 
   const activeSidebarSection = (() => {
-    if (pathname?.startsWith('/dashboard/accreditation')) return 'Accreditation'
-    if (pathname?.startsWith('/dashboard/testimonials')) return 'Testimonials'
-    if (pathname?.startsWith('/dashboard/forms')) return 'Forms'
-    if (pathname?.startsWith('/dashboard/contact')) return 'Contact'
+    if (pathname?.startsWith('/dashboard/portfolio/accreditation')) return 'Accreditation'
+    if (pathname?.startsWith('/dashboard/portfolio/testimonials')) return 'Testimonials'
+    if (pathname?.startsWith('/dashboard/portfolio/forms')) return 'Forms'
+    if (pathname?.startsWith('/dashboard/portfolio/contact')) return 'Contact'
     return 'Content'
   })()
   const sidebarRoutes: Record<string, string> = {
-    Content: '/dashboard/content',
-    Accreditation: '/dashboard/accreditation',
-    Testimonials: '/dashboard/testimonials',
-    Forms: '/dashboard/forms',
-    Contact: '/dashboard/contact',
+    Content: '/dashboard/portfolio/content',
+    Accreditation: '/dashboard/portfolio/accreditation',
+    Testimonials: '/dashboard/portfolio/testimonials',
+    Forms: '/dashboard/portfolio/forms',
+    Contact: '/dashboard/portfolio/contact',
   }
 
   // Accreditation state
   const [accreditationEditorContent, setAccreditationEditorContent] = useState('')
-  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([createCard()])
+  const [accreditationCards, setAccreditationCards] = useState<CardData[]>([])
 
   // Testimonials state
-  const [testimonials, setTestimonials] = useState<TestimonialData[]>([createTestimonial()])
+  const [testimonials, setTestimonials] = useState<TestimonialData[]>([])
 
   // Forms state
   const [customFields, setCustomFields] = useState<CustomFieldData[]>([])
@@ -537,6 +592,11 @@ const DashboardPage = () => {
   const cardDescLabel =
     activeTab === 'Portfolio' ? 'Project description' : 'Service description'
   const activeTabHeading = tabHeadingMap[activeTab] ?? activeTab
+  const multiImageTabs = new Set(['Welcome message', 'About', 'Portfolio', 'Services', 'How It Works'])
+  const isMultiImageTab = multiImageTabs.has(activeTab)
+  const activeTabFiles = sectionFiles[activeTab] ?? []
+  const activeTabPreviews = sectionPreview[activeTab] ?? []
+  const isMultiImageLimitReached = isMultiImageTab && activeTabFiles.length >= 3
 
 
   const handleStartEdit = (tab: string) => {
@@ -580,7 +640,7 @@ const DashboardPage = () => {
       const remaining = contentTabs.filter((item) => item !== tab)
       const nextTab = remaining[0] ?? 'Welcome message'
       setActiveTab(nextTab)
-      router.push(`/dashboard/content?tab=${encodeURIComponent(nextTab)}`)
+      router.push(`/dashboard/portfolio/content?tab=${encodeURIComponent(nextTab)}`)
     }
     if (editingTab === tab) handleCancelEdit()
     setDeleteTarget(null)
@@ -667,15 +727,31 @@ const DashboardPage = () => {
 
 
 
+  const updateSectionFilesAndPreviews = (tab: string, files: File[]) => {
+    setSectionFiles((prev) => ({ ...prev, [tab]: files }))
+    setSectionPreview((prev) => {
+      prev[tab]?.forEach((url) => URL.revokeObjectURL(url))
+      const nextPreviews = files.map((file) => URL.createObjectURL(file))
+      return { ...prev, [tab]: nextPreviews }
+    })
+  }
+
   const handleSectionFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ? Array.from(event.target.files) : []
-    setSectionFiles((prev) => ({ ...prev, [activeTab]: files }))
-    setSectionPreview((prev) => {
-      const previous = prev[activeTab]
-      if (previous) URL.revokeObjectURL(previous)
-      const nextPreview = files[0] ? URL.createObjectURL(files[0]) : null
-      return { ...prev, [activeTab]: nextPreview }
-    })
+    if (isMultiImageTab) {
+      const existing = sectionFiles[activeTab] ?? []
+      const combined = [...existing, ...files].slice(0, 3)
+      updateSectionFilesAndPreviews(activeTab, combined)
+    } else {
+      updateSectionFilesAndPreviews(activeTab, files)
+    }
+    event.currentTarget.value = ''
+  }
+
+  const handleRemoveSectionImage = (tab: string, index: number) => {
+    const files = sectionFiles[tab] ?? []
+    const nextFiles = files.filter((_, fileIndex) => fileIndex !== index)
+    updateSectionFilesAndPreviews(tab, nextFiles)
   }
 
   const activeCards = cardsByTab[activeTab] ?? []
@@ -686,6 +762,13 @@ const DashboardPage = () => {
       [activeTab]: (prev[activeTab] ?? []).map((card) =>
         card.id === id ? { ...card, ...patch } : card
       ),
+    }))
+  }
+
+  const removeCard = (id: string) => {
+    setCardsByTab((prev) => ({
+      ...prev,
+      [activeTab]: (prev[activeTab] ?? []).filter((card) => card.id !== id),
     }))
   }
 
@@ -741,6 +824,10 @@ const DashboardPage = () => {
     setAccreditationCards((prev) => [...prev, createCard()])
   }
 
+  const removeAccreditationCard = (id: string) => {
+    setAccreditationCards((prev) => prev.filter((card) => card.id !== id))
+  }
+
   // Testimonial functions
   const updateTestimonial = (id: string, patch: Partial<TestimonialData>) => {
     setTestimonials((prev) =>
@@ -766,6 +853,10 @@ const DashboardPage = () => {
 
   const addTestimonial = () => {
     setTestimonials((prev) => [...prev, createTestimonial()])
+  }
+
+  const removeTestimonial = (id: string) => {
+    setTestimonials((prev) => prev.filter((testimonial) => testimonial.id !== id))
   }
 
   // Forms functions
@@ -830,6 +921,39 @@ const DashboardPage = () => {
     })
     faqDragItem.current = null
     faqDragOver.current = null
+  }
+
+  const moveFAQ = (from: number | null, to: number | null) => {
+    if (from === null || to === null || from === to) return
+    setFaqs((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return next
+    })
+  }
+
+  const handleResourceSort = () => {
+    if (resourceDragItem.current === null || resourceDragOver.current === null) return
+    setResources((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(resourceDragItem.current!, 1)
+      next.splice(resourceDragOver.current!, 0, moved)
+      return next
+    })
+    resourceDragItem.current = null
+    resourceDragOver.current = null
+    setDraggedResourceIndex(null)
+  }
+
+  const moveResource = (from: number | null, to: number | null) => {
+    if (from === null || to === null || from === to) return
+    setResources((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return next
+    })
   }
 
   const handleAddFAQFromModal = () => {
@@ -1001,9 +1125,9 @@ const DashboardPage = () => {
           activeSidebarSection={activeSidebarSection}
           activeTab={activeTab}
           contentTabs={contentTabs}
-          contentRoute="/dashboard/content"
+          contentRoute="/dashboard/portfolio/content"
           onNavigate={(route) => router.push(route)}
-          onTabSelect={(tab) => router.push(`/dashboard/content?tab=${encodeURIComponent(tab)}`)}
+          onTabSelect={(tab) => router.push(`/dashboard/portfolio/content?tab=${encodeURIComponent(tab)}`)}
           onTabEditStart={handleStartEdit}
           editingTab={editingTab}
           editValue={editValue}
@@ -1151,30 +1275,65 @@ const DashboardPage = () => {
 
                     {activeTab !== 'Privacy' && activeTab !== 'T&C' && (
                       <div className="mt-6 flex items-center gap-4">
-                        <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
-                          {sectionPreview[activeTab] ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={sectionPreview[activeTab] ?? ''}
-                              alt="Uploaded preview"
-                              className="h-full w-full rounded-lg object-cover"
-                            />
-                          ) : (
-                            <ImageIcon className="h-6 w-6" />
-                          )}
-                        </div>
+                        {isMultiImageTab ? (
+                          <div className="flex items-center gap-3">
+                            {activeTabPreviews.length ? (
+                              activeTabPreviews.map((previewUrl, index) => (
+                                <div
+                                  key={`${previewUrl}-${index}`}
+                                  className="group relative flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400"
+                                >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={previewUrl}
+                                    alt="Uploaded preview"
+                                    className="h-full w-full rounded-lg object-cover"
+                                  />
+                                  <button
+                                    onClick={() => handleRemoveSectionImage(activeTab, index)}
+                                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 opacity-0 shadow-sm transition group-hover:opacity-100"
+                                    type="button"
+                                  >
+                                    <CloseIcon className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
+                                <ImageIcon className="h-6 w-6" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
+                            {sectionPreview[activeTab]?.[0] ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={sectionPreview[activeTab]?.[0] ?? ''}
+                                alt="Uploaded preview"
+                                className="h-full w-full rounded-lg object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="h-6 w-6" />
+                            )}
+                          </div>
+                        )}
                         <div className="flex-1 px-2">
                           <p className="text-xs italic text-slate-500">
                             Upload upto 3 images, each less than 5MB (1240 x 600)
                           </p>
                           <div className="mt-3 py-2 px-2 rounded-sm max-w-95.75 flex items-center bg-[#F8FCFF] gap-3">
-                            <label className="cursor-pointer rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD]">
+                            <label
+                              className={`rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD] ${isMultiImageLimitReached ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                                }`}
+                            >
                               Choose File
                               <input
                                 className="hidden"
                                 type="file"
                                 multiple
                                 accept="image/*"
+                                disabled={isMultiImageLimitReached}
                                 onChange={handleSectionFileChange}
                               />
                             </label>
@@ -1248,43 +1407,36 @@ const DashboardPage = () => {
                       Create {activeTab} Cards
                     </h2>
                     <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-                      {activeTab === 'Portfolio' && activeCards[0] && (
-                        <div className="lg:col-span-2">
-                          <CardForm
-                            key={activeCards[0].id}
-                            titleLabel={cardTitleLabel}
-                            descLabel={cardDescLabel}
-                            card={activeCards[0]}
-                            onTitleChange={(value) =>
-                              updateCard(activeCards[0].id, { title: value })
-                            }
-                            onDescriptionChange={(value) =>
-                              updateCard(activeCards[0].id, { description: value })
-                            }
-                            onImageChange={(event) =>
-                              handleCardImageChange(activeCards[0].id, event)
-                            }
-                          />
-                        </div>
-                      )}
-                      {activeCards[1] && (
-                        <CardForm
-                          key={activeCards[1].id}
-                          titleLabel={cardTitleLabel}
-                          descLabel={cardDescLabel}
-                          card={activeCards[1]}
-                          onTitleChange={(value) =>
-                            updateCard(activeCards[1].id, { title: value })
-                          }
-                          onDescriptionChange={(value) =>
-                            updateCard(activeCards[1].id, { description: value })
-                          }
-                          onImageChange={(event) =>
-                            handleCardImageChange(activeCards[1].id, event)
-                          }
+                      {activeCards.length === 0 && (
+                        <AddCard
+                          onAdd={addCard}
+                          className="lg:col-span-2"
                         />
                       )}
-                      <AddCard onAdd={addCard} />
+                      {activeCards.map((card, index) => (
+                        <div
+                          key={card.id}
+                          className={index === 0 ? 'lg:col-span-2' : ''}
+                        >
+                          <CardForm
+                            titleLabel={cardTitleLabel}
+                            descLabel={cardDescLabel}
+                            card={card}
+                            onTitleChange={(value) =>
+                              updateCard(card.id, { title: value })
+                            }
+                            onDescriptionChange={(value) =>
+                              updateCard(card.id, { description: value })
+                            }
+                            onImageChange={(event) =>
+                              handleCardImageChange(card.id, event)
+                            }
+                            showDelete={activeCards.length > 1}
+                            onDelete={() => removeCard(card.id)}
+                          />
+                        </div>
+                      ))}
+                      {activeCards.length > 0 && <AddCard onAdd={addCard} />}
                     </div>
                   </>
                 )}
@@ -1297,9 +1449,21 @@ const DashboardPage = () => {
                           key={faq.id}
                           draggable
                           onDragStart={() => (faqDragItem.current = index)}
-                          onDragEnter={() => (faqDragOver.current = index)}
-                          onDragEnd={handleFAQSort}
-                          onDragOver={(event) => event.preventDefault()}
+                          onDragOver={(event) => {
+                            event.preventDefault()
+                            faqDragOver.current = index
+                            event.dataTransfer.dropEffect = 'move'
+                          }}
+                          onDrop={(event) => {
+                            event.preventDefault()
+                            moveFAQ(faqDragItem.current, index)
+                            faqDragItem.current = null
+                            faqDragOver.current = null
+                          }}
+                          onDragEnd={() => {
+                            faqDragItem.current = null
+                            faqDragOver.current = null
+                          }}
                           className="rounded-xl border border-slate-200 bg-white p-6 hover:cursor-grab active:cursor-grabbing"
                         >
                           <div className="flex items-start gap-4">
@@ -1495,8 +1659,35 @@ const DashboardPage = () => {
                 {activeTab === 'Resources' && (
                   <div className="mt-6">
                     <div className="space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
-                      {resources.map((resource) => (
-                        <div key={resource.id} className="rounded-xl border border-slate-200 bg-white p-6">
+                      {resources.map((resource, index) => (
+                        <div
+                          key={resource.id}
+                          className="rounded-xl border border-slate-200 bg-white p-6 cursor-grab select-none hover:cursor-grab active:cursor-grabbing"
+                          draggable
+                          onDragStart={(event) => {
+                            resourceDragItem.current = index
+                            setDraggedResourceIndex(index)
+                            event.dataTransfer.effectAllowed = 'move'
+                            event.dataTransfer.setData('text/plain', String(index))
+                          }}
+                          onDragOver={(event) => {
+                            event.preventDefault()
+                            event.dataTransfer.dropEffect = 'move'
+                            resourceDragOver.current = index
+                          }}
+                          onDrop={(event) => {
+                            event.preventDefault()
+                            moveResource(draggedResourceIndex, index)
+                            resourceDragItem.current = null
+                            resourceDragOver.current = null
+                            setDraggedResourceIndex(null)
+                          }}
+                          onDragEnd={() => {
+                            resourceDragItem.current = null
+                            resourceDragOver.current = null
+                            setDraggedResourceIndex(null)
+                          }}
+                        >
                           <div className="flex items-start gap-4">
                             <div className="shrink-0 mt-3">
                               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -1712,26 +1903,36 @@ const DashboardPage = () => {
               </div>
 
               <h2 className="mt-10 text-lg font-semibold">Create Accreditation Cards</h2>
-              <div className="mt-4 grid gap-6 lg:grid-cols-[2fr_1fr]">
-                {accreditationCards.map((card) => (
-                  <CardForm
-                    key={card.id}
-                    titleLabel="Accreditation title"
-                    descLabel="Accreditation description"
-                    card={card}
-                    onTitleChange={(value) => updateAccreditationCard(card.id, { title: value })}
-                    onDescriptionChange={(value) =>
-                      updateAccreditationCard(card.id, { description: value })
-                    }
-                    onImageChange={(event) => handleAccreditationCardImageChange(card.id, event)}
+              <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+                {accreditationCards.length === 0 && (
+                  <AddCard
+                    onAdd={addAccreditationCard}
+                    text="Want to showcase more? Add another Accreditation!"
+                    className="lg:col-span-2"
                   />
+                )}
+                {accreditationCards.map((card, index) => (
+                  <div key={card.id} className={index === 0 ? 'lg:col-span-2' : ''}>
+                    <CardForm
+                      titleLabel="Accreditation title"
+                      descLabel="Accreditation description"
+                      card={card}
+                      onTitleChange={(value) => updateAccreditationCard(card.id, { title: value })}
+                      onDescriptionChange={(value) =>
+                        updateAccreditationCard(card.id, { description: value })
+                      }
+                      onImageChange={(event) => handleAccreditationCardImageChange(card.id, event)}
+                      showDelete={accreditationCards.length > 1}
+                      onDelete={() => removeAccreditationCard(card.id)}
+                    />
+                  </div>
                 ))}
-                <div className="w-full self-start">
+                {accreditationCards.length > 0 && (
                   <AddCard
                     onAdd={addAccreditationCard}
                     text="Want to showcase more? Add another Accreditation!"
                   />
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -1741,9 +1942,30 @@ const DashboardPage = () => {
               <h1 className="text-xl font-medium">Testimonials</h1>
               <h2 className="mt-5 text-xl font-medium">Add New Testimonial</h2>
 
-              <div className="mt-5 grid gap-6 lg:grid-cols-[2fr_1fr]">
-                {testimonials.map((testimonial) => (
-                  <div key={testimonial.id} className="rounded-xl shadow shadow-gray-200 bg-white p-3">
+              <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+                {testimonials.length === 0 && (
+                  <AddCard
+                    onAdd={addTestimonial}
+                    text="Want to showcase more? Add another Testimonial!"
+                    className="lg:col-span-2"
+                  />
+                )}
+                {testimonials.map((testimonial, index) => (
+                  <div
+                    key={testimonial.id}
+                    className={`relative rounded-xl shadow shadow-gray-200 bg-white p-3 ${index === 0 ? 'lg:col-span-2' : ''
+                      }`}
+                  >
+                    {testimonials.length > 1 && (
+                      <button
+                        onClick={() => removeTestimonial(testimonial.id)}
+                        type="button"
+                        className="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-rose-200 bg-rose-500 text-white shadow-sm"
+                        aria-label="Remove testimonial"
+                      >
+                        <CloseIcon className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                     <div className="grid gap-6 ">
                       <div className="space-y-4">
                         <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
@@ -1820,17 +2042,12 @@ const DashboardPage = () => {
                   </div>
                 ))}
 
-                <button
-                  onClick={addTestimonial}
-                  className="flex flex-col w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-[#0F67FD] bg-white p-6 text-center transition hover:border-blue-500 hover:bg-blue-50/40"
-                >
-                  <div className="flex h-20 w-20 items-center justify-center rounded-xl text-blue-600">
-                    <AddFileIcon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm max-w-42.5 text-slate-400">Want to showcase more? Add another Testimonial!</p>
-                  </div>
-                </button>
+                {testimonials.length > 0 && (
+                  <AddCard
+                    onAdd={addTestimonial}
+                    text="Want to showcase more? Add another Testimonial!"
+                  />
+                )}
               </div>
             </div>
           )}
@@ -1847,7 +2064,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Name</label>
                       <input
-                        readOnly
                         placeholder="John Doe"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -1856,7 +2072,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Email</label>
                       <input
-                        readOnly
                         placeholder="johndoe@gmail.com"
                         className="w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -1865,7 +2080,6 @@ const DashboardPage = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-semibold text-slate-600">Message</label>
                       <textarea
-                        readOnly
                         placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                         className="min-h-16 w-full rounded-lg  bg-[#FAFAFA] px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-50 focus:ring-2 focus:ring-slate-200"
                       />
@@ -1915,7 +2129,6 @@ const DashboardPage = () => {
                                 <input
                                   type={field.type === 'checkboxes' ? 'checkbox' : 'radio'}
                                   className="h-4 w-4 text-blue-600"
-                                  disabled
                                 />
                                 <input
                                   value={option}
@@ -1932,7 +2145,6 @@ const DashboardPage = () => {
                             type="number"
                             placeholder="Enter number"
                             className="w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                            disabled
                           />
                         )}
 
@@ -1940,7 +2152,6 @@ const DashboardPage = () => {
                           <textarea
                             placeholder="Enter address"
                             className="min-h-24 w-full rounded-xl border border-slate-200 bg-[#FAFAFA] px-3 py-3 text-sm text-slate-600"
-                            disabled
                           />
                         )}
                       </div>
@@ -2007,15 +2218,6 @@ const DashboardPage = () => {
                             <path d="M10.5042 1.04175C13.987 1.04399 17.5355 3.00018 18.4731 6.94507C19.5606 11.5202 16.562 15.3205 14.105 17.5676C12.0913 19.4174 8.9075 19.4156 6.88709 17.5676L6.88623 17.5668C4.4382 15.3198 1.44096 11.5115 2.52832 6.93693V6.93612C3.47076 2.99129 7.02122 1.03953 10.5042 1.04175ZM10.5033 2.29175C7.51402 2.28983 4.58949 3.94146 3.8075 7.212L3.80835 7.21281C2.88333 11.1044 5.41455 14.4796 7.79627 16.6659C9.31043 18.0509 11.6911 18.0491 13.1949 16.6667L13.1958 16.6659C15.5862 14.4798 18.1179 11.1131 17.1931 7.22176C16.4157 3.95022 13.4931 2.29367 10.5033 2.29175Z" fill="#566273" />
                           </svg>
                           Address Field
-                        </button>
-                        <div className=" "></div>
-                        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M5.20833 9.99998C5.20833 9.42849 4.73816 8.95831 4.16667 8.95831C3.59518 8.95831 3.125 9.42849 3.125 9.99998C3.125 10.5715 3.59518 11.0416 4.16667 11.0416C4.73816 11.0416 5.20833 10.5715 5.20833 9.99998ZM6.45833 9.99998C6.45833 11.2618 5.42851 12.2916 4.16667 12.2916C2.90482 12.2916 1.875 11.2618 1.875 9.99998C1.875 8.73814 2.90482 7.70831 4.16667 7.70831C5.42851 7.70831 6.45833 8.73814 6.45833 9.99998Z" fill="#566273" />
-                            <path d="M16.8763 9.99992C16.8763 9.42843 16.4061 8.95825 15.8346 8.95825C15.2631 8.95825 14.793 9.42843 14.793 9.99992C14.793 10.5714 15.2631 11.0416 15.8346 11.0416C16.4061 11.0416 16.8763 10.5714 16.8763 9.99992ZM18.1263 9.99992C18.1263 11.2618 17.0965 12.2916 15.8346 12.2916C14.5728 12.2916 13.543 11.2618 13.543 9.99992C13.543 8.73807 14.5728 7.70825 15.8346 7.70825C17.0965 7.70825 18.1263 8.73807 18.1263 9.99992Z" fill="#566273" />
-                            <path d="M11.0404 9.99992C11.0404 9.42843 10.5702 8.95825 9.9987 8.95825C9.42721 8.95825 8.95703 9.42843 8.95703 9.99992C8.95703 10.5714 9.42721 11.0416 9.9987 11.0416C10.5702 11.0416 11.0404 10.5714 11.0404 9.99992ZM12.2904 9.99992C12.2904 11.2618 11.2605 12.2916 9.9987 12.2916C8.73685 12.2916 7.70703 11.2618 7.70703 9.99992C7.70703 8.73807 8.73685 7.70825 9.9987 7.70825C11.2605 7.70825 12.2904 8.73807 12.2904 9.99992Z" fill="#566273" />
-                          </svg>
-                          More
                         </button>
                       </div>
                     )}
@@ -2356,6 +2558,8 @@ const CardForm = ({
   onTitleChange,
   onDescriptionChange,
   onImageChange,
+  showDelete = false,
+  onDelete,
 }: {
   titleLabel: string
   descLabel: string
@@ -2363,8 +2567,20 @@ const CardForm = ({
   onTitleChange: (value: string) => void
   onDescriptionChange: (value: string) => void
   onImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  showDelete?: boolean
+  onDelete?: () => void
 }) => (
-  <div className="space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
+  <div className="relative space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
+    {showDelete && onDelete && (
+      <button
+        onClick={onDelete}
+        type="button"
+        className="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-rose-200 bg-rose-500 text-white shadow-sm"
+        aria-label="Remove card"
+      >
+        <CloseIcon className="h-3.5 w-3.5" />
+      </button>
+    )}
     <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200  px-4 py-6 text-center text-xs text-slate-500">
       {card.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -2405,10 +2621,18 @@ const CardForm = ({
   </div>
 )
 
-const AddCard = ({ onAdd, text = 'Add another project!' }: { onAdd: () => void; text?: string }) => (
+const AddCard = ({
+  onAdd,
+  text = 'Add another project!',
+  className,
+}: {
+  onAdd: () => void
+  text?: string
+  className?: string
+}) => (
   <button
     onClick={onAdd}
-    className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40"
+    className={`flex w-full h-full min-h-[320px] cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-3 border-dashed border-[#0F67FD] bg-white p-6 text-center text-base text-slate-500 transition hover:border-blue-500 hover:bg-blue-50/40 ${className ?? ''}`}
   >
     <div className="flex h-20 w-20 items-center justify-center rounded-2xl text-blue-600">
       <AddFileIcon className="h-8 w-8" />

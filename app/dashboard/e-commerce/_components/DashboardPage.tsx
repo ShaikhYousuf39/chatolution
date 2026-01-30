@@ -169,6 +169,8 @@ export const DashboardSidebar = ({
   showTabEdit = true,
 }: DashboardSidebarProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement | null>(null)
   const [contentOpen, setContentOpen] = useState(() => {
     if (typeof window === 'undefined') return true
     const stored = window.localStorage.getItem('dashboardContentOpen')
@@ -190,6 +192,18 @@ export const DashboardSidebar = ({
   useEffect(() => {
     window.localStorage.setItem('dashboardProductOpen', String(productOpen))
   }, [productOpen])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!profileMenuRef.current) return
+      if (!profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <aside
@@ -396,11 +410,49 @@ export const DashboardSidebar = ({
           <SettingsIcon className="h-4 w-4 text-slate-400" />
           {sidebarOpen && 'Settings'}
         </button>
-        <div className="flex items-center gap-3 px-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C7E3EC] text-xs font-semibold text-[#1C7089]">
-            j
-          </div>
-          {sidebarOpen && 'Joel'}
+        <div ref={profileMenuRef} className="relative">
+          <button
+            onClick={() => setProfileMenuOpen((prev) => !prev)}
+            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
+            type="button"
+          >
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C7E3EC] text-xs font-semibold text-[#1C7089]">
+              j
+            </div>
+            {sidebarOpen && 'Joel'}
+          </button>
+          {profileMenuOpen && (
+            <div
+              className={`absolute bottom-full mb-2 w-44 rounded-xl border border-slate-200 bg-white p-1 shadow-lg ${sidebarOpen ? 'left-0' : 'left-1/2 -translate-x-1/2'
+                }`}
+            >
+              <button
+                className=" flex gap-3 w-full rounded-lg px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-slate-50"
+                type="button"
+              >
+                
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.5443 5.83317C13.5443 3.87716 11.9586 2.2915 10.0026 2.2915C8.0466 2.2915 6.46094 3.87716 6.46094 5.83317C6.46094 7.78918 8.0466 9.37484 10.0026 9.37484C11.9586 9.37484 13.5443 7.78918 13.5443 5.83317ZM14.7943 5.83317C14.7943 8.47953 12.649 10.6248 10.0026 10.6248C7.35624 10.6248 5.21094 8.47953 5.21094 5.83317C5.21094 3.18681 7.35624 1.0415 10.0026 1.0415C12.649 1.0415 14.7943 3.18681 14.7943 5.83317Z" fill="#566273"/>
+<path d="M16.5352 18.3333C16.5352 15.5674 13.7329 13.125 10.002 13.125C6.27108 13.1251 3.46875 15.5674 3.46875 18.3333C3.46875 18.6785 3.18893 18.9583 2.84375 18.9583C2.49857 18.9583 2.21875 18.6785 2.21875 18.3333C2.21875 14.6493 5.83294 11.8751 10.002 11.875C14.171 11.875 17.7852 14.6493 17.7852 18.3333C17.7852 18.6785 17.5053 18.9583 17.1602 18.9583C16.8151 18.9582 16.5352 18.6784 16.5352 18.3333Z" fill="#566273"/>
+</svg>
+
+                My Profile
+              </button>
+              <button
+                className=" flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-rose-600 transition hover:bg-rose-50"
+                type="button"
+              >
+                
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.2925 12.7254V7.29167C17.2925 5.49132 16.9286 4.3929 16.2647 3.72884C15.6006 3.06478 14.5017 2.7002 12.7011 2.7002H12.5928C10.9626 2.7002 9.90612 2.99972 9.23019 3.54818C8.57164 4.08265 8.16153 4.94761 8.04041 6.35417C8.01062 6.69789 7.70793 6.95262 7.36415 6.92301C7.02033 6.89337 6.76578 6.59056 6.7953 6.24674C6.93249 4.65355 7.42208 3.40535 8.44243 2.57731C9.44567 1.76327 10.8481 1.4502 12.5928 1.4502H12.7011C14.6254 1.4502 16.1355 1.83203 17.1485 2.84505C18.1613 3.85804 18.5425 5.3676 18.5425 7.29167V12.7254C18.5425 14.6495 18.1613 16.1591 17.1485 17.172C16.1355 18.1851 14.6254 18.5669 12.7011 18.5669H12.5928C10.8608 18.5669 9.46722 18.2578 8.46603 17.4569C7.44679 16.6415 6.95064 15.4115 6.80425 13.8411C6.77242 13.4976 7.02465 13.1936 7.36821 13.1616C7.7119 13.1296 8.01651 13.3819 8.04855 13.7256C8.17716 15.1051 8.58872 15.9549 9.24647 16.4811C9.92236 17.0218 10.9749 17.3169 12.5928 17.3169H12.7011C14.5017 17.3169 15.6006 16.9523 16.2647 16.2882C16.9286 15.6242 17.2925 14.5258 17.2925 12.7254Z" fill="#566273"/>
+<path d="M12.4012 9.375C12.7464 9.375 13.0262 9.65482 13.0262 10C13.0262 10.3452 12.7464 10.625 12.4012 10.625H1.66797C1.32279 10.625 1.04297 10.3452 1.04297 10C1.04297 9.65482 1.32279 9.375 1.66797 9.375H12.4012Z" fill="#566273"/>
+<path d="M10.101 6.76655C10.3451 6.52248 10.7407 6.52248 10.9848 6.76655L13.7762 9.5579C14.0202 9.80197 14.0202 10.1976 13.7762 10.4417L10.9848 13.2338C10.7408 13.4778 10.3451 13.4778 10.101 13.2338C9.85698 12.9898 9.85703 12.5941 10.101 12.3501L12.4505 9.99979L10.101 7.65034C9.85695 7.40627 9.85695 7.01063 10.101 6.76655Z" fill="#566273"/>
+</svg>
+
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </aside>
@@ -487,6 +539,8 @@ const DashboardPage = () => {
   const [editResourceFileUrl, setEditResourceFileUrl] = useState<string | null>(null)
   const [deleteFAQTarget, setDeleteFAQTarget] = useState<string | null>(null)
   const [deleteResourceTarget, setDeleteResourceTarget] = useState<string | null>(null)
+  const faqDragItem = useRef<number | null>(null)
+  const faqDragOver = useRef<number | null>(null)
   const [productImages, setProductImages] = useState<{ file: File; url: string }[]>([])
   const [productImageUploadProgress, setProductImageUploadProgress] = useState(0)
   const [isProductImageUploading, setIsProductImageUploading] = useState(false)
@@ -563,17 +617,17 @@ const DashboardPage = () => {
     'T&C': [],
     'Returns & Refunds': [],
   })
-  const [sectionPreview, setSectionPreview] = useState<Record<string, string | null>>({
-    'Welcome message': null,
-    'About': null,
-    'Portfolio': null,
-    'Services': null,
-    'How It Works': null,
-    'FAQs': null,
-    'Resources': null,
-    'Privacy': null,
-    'T&C': null,
-    'Returns & Refunds': null,
+  const [sectionPreview, setSectionPreview] = useState<Record<string, string[]>>({
+    'Welcome message': [],
+    'About': [],
+    'Portfolio': [],
+    'Services': [],
+    'How It Works': [],
+    'FAQs': [],
+    'Resources': [],
+    'Privacy': [],
+    'T&C': [],
+    'Returns & Refunds': [],
   })
   const [cardsByTab, setCardsByTab] = useState<Record<string, CardData[]>>({
     'Welcome message': [],
@@ -951,6 +1005,11 @@ const DashboardPage = () => {
   const cardDescLabel =
     activeTab === 'Portfolio' ? 'Project description' : 'Service description'
   const activeTabHeading = tabHeadingMap[activeTab] ?? activeTab
+  const multiImageTabs = new Set(['Welcome message', 'About'])
+  const isMultiImageTab = multiImageTabs.has(activeTab)
+  const activeTabFiles = sectionFiles[activeTab] ?? []
+  const activeTabPreviews = sectionPreview[activeTab] ?? []
+  const isMultiImageLimitReached = isMultiImageTab && activeTabFiles.length >= 3
 
 
   const handleStartEdit = (tab: string) => {
@@ -1123,15 +1182,31 @@ const DashboardPage = () => {
 
 
 
+  const updateSectionFilesAndPreviews = (tab: string, files: File[]) => {
+    setSectionFiles((prev) => ({ ...prev, [tab]: files }))
+    setSectionPreview((prev) => {
+      prev[tab]?.forEach((url) => URL.revokeObjectURL(url))
+      const nextPreviews = files.map((file) => URL.createObjectURL(file))
+      return { ...prev, [tab]: nextPreviews }
+    })
+  }
+
   const handleSectionFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ? Array.from(event.target.files) : []
-    setSectionFiles((prev) => ({ ...prev, [activeTab]: files }))
-    setSectionPreview((prev) => {
-      const previous = prev[activeTab]
-      if (previous) URL.revokeObjectURL(previous)
-      const nextPreview = files[0] ? URL.createObjectURL(files[0]) : null
-      return { ...prev, [activeTab]: nextPreview }
-    })
+    if (activeTab === 'Welcome message' || activeTab === 'About') {
+      const existing = sectionFiles[activeTab] ?? []
+      const combined = [...existing, ...files].slice(0, 3)
+      updateSectionFilesAndPreviews(activeTab, combined)
+    } else {
+      updateSectionFilesAndPreviews(activeTab, files)
+    }
+    event.currentTarget.value = ''
+  }
+
+  const handleRemoveSectionImage = (tab: string, index: number) => {
+    const files = sectionFiles[tab] ?? []
+    const nextFiles = files.filter((_, fileIndex) => fileIndex !== index)
+    updateSectionFilesAndPreviews(tab, nextFiles)
   }
 
   const activeCards = cardsByTab[activeTab] ?? []
@@ -1197,6 +1272,10 @@ const DashboardPage = () => {
     setAccreditationCards((prev) => [...prev, createCard()])
   }
 
+  const removeAccreditationCard = (id: string) => {
+    setAccreditationCards((prev) => prev.filter((card) => card.id !== id))
+  }
+
   // Testimonial functions
   const updateTestimonial = (id: string, patch: Partial<TestimonialData>) => {
     setTestimonials((prev) =>
@@ -1222,6 +1301,10 @@ const DashboardPage = () => {
 
   const addTestimonial = () => {
     setTestimonials((prev) => [...prev, createTestimonial()])
+  }
+
+  const removeTestimonial = (id: string) => {
+    setTestimonials((prev) => prev.filter((testimonial) => testimonial.id !== id))
   }
 
   // Forms functions
@@ -1274,6 +1357,16 @@ const DashboardPage = () => {
 
   const addFAQ = () => {
     setFaqs((prev) => [...prev, createFAQ()])
+  }
+
+  const moveFAQ = (from: number | null, to: number | null) => {
+    if (from === null || to === null || from === to) return
+    setFaqs((prev) => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return next
+    })
   }
 
   const handleAddFAQFromModal = () => {
@@ -1747,33 +1840,69 @@ const DashboardPage = () => {
 
                       {activeTab !== 'Privacy' && activeTab !== 'T&C' && (
                         <div className="mt-6 flex items-center gap-4">
-                          <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
-                            {sectionPreview[activeTab] ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={sectionPreview[activeTab] ?? ''}
-                                alt="Uploaded preview"
-                                className="h-full w-full rounded-lg object-cover"
-                              />
-                            ) : (
-                              <ImageIcon className="h-6 w-6" />
-                            )}
-                          </div>
+                          {isMultiImageTab ? (
+                            <div className="flex items-center gap-3">
+                              {activeTabPreviews.length ? (
+                                activeTabPreviews.map((previewUrl, index) => (
+                                  <div
+                                    key={`${previewUrl}-${index}`}
+                                    className="group relative flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400"
+                                  >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={previewUrl}
+                                      alt="Uploaded preview"
+                                      className="h-full w-full rounded-lg object-cover"
+                                    />
+                                    <button
+                                      onClick={() => handleRemoveSectionImage(activeTab, index)}
+                                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 opacity-0 shadow-sm transition group-hover:opacity-100"
+                                      type="button"
+                                    >
+                                      <CloseIcon className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
+                                  <ImageIcon className="h-6 w-6" />
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex h-26 w-26 items-center justify-center rounded-md border border-slate-200 bg-[#E2E6EC] text-slate-400">
+                              {sectionPreview[activeTab]?.[0] ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={sectionPreview[activeTab]?.[0] ?? ''}
+                                  alt="Uploaded preview"
+                                  className="h-full w-full rounded-lg object-cover"
+                                />
+                              ) : (
+                                <ImageIcon className="h-6 w-6" />
+                              )}
+                            </div>
+                          )}
                           <div className="flex-1 px-2">
                             <p className="text-xs italic text-slate-500">
                               Upload upto 3 images, each less than 5MB (1240 x 600)
                             </p>
                             <div className="mt-3 py-2 px-2 rounded-sm max-w-95.75 flex items-center bg-[#F8FCFF] gap-3">
-                              <label className="cursor-pointer rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD]">
-                                Choose File
-                                <input
-                                  className="hidden"
-                                  type="file"
-                                  multiple
-                                  accept="image/*"
-                                  onChange={handleSectionFileChange}
-                                />
-                              </label>
+                            <label
+                              className={`rounded-md border border-[#0F67FD] bg-[#F8FCFF] px-4 py-2 text-sm font-semibold text-[#0F67FD] ${
+                                isMultiImageLimitReached ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                              }`}
+                            >
+                              Choose File
+                              <input
+                                className="hidden"
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                disabled={isMultiImageLimitReached}
+                                onChange={handleSectionFileChange}
+                              />
+                            </label>
                               <span className="text-sm text-slate-500">
                                 {sectionFiles[activeTab]?.length
                                   ? sectionFiles[activeTab].map((file) => file.name).join(', ')
@@ -1889,8 +2018,28 @@ const DashboardPage = () => {
                 {activeTab === 'FAQs' && (
                   <div className="mt-6">
                     <div className="space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
-                      {faqs.map((faq) => (
-                        <div key={faq.id} className="rounded-xl border border-slate-200 bg-white p-6">
+                      {faqs.map((faq, index) => (
+                        <div
+                          key={faq.id}
+                          className="rounded-xl border border-slate-200 bg-white p-6 cursor-grab hover:cursor-grab active:cursor-grabbing"
+                          draggable
+                          onDragStart={() => (faqDragItem.current = index)}
+                          onDragOver={(event) => {
+                            event.preventDefault()
+                            faqDragOver.current = index
+                            event.dataTransfer.dropEffect = 'move'
+                          }}
+                          onDrop={(event) => {
+                            event.preventDefault()
+                            moveFAQ(faqDragItem.current, index)
+                            faqDragItem.current = null
+                            faqDragOver.current = null
+                          }}
+                          onDragEnd={() => {
+                            faqDragItem.current = null
+                            faqDragOver.current = null
+                          }}
+                        >
                           <div className="flex items-start gap-4">
                             <div className="shrink-0 mt-1">
                               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -2788,6 +2937,12 @@ const DashboardPage = () => {
                                     <input
                                       defaultValue={row.price}
                                       placeholder="."
+                                      inputMode="decimal"
+                                      pattern="\\d*"
+                                      onInput={(event) => {
+                                        const target = event.currentTarget
+                                        target.value = target.value.replace(/[^0-9.]/g, '')
+                                      }}
                                       className="w-full bg-transparent text-xs text-slate-700 outline-none"
                                     />
                                   </div>
@@ -2795,6 +2950,14 @@ const DashboardPage = () => {
                                 <td className="border border-slate-100 px-4 py-3 text-center">
                                   <input
                                     defaultValue={row.stock}
+                                    type="number"
+                                    inputMode="numeric"
+                                    min="0"
+                                    step="1"
+                                    onInput={(event) => {
+                                      const target = event.currentTarget
+                                      target.value = target.value.replace(/\\D/g, '')
+                                    }}
                                     className="mx-auto h-7 w-24 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-700"
                                   />
                                 </td>
@@ -3251,6 +3414,8 @@ const DashboardPage = () => {
                     onImageChange={(event) =>
                       handleAccreditationCardImageChange(card.id, event)
                     }
+                    showDelete={accreditationCards.length > 1}
+                    onDelete={() => removeAccreditationCard(card.id)}
                   />
                 ))}
                 <div className="w-full self-start">
@@ -3270,7 +3435,17 @@ const DashboardPage = () => {
 
               <div className="mt-5 grid gap-6 lg:grid-cols-[2fr_1fr]">
                 {testimonials.map((testimonial) => (
-                  <div key={testimonial.id} className="rounded-xl shadow shadow-gray-200 bg-white p-3">
+                  <div key={testimonial.id} className="relative rounded-xl shadow shadow-gray-200 bg-white p-3">
+                    {testimonials.length > 1 && (
+                      <button
+                        onClick={() => removeTestimonial(testimonial.id)}
+                        type="button"
+                        className="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-rose-200 bg-rose-500 text-white shadow-sm"
+                        aria-label="Remove testimonial"
+                      >
+                        <CloseIcon className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                     <div className="grid gap-6 ">
                       <div className="space-y-4">
                         <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
@@ -3872,6 +4047,8 @@ const CardForm = ({
   onTitleChange,
   onDescriptionChange,
   onImageChange,
+  showDelete = false,
+  onDelete,
 }: {
   titleLabel: string
   descLabel: string
@@ -3879,8 +4056,20 @@ const CardForm = ({
   onTitleChange: (value: string) => void
   onDescriptionChange: (value: string) => void
   onImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  showDelete?: boolean
+  onDelete?: () => void
 }) => (
-  <div className="space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
+  <div className="relative space-y-4 flex flex-col justify-center rounded-xl shadow bg-white p-3">
+    {showDelete && onDelete && (
+      <button
+        onClick={onDelete}
+        type="button"
+        className="absolute -right-2 -top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-rose-200 bg-rose-500 text-white shadow-sm"
+        aria-label="Remove card"
+      >
+        <CloseIcon className="h-3.5 w-3.5" />
+      </button>
+    )}
     <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200  px-4 py-6 text-center text-xs text-slate-500">
       {card.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

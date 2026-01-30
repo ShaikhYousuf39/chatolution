@@ -1,8 +1,25 @@
-const SettingsPage = () => (
+'use client'
+
+import { useState } from 'react'
+
+const SettingsPage = () => {
+  const [faviconName, setFaviconName] = useState('No File Chosen')
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(null)
+
+  const handleFaviconChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    if (faviconPreview) URL.revokeObjectURL(faviconPreview)
+    setFaviconPreview(URL.createObjectURL(file))
+    setFaviconName(file.name)
+    event.currentTarget.value = ''
+  }
+
+  return (
   <div className="min-h-screen bg-white text-slate-900">
     <div className="flex">
       <aside className="w-56 border-r border-slate-200 px-6 py-3">
-        <a href="/dashboard/content" className="flex items-center gap-2 text-sm text-slate-600">
+        <a href="/dashboard/portfolio/content" className="flex items-center gap-2 text-sm text-slate-600">
           <span className="flex h-7 w-7 items-center justify-center rounded-full ">
             <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
               <path d="M12.5 5l-5 5 5 5" stroke="#566273" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -70,21 +87,33 @@ const SettingsPage = () => (
             <div>
               <label className="text-sm font-semibold text-slate-700">Fav icon</label>
               <div className="mt-2 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#e9ebed] text-slate-400">
-
-                  <svg width="27" height="22" viewBox="0 0 27 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 2.68667C0 1.20286 1.20286 0 2.68667 0H23.7667C25.2505 0 26.4533 1.20286 26.4533 2.68667V19.22C26.4533 20.7038 25.2505 21.9067 23.7667 21.9067H2.68667C1.20286 21.9067 0 20.7038 0 19.22V2.68667ZM2.68667 1.24C1.88769 1.24 1.24 1.8877 1.24 2.68667V19.22C1.24 20.019 1.8877 20.6667 2.68667 20.6667H23.7667C24.5656 20.6667 25.2133 20.019 25.2133 19.22V2.68667C25.2133 1.8877 24.5656 1.24 23.7667 1.24H2.68667Z" fill="#B2B9C4" />
-                    <circle cx="6.19839" cy="5.78664" r="2.68667" fill="#B2B9C4" />
-                    <path d="M3.51172 16.52V16.1903C3.51172 15.7483 3.68731 15.3244 3.99987 15.0118L6.75783 12.2538C7.37021 11.6415 8.35559 11.618 8.9964 12.2006C9.63068 12.7772 10.6041 12.7609 11.2187 12.1633L16.3868 7.13884C17.0402 6.50357 18.0827 6.51091 18.7271 7.15532L22.8636 11.2918C23.1761 11.6044 23.3517 12.0283 23.3517 12.4703V16.52C23.3517 17.4404 22.6055 18.1866 21.6851 18.1866H5.17839C4.25791 18.1866 3.51172 17.4404 3.51172 16.52Z" fill="#B2B9C4" />
-                  </svg>
-
+                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-[#e9ebed] text-slate-400">
+                  {faviconPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={faviconPreview}
+                      alt="Favicon preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <svg width="27" height="22" viewBox="0 0 27 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M0 2.68667C0 1.20286 1.20286 0 2.68667 0H23.7667C25.2505 0 26.4533 1.20286 26.4533 2.68667V19.22C26.4533 20.7038 25.2505 21.9067 23.7667 21.9067H2.68667C1.20286 21.9067 0 20.7038 0 19.22V2.68667ZM2.68667 1.24C1.88769 1.24 1.24 1.8877 1.24 2.68667V19.22C1.24 20.019 1.8877 20.6667 2.68667 20.6667H23.7667C24.5656 20.6667 25.2133 20.019 25.2133 19.22V2.68667C25.2133 1.8877 24.5656 1.24 23.7667 1.24H2.68667Z" fill="#B2B9C4" />
+                      <circle cx="6.19839" cy="5.78664" r="2.68667" fill="#B2B9C4" />
+                      <path d="M3.51172 16.52V16.1903C3.51172 15.7483 3.68731 15.3244 3.99987 15.0118L6.75783 12.2538C7.37021 11.6415 8.35559 11.618 8.9964 12.2006C9.63068 12.7772 10.6041 12.7609 11.2187 12.1633L16.3868 7.13884C17.0402 6.50357 18.0827 6.51091 18.7271 7.15532L22.8636 11.2918C23.1761 11.6044 23.3517 12.0283 23.3517 12.4703V16.52C23.3517 17.4404 22.6055 18.1866 21.6851 18.1866H5.17839C4.25791 18.1866 3.51172 17.4404 3.51172 16.52Z" fill="#B2B9C4" />
+                    </svg>
+                  )}
                 </div>
                 <label className="flex items-center gap-3 rounded-lg  bg-[#F8FCFF] px-3 py-2 text-sm text-slate-600 cursor-pointer">
                   <span className="rounded-md border border-[#0F67FD] bg-[#F2F6FF] px-3 py-1 text-sm font-semibold text-[#0F67FD]">
                     Choose File
                   </span>
-                  <span>No File Chosen</span>
-                  <input className="hidden" type="file" accept="image/*" />
+                  <span>{faviconName}</span>
+                  <input
+                    className="hidden"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFaviconChange}
+                  />
                 </label>
               </div>
               <p className="mt-2 text-[14px] font-normal text-slate-500">
@@ -119,6 +148,7 @@ const SettingsPage = () => (
       </main>
     </div>
   </div>
-)
+  )
+}
 
 export default SettingsPage
