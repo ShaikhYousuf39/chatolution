@@ -105,12 +105,12 @@ export default function SignInPage() {
 
                 {/* Forgot + Sign up */}
                 <div className="flex items-center justify-between pt-1">
-                  <a
-                    href="#"
+                  <Link
+                    href="/forgetpassword"
                     className="text-sm text-slate-500 hover:text-slate-800"
                   >
                     Forgot your password?
-                  </a>
+                  </Link>
                   <a
                     href="/signup"
                     className="text-sm font-medium text-slate-900 hover:underline"
