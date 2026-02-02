@@ -427,6 +427,10 @@ export const DashboardSidebar = ({
                 }`}
             >
               <button
+                onClick={() => {
+                  onNavigate('/dashboard/e-commerce/profile')
+                  setProfileMenuOpen(false)
+                }}
                 className=" flex gap-3 w-full rounded-lg px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-slate-50"
                 type="button"
               >
@@ -650,6 +654,7 @@ const DashboardPage = () => {
     if (pathname?.startsWith('/dashboard/e-commerce/testimonials')) return 'Testimonials'
     if (pathname?.startsWith('/dashboard/e-commerce/forms')) return 'Forms'
     if (pathname?.startsWith('/dashboard/e-commerce/contact')) return 'Contact'
+    if (pathname?.startsWith('/dashboard/e-commerce/profile')) return 'Profile'
     return 'Content'
   })()
   const sidebarRoutes: Record<string, string> = {
@@ -963,6 +968,18 @@ const DashboardPage = () => {
   const [formNotifications, setFormNotifications] = useState(false)
   const [showFieldMenu, setShowFieldMenu] = useState(false)
   const [editingCustomFieldId, setEditingCustomFieldId] = useState<string | null>(null)
+
+  // Profile state
+  const [profileFirstName, setProfileFirstName] = useState('Joel')
+  const [profileLastName, setProfileLastName] = useState('Hipkins')
+  const [profileEmail, setProfileEmail] = useState('joelhipkins@gmail.com')
+  const [profileCurrentPassword, setProfileCurrentPassword] = useState('')
+  const [profileNewPassword, setProfileNewPassword] = useState('')
+  const [profileAvatarName, setProfileAvatarName] = useState('')
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null)
+  const [showProfileCurrentPassword, setShowProfileCurrentPassword] = useState(false)
+  const [showProfileNewPassword, setShowProfileNewPassword] = useState(false)
+  const profileAvatarInputRef = useRef<HTMLInputElement | null>(null)
 
   // FAQs state
   const [faqs, setFaqs] = useState<FAQData[]>([
@@ -3827,8 +3844,218 @@ const DashboardPage = () => {
             </div>
           )}
 
+          {activeSidebarSection === 'Profile' && (
+            <div className="w-full">
+              <div className="mx-auto w-full max-w-[700px]">
+                <h1 className="text-xl font-medium">Profile</h1>
+                <p className="mt-2 text-sm text-slate-500">
+                  Manage the personal and professional information that represents you on the platform.
+                </p>
+
+                <div className="mt-7 rounded-xl border border-slate-100 bg-white p-6 shadow shadow-gray-100">
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-sm font-semibold text-slate-700">Avatar</h2>
+                      <div className="mt-4 flex flex-wrap items-center gap-4">
+                        <div className="relative">
+                          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#C7E3EC] text-sm font-semibold uppercase text-[#1C7089]">
+                            {profileAvatarUrl ? (
+                              <img
+                                src={profileAvatarUrl}
+                                alt="Profile avatar"
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              (profileFirstName[0] || 'J') + (profileLastName[0] || 'H')
+                            )}
+                          </div>
+                          {profileAvatarUrl && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                URL.revokeObjectURL(profileAvatarUrl)
+                                setProfileAvatarUrl(null)
+                                setProfileAvatarName('')
+                              }}
+                              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-white text-slate-500 shadow-sm hover:text-slate-700"
+                              aria-label="Remove avatar"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => profileAvatarInputRef.current?.click()}
+                          className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                          type="button"
+                        >
+                          Choose
+                        </button>
+                        <input
+                          ref={profileAvatarInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0]
+                            if (!file) return
+                            if (profileAvatarUrl) URL.revokeObjectURL(profileAvatarUrl)
+                            const url = URL.createObjectURL(file)
+                            setProfileAvatarName(file.name)
+                            setProfileAvatarUrl(url)
+                            event.target.value = ''
+                          }}
+                        />
+                        <div className="text-xs text-slate-400">
+                          {profileAvatarName ? profileAvatarName : 'JPG, GIF or PNG. 1MB Max.'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-6">
+                      <h2 className="text-sm font-semibold text-slate-700">Account Info</h2>
+                      <div className="mt-4 grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-600">First Name</label>
+                          <input
+                            value={profileFirstName}
+                            onChange={(event) => setProfileFirstName(event.target.value)}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-600">Last Name</label>
+                          <input
+                            value={profileLastName}
+                            onChange={(event) => setProfileLastName(event.target.value)}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-4 flex justify-end">
+                        <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700" type="button">
+                          Save
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-6">
+                      <h2 className="text-sm font-semibold text-slate-700">Update email address</h2>
+                      <div className="mt-4 space-y-2">
+                        <label className="text-xs font-semibold text-slate-600">New email address</label>
+                        <input
+                          value={profileEmail}
+                          onChange={(event) => setProfileEmail(event.target.value)}
+                          className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
+                        />
+                      </div>
+                      <div className="mt-4 flex justify-end">
+                        <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700" type="button">
+                          Change
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-6">
+                      <h2 className="text-sm font-semibold text-slate-700">Change password</h2>
+                      <div className="mt-4 space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-600">Current password</label>
+                          <div className="relative">
+                            <input
+                              value={profileCurrentPassword}
+                              onChange={(event) => setProfileCurrentPassword(event.target.value)}
+                              type={showProfileCurrentPassword ? 'text' : 'password'}
+                              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 pr-10 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowProfileCurrentPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
+                              aria-label={showProfileCurrentPassword ? 'Hide password' : 'Show password'}
+                            >
+                              {showProfileCurrentPassword ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M3 3L21 21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                                  <path d="M10.7 5.1C11.1 5 11.5 5 12 5c5 0 9.3 3.2 11 7-0.7 1.5-1.8 2.9-3.1 4.1M6.5 6.5C4.6 7.8 3.2 9.8 2 12c1.7 3.8 6 7 10 7 2 0 3.8-0.5 5.3-1.4M9.9 9.9c-0.6 0.6-0.9 1.4-0.9 2.1 0 1.7 1.4 3 3 3 0.8 0 1.6-0.3 2.1-0.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-slate-600">New password</label>
+                          <div className="relative">
+                            <input
+                              value={profileNewPassword}
+                              onChange={(event) => setProfileNewPassword(event.target.value)}
+                              type={showProfileNewPassword ? 'text' : 'password'}
+                              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 pr-10 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowProfileNewPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
+                              aria-label={showProfileNewPassword ? 'Hide password' : 'Show password'}
+                            >
+                              {showProfileNewPassword ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M3 3L21 21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                                  <path d="M10.7 5.1C11.1 5 11.5 5 12 5c5 0 9.3 3.2 11 7-0.7 1.5-1.8 2.9-3.1 4.1M6.5 6.5C4.6 7.8 3.2 9.8 2 12c1.7 3.8 6 7 10 7 2 0 3.8-0.5 5.3-1.4M9.9 9.9c-0.6 0.6-0.9 1.4-0.9 2.1 0 1.7 1.4 3 3 3 0.8 0 1.6-0.3 2.1-0.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                          <div className="mt-3 grid gap-2 text-xs text-slate-500 sm:grid-cols-2">
+                            {[
+                              { label: 'At least 8 characters', ok: profileNewPassword.length >= 8 },
+                              { label: 'At least one uppercase letter', ok: /[A-Z]/.test(profileNewPassword) },
+                              { label: 'At least one number', ok: /\d/.test(profileNewPassword) },
+                              { label: 'At least one lowercase letter', ok: /[a-z]/.test(profileNewPassword) },
+                            ].map((rule) => (
+                              <div key={rule.label} className="flex items-center gap-2">
+                                <span
+                                  className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold ${rule.ok ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
+                                    }`}
+                                  aria-hidden="true"
+                                >
+                                  {rule.ok ? '✓' : '×'}
+                                </span>
+                                <span className={rule.ok ? 'text-emerald-700' : 'text-slate-500'}>
+                                  {rule.label}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex justify-end">
+                        <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700" type="button">
+                          Update password
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeSidebarSection !== 'Product' &&
             activeSidebarSection !== 'Categories' &&
+            activeSidebarSection !== 'Profile' &&
             activeTab !== 'Returns & Refunds' && (
               <div className="mt-auto flex justify-end pt-12">
                 <div className="flex items-center gap-4">
