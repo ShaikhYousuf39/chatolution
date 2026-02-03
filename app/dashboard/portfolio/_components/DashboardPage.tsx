@@ -369,7 +369,7 @@ export const DashboardSidebar = ({
                   onNavigate('/dashboard/portfolio/profile')
                   setProfileMenuOpen(false)
                 }}
-                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-50"
+                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:cursor-pointer hover:bg-slate-50"
                 type="button"
               >
 
@@ -381,7 +381,7 @@ export const DashboardSidebar = ({
                 My Profile
               </button>
               <button
-                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-rose-600 transition hover:bg-rose-50"
+                className="flex gap-3 w-full rounded-lg px-3 py-2 text-sm text-rose-600 transition hover:cursor-pointer hover:bg-rose-50"
                 type="button"
               >
 
