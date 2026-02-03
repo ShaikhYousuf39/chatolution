@@ -1,9 +1,87 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+const cityToProvinceMap: Record<string, string> = {
+    karachi: 'Sindh',
+    hyderabad: 'Sindh',
+    sukkur: 'Sindh',
+    lahore: 'Punjab',
+    rawalpindi: 'Punjab',
+    faisalabad: 'Punjab',
+    multan: 'Punjab',
+    sialkot: 'Punjab',
+    gujranwala: 'Punjab',
+    bahawalpur: 'Punjab',
+    'rahim yar khan': 'Punjab',
+    islamabad: 'Islamabad Capital Territory',
+    peshawar: 'Khyber Pakhtunkhwa',
+    mardan: 'Khyber Pakhtunkhwa',
+    abbottabad: 'Khyber Pakhtunkhwa',
+    swat: 'Khyber Pakhtunkhwa',
+    quetta: 'Balochistan',
+    moscow: 'Moscow',
+    'saint petersburg': 'Saint Petersburg',
+    kazan: 'Tatarstan',
+    sochi: 'Krasnodar Krai',
+    berlin: 'Berlin',
+    munich: 'Bavaria',
+    hamburg: 'Hamburg',
+    frankfurt: 'Hesse',
+    cologne: 'North Rhine-Westphalia',
+    london: 'England',
+    manchester: 'England',
+    birmingham: 'England',
+    edinburgh: 'Scotland',
+    glasgow: 'Scotland',
+    rome: 'Lazio',
+    milan: 'Lombardy',
+    venice: 'Veneto',
+    florence: 'Tuscany',
+    naples: 'Campania',
+    paris: 'Ile-de-France',
+    lyon: 'Auvergne-Rhone-Alpes',
+    marseille: "Provence-Alpes-Cote d'Azur",
+    toulouse: 'Occitanie',
+    nice: "Provence-Alpes-Cote d'Azur",
+    madrid: 'Community of Madrid',
+    barcelona: 'Catalonia',
+    valencia: 'Valencian Community',
+    seville: 'Andalusia',
+    bilbao: 'Basque Country',
+    brussels: 'Brussels-Capital Region',
+    antwerp: 'Flanders',
+    ghent: 'Flanders',
+    bruges: 'Flanders',
+    liege: 'Wallonia',
+    copenhagen: 'Capital Region of Denmark',
+    aarhus: 'Central Denmark Region',
+    odense: 'Region of Southern Denmark',
+    aalborg: 'North Denmark Region',
+    stockholm: 'Stockholm County',
+    gothenburg: 'Vastra Gotaland County',
+    malmo: 'Skane County',
+    uppsala: 'Uppsala County',
+    'lund': 'Skane County',
+}
 
 const CheckoutPage = () => {
     const router = useRouter()
+    const [city, setCity] = useState('')
+    const [province, setProvince] = useState('')
+
+    const normalizedCity = city.trim().toLowerCase()
+    const matchedProvince = normalizedCity ? cityToProvinceMap[normalizedCity] : ''
+    const availableProvinces = matchedProvince ? [matchedProvince] : []
+
+    const handleCityChange = (value: string) => {
+        setCity(value)
+        const normalized = value.trim().toLowerCase()
+        const nextProvince = normalized ? cityToProvinceMap[normalized] : ''
+        setProvince(nextProvince || '')
+    }
+
     return (
         <div className="min-h-screen bg-[#F3F4F6] text-slate-900">
             <header className="bg-white">
@@ -152,8 +230,27 @@ const CheckoutPage = () => {
                                 </div>
                                 <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Apartment, suite, etc. (optional)" />
                                 <div className="grid gap-3 sm:grid-cols-3">
-                                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="City" />
-                                    <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Province" />
+                                    <input
+                                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                                        placeholder="City"
+                                        value={city}
+                                        onChange={(event) => handleCityChange(event.target.value)}
+                                    />
+                                    <select
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                        value={province}
+                                        onChange={(event) => setProvince(event.target.value)}
+                                        disabled={availableProvinces.length === 0}
+                                    >
+                                        <option value="">
+                                            {availableProvinces.length === 0 ? 'Province' : 'Select province'}
+                                        </option>
+                                        {availableProvinces.map((provinceName) => (
+                                            <option key={provinceName} value={provinceName}>
+                                                {provinceName}
+                                            </option>
+                                        ))}
+                                    </select>
                                     <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Postal code" />
                                 </div>
                             </div>

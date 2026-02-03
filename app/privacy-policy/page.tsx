@@ -6,7 +6,9 @@ export default function PrivacyPolicyPage() {
       <header className="absolute top-0 w-full z-10 bg-transparent py-4">
         <div className="mx-auto flex w-full max-w-[1160px] items-center justify-between px-5">
           <div className="flex items-center gap-2 text-2xl font-bold">
+            <Link href="/">
             <img src="/assetes/Group.svg" alt="Chatolution logo" className="h-8 w-8" />
+            </Link>
             <span className="hidden md:block">Chatolution</span>
           </div>
           <nav className="hidden items-center gap-8 md:flex">

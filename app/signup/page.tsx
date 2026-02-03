@@ -134,7 +134,7 @@ export default function SignUpPage() {
                                             className=" h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
                                         <label htmlFor="terms" className="text-[10px] sm:text-[12px] text-slate-600 sm:whitespace-nowrap">
-                                            I agree to the <a href="#" className="font-medium text-blue-600 hover:underline">Services Agreement</a> and the <a href="#" className="font-medium text-blue-600 hover:underline">Privacy Policy</a>
+                                            I agree to the <a href="/services-agreement" className="font-medium text-blue-600 hover:underline">Services Agreement</a> and the <a href="/privacy-policy" className="font-medium text-blue-600 hover:underline">Privacy Policy</a>
                                         </label>
                                     </div>
 
