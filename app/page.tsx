@@ -16,13 +16,13 @@ export default function Home() {
             <span className="hidden md:block">Chatolution</span>
           </div>
           <nav className="hidden items-center gap-8 md:flex">
-            <Link href="#" className="text-sm font-bold text-[#4F46E5]">
+            <Link href="#benifits" className="text-sm font-bold text-[#4F46E5]">
               Benefits
             </Link>
-            <Link href="#" className="text-sm font-bold text-black hover:text-[#4F46E5]">
+            <Link href="#pricing" className="text-sm font-bold text-black hover:text-[#4F46E5]">
               Pricing
             </Link>
-            <Link href="#" className="text-sm font-bold text-black hover:text-[#4F46E5]">
+            <Link href="#trynow" className="text-sm font-bold text-black hover:text-[#4F46E5]">
               Try Now
             </Link>
           </nav>
@@ -149,7 +149,7 @@ export default function Home() {
 
 
 
-          <div className="bg-[#F9FAFB] px-5 py-24 text-center">
+          <div id='benifits' className="bg-[#F9FAFB] px-5 py-24 text-center">
             <div className="mx-auto max-w-[900px]">
               <div className="mx-auto w-fit rounded-full bg-[#DFE9FA] px-4 py-1 text-sm font-semibold text-[#00A4FF]">
                 Benefits
@@ -225,7 +225,7 @@ export default function Home() {
               </div>
               {index === 2 && (
                 <div className="mt-16 bg-[radial-gradient(circle,rgba(191,213,252,0.5)_0%,rgba(255,255,255,0.5)_80%)] px-5 pt-20 pb-0 text-center">
-                  <div className="mx-auto max-w-[900px]">
+                  <div id='pricing' className="mx-auto max-w-[900px]">
                     <div className="mx-auto w-fit rounded-full bg-[#DFE9FA] px-4 py-1 text-sm font-semibold text-[#00A4FF]">
                       Pricing
                     </div>
@@ -324,8 +324,8 @@ export default function Home() {
             </div>
           ))}
 
-          <div className="bg-gradient-to-r from-white via-[#BFD5FC] to-[#F8DBBD] px-5 py-24 text-center">
-            <div className="mx-auto max-w-[900px]">
+          <div id='trynow' className="bg-gradient-to-r from-white via-[#BFD5FC] to-[#F8DBBD] px-5 py-24 text-center">
+            <div  className="mx-auto max-w-[900px]">
               <div className="mx-auto w-fit rounded-full bg-[#DFE9FA] px-4 py-1 text-sm font-semibold text-[#00A4FF]">
                 Try it now
               </div>
@@ -334,7 +334,7 @@ export default function Home() {
                 <span className="italic text-[#F59E0B]">Converting Conversations</span>
               </h2>
               <p className="mx-auto mt-6 max-w-[700px] text-lg text-[#4B5563]">
-                Stop losing users on long pages and confusing menus.  Give them instant answers, build trust, and guide them to take action through chat.  Set up your chat-based website in minutes and see the difference.
+                Stop losing users on long pages and confusing menus. Give them instant answers, build trust, and guide them to take action through chat. Set up your chat-based website in minutes and see the difference.
               </p>
               <button className="mt-8 inline-flex items-center gap-2 rounded-[14px] bg-black px-10 py-4 text-base font-semibold text-white">
                 Start Your Chatolution Now!
@@ -357,9 +357,9 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-100 bg-white px-5 py-10">
-        <div className="mx-auto flex w-full max-w-[1160px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-4">
+      <footer className="border-t border-slate-100 bg-[#ECEDF0] px-5 py-8">
+        <div className="mx-auto flex w-full max-w-[1160px] flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-xl font-bold">
               <img src="/assetes/Group.svg" alt="Chatolution Logo" className="h-8 w-8" />
               <span>Chatolution</span>
@@ -382,17 +382,17 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <div className="flex flex-col items-start gap-4 text-sm text-slate-500 md:items-end">
+          <div className="flex flex-col items-start gap-2 text-sm text-slate-500 md:items-end">
             <div className="flex items-center gap-2">
-              <a href="#" className="hover:text-slate-900">
+              <a href="#benifits" className="hover:text-slate-900">
                 Benefits
               </a>
-              <span className="text-slate-300">|</span>
-              <a href="#" className="hover:text-slate-900">
+              <span className="text-slate-300">·</span>
+              <a href="#pricing" className="hover:text-slate-900">
                 Pricing
               </a>
-              <span className="text-slate-300">|</span>
-              <a href="#" className="hover:text-slate-900">
+              <span className="text-slate-300">·</span>
+              <a href="#trynow" className="hover:text-slate-900">
                 Try Now
               </a>
             </div>
@@ -401,18 +401,27 @@ export default function Home() {
             </a>
           </div>
         </div>
-        <div className="mx-auto mt-8 h-px w-full max-w-[1160px] bg-slate-200" />
-        <div className="mx-auto mt-6 text-center text-sm text-slate-500">
-          Copyright Ac 2026 Chatolution. All Rights Reserved.
+        <div className="mx-auto mt-6 h-px w-full max-w-[1160px] bg-slate-200" />
+        <div className="mx-auto mt-4 flex w-full max-w-[1160px] flex-col gap-2 text-xs text-slate-500 md:flex-row md:items-center md:justify-between">
+          <span>Copyright © 2026 Chatolution. All Rights Reserved.</span>
+          <div className="flex items-center gap-2">
+            <Link href="/privacy-policy" className="hover:text-slate-900">
+              Privacy Policy
+            </Link>
+            <span className="text-slate-300">·</span>
+            <Link href="/services-agreement" className="hover:text-slate-900">
+              Services Agreement
+            </Link>
+          </div>
         </div>
       </footer>
 
-      <a
-        href="#chatbot"
+      <Link
+        href="/chatbot"
         className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#DFE9FA] shadow-lg"
       >
         <img src="/assetes/Group.svg" alt="Chatbot Logo" className="h-8 w-8" />
-      </a>
+      </Link>
     </div>
   );
 }

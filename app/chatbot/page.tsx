@@ -2,6 +2,7 @@
 "use client"
 
 import { useRef } from "react"
+import Link from "next/link"
 
 const HomeLandingPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
