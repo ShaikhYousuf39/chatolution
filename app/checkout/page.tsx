@@ -209,10 +209,10 @@ const CheckoutPage = () => {
                                     <button className="text-xs font-semibold text-blue-600" type="button">Log in</button>
                                 </div>
                                 <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Email or phone number" />
-                                <label className="flex items-center gap-2 text-xs text-slate-500">
+                                {/* <label className="flex items-center gap-2 text-xs text-slate-500">
                                     <input type="checkbox" className="h-3 w-3 rounded border-slate-300" />
                                     Email me with news and offers
-                                </label>
+                                </label> */}
 
                                 <select className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
                                     <option>Country/region</option>
@@ -405,10 +405,10 @@ const CheckoutPage = () => {
                                     <input className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Name on card" />
                                 </div>
 
-                                {/* <label className="flex items-center gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                                <label className="flex items-center gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
                                     <input type="checkbox" defaultChecked className="h-3 w-3 rounded border-slate-300" />
                                     Email me with news and offers
-                                </label> */}
+                                </label>
 
                                 <label className="flex items-center justify-between gap-2 border-t border-slate-200 px-3 py-2">
                                     <div className="flex items-center gap-2">
