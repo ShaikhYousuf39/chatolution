@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const cityToProvinceMap: Record<string, string> = {
     karachi: 'Sindh',
@@ -118,12 +119,14 @@ const CheckoutPage = () => {
                         </svg>
                     </div>
                     <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white">
+                        <Link href="/cart">
                         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
                             <path d="M2.49023 0C3.6794 0.000102597 4.66576 0.800703 4.97949 1.87012H17.4805C19.5831 1.87037 21.1894 3.58712 21.0381 5.68359L20.498 13.1836V13.1875C20.3583 15.0043 18.7759 16.49 16.9404 16.4902H6.29004C4.21307 16.4902 2.5751 14.716 2.75293 12.6455L3.58301 2.6875L3.58594 2.56934C3.57188 1.98655 3.09003 1.50012 2.49023 1.5H0.75C0.335786 1.5 0 1.16421 0 0.75C0 0.335786 0.335786 0 0.75 0H2.49023ZM4.24707 12.7725V12.7744C4.14506 13.9638 5.0871 14.9902 6.29004 14.9902H16.9404C17.9846 14.99 18.9217 14.1152 19.002 13.0723L19.542 5.57617C19.6304 4.35318 18.7172 3.37037 17.4805 3.37012H5.03027L4.24707 12.7725Z" fill="#566273" />
                             <path d="M15.5 19.5C15.5 19.2239 15.2761 19 15 19C14.7239 19 14.5 19.2239 14.5 19.5C14.5 19.7761 14.7239 20 15 20C15.2761 20 15.5 19.7761 15.5 19.5ZM17 19.5C17 20.6046 16.1046 21.5 15 21.5C13.8954 21.5 13 20.6046 13 19.5C13 18.3954 13.8954 17.5 15 17.5C16.1046 17.5 17 18.3954 17 19.5Z" fill="#566273" />
                             <path d="M7.5 19.5C7.5 19.2239 7.27614 19 7 19C6.72386 19 6.5 19.2239 6.5 19.5C6.5 19.7761 6.72386 20 7 20C7.27614 20 7.5 19.7761 7.5 19.5ZM9 19.5C9 20.6046 8.10457 21.5 7 21.5C5.89543 21.5 5 20.6046 5 19.5C5 18.3954 5.89543 17.5 7 17.5C8.10457 17.5 9 18.3954 9 19.5Z" fill="#566273" />
                             <path d="M19.75 6C20.1642 6 20.5 6.33579 20.5 6.75C20.5 7.16421 20.1642 7.5 19.75 7.5H7.75C7.33579 7.5 7 7.16421 7 6.75C7 6.33579 7.33579 6 7.75 6H19.75Z" fill="#566273" />
                         </svg>
+                        </Link>
                     </div>
                 </div>
             </header>
@@ -214,6 +217,57 @@ const CheckoutPage = () => {
                                 <select className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
                                     <option>Country/region</option>
                                     <option>USA</option>
+                                    <option>Canada</option>
+                                    <option>Albania</option>
+                                    <option>Andorra</option>
+                                    <option>Armenia</option>
+                                    <option>Austria</option>
+                                    <option>Azerbaijan</option>
+                                    <option>Belarus</option>
+                                    <option>Belgium</option>
+                                    <option>Bosnia and Herzegovina</option>
+                                    <option>Bulgaria</option>
+                                    <option>Croatia</option>
+                                    <option>Cyprus</option>
+                                    <option>Czechia</option>
+                                    <option>Denmark</option>
+                                    <option>Estonia</option>
+                                    <option>Finland</option>
+                                    <option>France</option>
+                                    <option>Georgia</option>
+                                    <option>Germany</option>
+                                    <option>Greece</option>
+                                    <option>Hungary</option>
+                                    <option>Iceland</option>
+                                    <option>Ireland</option>
+                                    <option>Italy</option>
+                                    <option>Kosovo</option>
+                                    <option>Latvia</option>
+                                    <option>Liechtenstein</option>
+                                    <option>Lithuania</option>
+                                    <option>Luxembourg</option>
+                                    <option>Malta</option>
+                                    <option>Moldova</option>
+                                    <option>Monaco</option>
+                                    <option>Montenegro</option>
+                                    <option>Netherlands</option>
+                                    <option>North Macedonia</option>
+                                    <option>Norway</option>
+                                    <option>Poland</option>
+                                    <option>Portugal</option>
+                                    <option>Romania</option>
+                                    <option>Russia</option>
+                                    <option>San Marino</option>
+                                    <option>Serbia</option>
+                                    <option>Slovakia</option>
+                                    <option>Slovenia</option>
+                                    <option>Spain</option>
+                                    <option>Sweden</option>
+                                    <option>Switzerland</option>
+                                    <option>Turkey</option>
+                                    <option>Ukraine</option>
+                                    <option>United Kingdom</option>
+                                    <option>Vatican City</option>
                                 </select>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                     <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="First name (optional)" />
@@ -321,7 +375,7 @@ const CheckoutPage = () => {
                                                     </clipPath>
                                                 </defs>
                                             </svg>
-                                        </span>
+                                        </span> 
                                     </div>
                                 </label>
 
@@ -351,14 +405,15 @@ const CheckoutPage = () => {
                                     <input className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Name on card" />
                                 </div>
 
-                                <label className="flex items-center gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                                {/* <label className="flex items-center gap-2 border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
                                     <input type="checkbox" defaultChecked className="h-3 w-3 rounded border-slate-300" />
                                     Email me with news and offers
-                                </label>
+                                </label> */}
 
                                 <label className="flex items-center justify-between gap-2 border-t border-slate-200 px-3 py-2">
                                     <div className="flex items-center gap-2">
-                                        <span className="h-4 w-4 rounded-full border border-slate-300" />
+                                        <input type="radio" />
+                                        {/* <span className="h-4 w-4 rounded-full border border-slate-300" /> */}
                                         PayPal
                                     </div>
                                     <span className="text-xs font-semibold text-blue-600">
@@ -374,7 +429,8 @@ const CheckoutPage = () => {
                                 </label>
 
                                 <label className="flex items-center gap-2 border-t border-slate-200 px-3 py-2">
-                                    <span className="h-4 w-4 rounded-full border border-slate-300" />
+                                    {/* <span className="h-4 w-4 rounded-full border border-slate-300" /> */}
+                                     <input type="radio" />
                                     Cash on Delivery (COD)
                                 </label>
                             </div>
