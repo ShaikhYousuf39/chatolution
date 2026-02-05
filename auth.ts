@@ -14,15 +14,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/signIn",
   },
   providers: [
-    (function () {
-      console.log("Debug: GOOGLE_CLIENT_ID present:", !!process.env.GOOGLE_CLIENT_ID);
-      console.log("Debug: GOOGLE_CLIENT_ID length:", process.env.GOOGLE_CLIENT_ID?.length);
-      console.log("Debug: GOOGLE_CLIENT_SECRET present:", !!process.env.GOOGLE_CLIENT_SECRET);
-      return Google({
-        clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      });
-    })(),
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     MicrosoftEntraID({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID ?? "",
       clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET ?? "",
