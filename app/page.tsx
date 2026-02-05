@@ -224,7 +224,7 @@ export default function Home() {
                 </div>
               </div>
               {index === 2 && (
-                <div className="mt-16 bg-[radial-gradient(circle,rgba(191,213,252,0.5)_0%,rgba(255,255,255,0.5)_80%)] px-5 pt-20 pb-0 text-center">
+                <div className="mt-16 bg-[radial-gradient(circle,#bfd5fc80_0%,#f9fafb_55%)] px-5 pt-20 pb-0 text-center">
                   <div id='pricing' className="mx-auto max-w-[900px]">
                     <div className="mx-auto w-fit rounded-full bg-[#DFE9FA] px-4 py-1 text-sm font-semibold text-[#00A4FF]">
                       Pricing

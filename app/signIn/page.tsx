@@ -3,12 +3,40 @@
 import Image from "next/image";
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setIsSubmitting(false);
+
+    if (result?.error) {
+      setError("Invalid email or password.");
+      return;
+    }
+
+    router.push("/");
   };
   return (
     <main className="min-h-screen bg-white overflow-hidden">
@@ -39,7 +67,7 @@ export default function SignInPage() {
                 Sign in to your account.
               </p>
 
-              <form className="mt-2 space-y-2 sm:mt-8">
+              <form className="mt-2 space-y-2 sm:mt-8" onSubmit={handleSubmit}>
                 {/* Email */}
                 <div className="space-y-2">
                   <label
@@ -53,6 +81,8 @@ export default function SignInPage() {
                     name="email"
                     type="email"
                     placeholder="chatolution.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                     className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200"
                   />
                 </div>
@@ -71,6 +101,8 @@ export default function SignInPage() {
                       id="password"
                       type={showPassword ? 'text' : 'password'} // Toggle the input type
                       placeholder="••••••••"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
                       className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200"
                       name="password"
                     />
@@ -119,12 +151,17 @@ export default function SignInPage() {
                   </a>
                 </div>
 
+                {error ? (
+                  <p className="text-sm text-red-600">{error}</p>
+                ) : null}
+
                 {/* Sign in button */}
                 <button
                   type="submit"
-                  className="mt-2 h-11 w-full rounded-xl bg-black text-sm font-medium text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-black/20"
+                  disabled={isSubmitting}
+                  className="mt-2 h-11 w-full rounded-xl bg-black text-sm font-medium text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-black/20 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Sign In
+                  {isSubmitting ? "Signing in..." : "Sign In"}
                 </button>
 
                 {/* divider */}
@@ -137,14 +174,14 @@ export default function SignInPage() {
 
                 {/* SSO buttons */}
                 <div className="space-y-3">
-                  <SocialButton label="Log in with Google">
+                  <SocialButton label="Log in with Google" onClick={() => signIn("google", { redirectTo: "/" })}>
                     <img
                       src="/assetes/google-logo.png"
                       alt="Google"
                       className="h-full w-full object-contain "
                     />
                   </SocialButton>
-                  <SocialButton label="Log in with Microsoft">
+                  <SocialButton label="Log in with Microsoft" onClick={() => signIn("microsoft-entra-id", { redirectTo: "/" })}>
                     <MicrosoftIcon />
                   </SocialButton>
 
@@ -202,13 +239,16 @@ export default function SignInPage() {
 function SocialButton({
   label,
   children,
+  onClick,
 }: {
   label: string;
   children: React.ReactNode;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800 hover:bg-slate-50"
     >
       <span className="grid h-5 w-5 place-items-center">{children}</span>
@@ -229,6 +269,7 @@ function MicrosoftIcon() {
     </svg>
   );
 }
+
 
 
 

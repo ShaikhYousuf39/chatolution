@@ -1,14 +1,19 @@
 "use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignUpPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [selectedOption, setSelectedOption] = useState<'portfolio' | 'ecommerce'>('portfolio');
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
     const hasMinLength = password.length >= 8;
@@ -17,11 +22,40 @@ export default function SignUpPage() {
     const hasNumber = /\d/.test(password);
     const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here you would normally handle the actual sign up logic (API call)
-        // For now, we just redirect to the success page
-        router.push("/signup-success");
+        setError('');
+        setIsSubmitting(true);
+
+        const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            setError(data?.error ?? "Unable to create account.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        const result = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+        });
+
+        setIsSubmitting(false);
+
+        if (result?.error) {
+            setError("Account created, but sign in failed. Try signing in.");
+            return;
+        }
+
+        router.push("/");
     };
 
     return (
@@ -64,6 +98,8 @@ export default function SignUpPage() {
                                             id="email"
                                             type="email"
                                             placeholder="jessica.hanson@example.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             className="h-11 w-full rounded-lg border border-slate-100 bg-slate-50 px-4 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                         />
                                     </div>
@@ -182,11 +218,15 @@ export default function SignUpPage() {
                                     {/* Submit */}
                                     <button
                                         type="submit"
-                                        disabled={!termsAccepted || !isPasswordValid}
-                                        className={`w-full rounded-xl py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed ${termsAccepted && isPasswordValid ? 'bg-black hover:bg-slate-900' : 'bg-slate-200'}`}
+                                        disabled={!termsAccepted || !isPasswordValid || !email || isSubmitting}
+                                        className={`w-full rounded-xl py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed ${termsAccepted && isPasswordValid && email ? 'bg-black hover:bg-slate-900' : 'bg-slate-200'}`}
                                     >
-                                        Create free account
+                                        {isSubmitting ? 'Creating account...' : 'Create free account'}
                                     </button>
+
+                                    {error ? (
+                                        <p className="text-sm text-red-600 text-center">{error}</p>
+                                    ) : null}
 
                                     <div className="text-center">
                                         <span className="text-sm text-slate-600">Already have an account? </span>
@@ -197,6 +237,7 @@ export default function SignUpPage() {
                                         <button
                                             type="button"
                                             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                            onClick={() => signIn("google", { redirectTo: "/" })}
                                         >
                                             <img
                                                 src="/assetes/google-logo.png"
@@ -208,6 +249,7 @@ export default function SignUpPage() {
                                         <button
                                             type="button"
                                             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                            onClick={() => signIn("microsoft-entra-id", { redirectTo: "/" })}
                                         >
                                             <MicrosoftIcon />
                                             Microsoft
