@@ -1641,10 +1641,6 @@ const DashboardPage = () => {
                           icon={<DotListIcon className="h-4 w-4" />}
                           onClick={() => runEditorCommandFor(returnsPolicyRef, 'insertUnorderedList')}
                         />
-                        <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
-                        <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
-                        <ToolButton icon={<TextToolbarIcon className="h-4 w-4" />} />
-
                         <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
                           <span className="inline-flex items-center gap-2">
                             <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
@@ -1720,9 +1716,6 @@ const DashboardPage = () => {
                           icon={<DotListIcon className="h-4 w-4" />}
                           onClick={() => runEditorCommandFor(refundsPolicyRef, 'insertUnorderedList')}
                         />
-                        <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
-                        <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
-                        <ToolButton icon={<TextToolbarIcon className="h-5 w-5" />} />
                         <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
                           <span className="inline-flex items-center gap-2">
                             <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
@@ -2460,9 +2453,6 @@ const DashboardPage = () => {
                                   runEditorCommandFor(productDescriptionRef, 'insertUnorderedList')
                                 }
                               />
-                              <ToolButton icon={<ImageToolbarIcon className="h-4 w-4" />} />
-                              <ToolButton icon={<UploadToolbarIcon className="h-4 w-4" />} />
-                              <ToolButton icon={<TextToolbarIcon className="h-4 w-4" />} />
                               <button className="ml-auto shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-slate-500">
                                 <span className="inline-flex items-center gap-2">
                                   <TagIcon className="h-4 w-4 shrink-0 text-slate-500" />
