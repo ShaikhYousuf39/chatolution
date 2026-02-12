@@ -174,14 +174,14 @@ export default function SignInPage() {
 
                 {/* SSO buttons */}
                 <div className="space-y-3">
-                  <SocialButton label="Log in with Google" onClick={() => signIn("google", { redirectTo: "/" })}>
+                  <SocialButton label="Log in with Google" onClick={() => signIn("google", { callbackUrl: "/" })}>
                     <img
                       src="/assetes/google-logo.png"
                       alt="Google"
                       className="h-full w-full object-contain "
                     />
                   </SocialButton>
-                  <SocialButton label="Log in with Microsoft" onClick={() => signIn("microsoft-entra-id", { redirectTo: "/" })}>
+                  <SocialButton label="Log in with Microsoft" onClick={() => signIn("microsoft-entra-id", { callbackUrl: "/" })}>
                     <MicrosoftIcon />
                   </SocialButton>
 

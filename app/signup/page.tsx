@@ -237,7 +237,7 @@ export default function SignUpPage() {
                                         <button
                                             type="button"
                                             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
-                                            onClick={() => signIn("google", { redirectTo: "/" })}
+                                            onClick={() => signIn("google", { callbackUrl: "/" })}
                                         >
                                             <img
                                                 src="/assetes/google-logo.png"
@@ -249,7 +249,7 @@ export default function SignUpPage() {
                                         <button
                                             type="button"
                                             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
-                                            onClick={() => signIn("microsoft-entra-id", { redirectTo: "/" })}
+                                            onClick={() => signIn("microsoft-entra-id", { callbackUrl: "/" })}
                                         >
                                             <MicrosoftIcon />
                                             Microsoft

@@ -75,6 +75,60 @@ const standardColors = [
   '#f9a8d4',
 ]
 
+const orderStatusTabs = [
+  { label: 'All', count: 15 },
+  { label: 'Processing', count: 1 },
+  { label: 'Completed', count: 10 },
+  { label: 'Cancelled', count: 3 },
+  { label: 'Refund', count: 2 },
+]
+
+const orderRows = [
+  {
+    id: '#1234',
+    date: '20 Hours ago',
+    customer: 'Joel Hipkins',
+    status: 'Completed',
+    quantity: 2,
+    price: '$49.99',
+    total: '$99.98',
+  },
+  {
+    id: '#2254',
+    date: 'Fri 06, 2026',
+    customer: 'Dev Alpha',
+    status: 'Processing',
+    quantity: 1,
+    price: '$29.99',
+    total: '$29.99',
+  },
+  {
+    id: '#1837',
+    date: 'Thu 05, 2026',
+    customer: 'John Doe',
+    status: 'Cancelled',
+    quantity: 3,
+    price: '$10.99',
+    total: '$32.97',
+  },
+  {
+    id: '#2630',
+    date: 'Wed 04, 2026',
+    customer: 'David',
+    status: 'Refunded',
+    quantity: 1,
+    price: '$15.00',
+    total: '$15.00',
+  },
+]
+
+const orderStatusBadgeClasses: Record<string, string> = {
+  Completed: 'bg-emerald-50 text-emerald-600',
+  Processing: 'bg-blue-50 text-blue-600',
+  Cancelled: 'bg-rose-50 text-rose-600',
+  Refunded: 'bg-amber-50 text-amber-600',
+}
+
 
 type CardData = {
   id: string
@@ -649,6 +703,7 @@ const DashboardPage = () => {
 
   const activeSidebarSection = (() => {
     if (pathname?.startsWith('/dashboard/e-commerce/products')) return 'Product'
+    if (pathname?.startsWith('/dashboard/e-commerce/orders')) return 'Orders'
     if (pathname?.startsWith('/dashboard/e-commerce/categories')) return 'Categories'
     if (pathname?.startsWith('/dashboard/e-commerce/accreditation')) return 'Accreditation'
     if (pathname?.startsWith('/dashboard/e-commerce/testimonials')) return 'Testimonials'
@@ -659,12 +714,32 @@ const DashboardPage = () => {
   })()
   const sidebarRoutes: Record<string, string> = {
     Content: '/dashboard/e-commerce/content',
+    Orders: '/dashboard/e-commerce/orders',
     Categories: '/dashboard/e-commerce/categories',
     Accreditation: '/dashboard/e-commerce/accreditation',
     Testimonials: '/dashboard/e-commerce/testimonials',
     Forms: '/dashboard/e-commerce/forms',
     Contact: '/dashboard/e-commerce/contact',
   }
+
+  const [activeOrderTab, setActiveOrderTab] = useState('All')
+  const [orderSearch, setOrderSearch] = useState('')
+  const normalizedOrderSearch = orderSearch.trim().toLowerCase()
+  const filteredOrderRows = orderRows.filter((order) => {
+    const matchesStatus =
+      activeOrderTab === 'All' ||
+      (activeOrderTab === 'Refund'
+        ? order.status === 'Refunded'
+        : order.status === activeOrderTab)
+
+    if (!matchesStatus) return false
+    if (!normalizedOrderSearch) return true
+
+    return (
+      order.id.toLowerCase().includes(normalizedOrderSearch) ||
+      order.customer.toLowerCase().includes(normalizedOrderSearch)
+    )
+  })
 
   const isProductNew = pathname?.startsWith('/dashboard/e-commerce/products/new')
   const [productRows, setProductRows] = useState([
@@ -691,6 +766,18 @@ const DashboardPage = () => {
       imageAlt: 'Black hoodie',
     },
   ])
+  const [activeProductTab, setActiveProductTab] = useState('All')
+  const productStatusTabs = [
+    { label: 'All', count: productRows.length },
+    {
+      label: 'Published',
+      count: productRows.filter((row) => row.status === 'Published').length,
+    },
+  ]
+  const filteredProductRows =
+    activeProductTab === 'All'
+      ? productRows
+      : productRows.filter((row) => row.status === activeProductTab)
 
   const handleProductEdit = (sku: string) => {
     router.push(`/dashboard/e-commerce/products/new?sku=${encodeURIComponent(sku)}`)
@@ -2353,16 +2440,28 @@ const DashboardPage = () => {
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h1 className="text-xl font-semibold text-slate-900">Products</h1>
-                    <div className="mt-2 flex items-center gap-4 text-sm text-slate-500">
-                      <button
-                        className={`rounded-md px-2 py-1 text-sm font-medium ${!isProductNew ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                        onClick={() => router.push('/dashboard/e-commerce/products')}
-                      >
-                        All (2)
-                      </button>
-                      <button className="text-sm text-slate-500 hover:text-slate-700">
-                        Published (2)
-                      </button>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {productStatusTabs.map((tab) => {
+                        const isActive = activeProductTab === tab.label
+                        return (
+                          <button
+                            key={tab.label}
+                            onClick={() => setActiveProductTab(tab.label)}
+                            className={`inline-flex items-center gap-2 rounded-md border px-3 py-1 text-xs font-semibold transition ${isActive
+                              ? 'border-blue-600 bg-blue-50 text-blue-600'
+                              : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                              }`}
+                          >
+                            <span>{tab.label}</span>
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${isActive ? 'bg-white text-blue-600' : 'bg-slate-100 text-slate-500'
+                                }`}
+                            >
+                              {tab.count}
+                            </span>
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
                   <button
@@ -3076,7 +3175,7 @@ const DashboardPage = () => {
                     <div className="p-4">
                       <div className="overflow-x-auto rounded-lg border border-slate-200">
                         <table className="w-full text-left text-sm">
-                          <thead className="bg-slate-100 text-xs font-semibold text-slate-700">
+                          <thead className="bg-[#EBEBEB] bg-slate-100 text-xs font-semibold text-slate-700">
                             <tr>
                               <th className="px-4 py-3">Image</th>
                               <th className="px-4 py-3">Name</th>
@@ -3089,7 +3188,7 @@ const DashboardPage = () => {
                             </tr>
                           </thead>
                           <tbody className="text-slate-600">
-                            {productRows.map((row) => (
+                            {filteredProductRows.map((row) => (
                               <tr key={row.sku} className="border-t border-slate-200">
                                 <td className="px-4 py-3">
                                   <div className="grid h-10 w-10 place-items-center  rounded-lg bg-slate-100">
@@ -3138,6 +3237,132 @@ const DashboardPage = () => {
                   </div>
                 </>
               )}
+            </div>
+          )}
+
+          {activeSidebarSection === 'Orders' && (
+            <div className="space-y-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-semibold text-slate-900">Orders</h1>
+                </div>
+                <button className="rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:cursor-pointer">
+                  Preview
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {orderStatusTabs.map((tab) => {
+                  const isActive = activeOrderTab === tab.label
+                  return (
+                    <button
+                      key={tab.label}
+                      onClick={() => setActiveOrderTab(tab.label)}
+                      className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs text-slate-950 font-bold transition hover:cursor-pointer ${isActive
+                        ? 'border-blue-600 bg-blue-50 text-blue-600'
+                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                        }`}
+                    >
+                      <span>{tab.label}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${isActive ? 'bg-white text-blue-600' : 'bg-slate-100 text-slate-500'
+                          }`}
+                      >
+                        {tab.count}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <select className="h-9 rounded-lg border border-slate-200 bg-white px-3  text-xs text-slate-500">
+                    <option>Select status action</option>
+                    <option>Mark as completed</option>
+                    <option>Mark as cancelled</option>
+                    <option>Issue refund</option>
+                  </select>
+                  <button className="h-9 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white hover:cursor-pointer">
+                    Apply
+                  </button>
+                  <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-500">
+                    <option>All dates</option>
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>This year</option>
+                  </select>
+                </div>
+                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                  <div className="relative w-full sm:w-60">
+                    <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      value={orderSearch}
+                      onChange={(event) => setOrderSearch(event.target.value)}
+                      placeholder="Search order ID..."
+                      className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-xs text-slate-600 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <button className="h-9 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white hover:cursor-pointer ">
+                    Search Orders
+                  </button>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-slate-200/70 text-xs font-semibold text-slate-950">
+                      <tr>
+                        <th className="px-4 py-4">
+                          <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                        </th>
+                        <th className="px-4 py-4">Order</th>
+                        <th className="px-4 py-4">Date</th>
+                        <th className="px-4 py-4">Customer</th>
+                        <th className="px-4 py-4">Status</th>
+                        <th className="px-4 py-4">Quantity</th>
+                        <th className="px-4 py-4 text-right">Price</th>
+                        <th className="px-4 py-4 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-600">
+                      {filteredOrderRows.map((order) => (
+                        <tr key={order.id} className="border-t border-slate-200">
+                          <td className="px-4 py-4">
+                            <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                          </td>
+                          <td className="px-4 py-4 font-medium text-slate-950">{order.id}</td>
+                          <td className="px-4 py-4 text-sm text-slate-950">{order.date}</td>
+                          <td className="px-4 py-4 text-slate-950">{order.customer}</td>
+                          <td className="px-4 py-4">
+                            <span
+                              className={`inline-flex rounded-md px-2.5 py-1 text-xs font-semibold ${orderStatusBadgeClasses[order.status] ?? 'bg-slate-100 text-slate-600'
+                                }`}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-slate-950">{order.quantity}</td>
+                          <td className="px-4 py-4 text-right text-slate-950">{order.price}</td>
+                          <td className="px-4 py-4 text-right font-medium text-slate-900">{order.total}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {filteredOrderRows.length === 0 && (
+                  <div className="border-t border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+                    No orders found.
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end pt-6">
+                <button className="rounded-2xl bg-black px-10 py-4 text-sm font-semibold text-white shadow transition hover:cursor-pointer hover:bg-slate-800 active:scale-[0.98]">
+                  Submit
+                </button>
+              </div>
             </div>
           )}
 
@@ -4044,6 +4269,7 @@ const DashboardPage = () => {
           )}
 
           {activeSidebarSection !== 'Product' &&
+            activeSidebarSection !== 'Orders' &&
             activeSidebarSection !== 'Categories' &&
             activeSidebarSection !== 'Profile' &&
             activeTab !== 'Returns & Refunds' && (
@@ -4949,6 +5175,46 @@ const ProductIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const OrdersIcon = ({ className }: { className?: string }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <path
+      d="M17.7498 10.1914H14.8498C14.0332 10.1914 13.3082 10.6414 12.9415 11.3747L12.2415 12.7581C12.0748 13.0914 11.7415 13.2997 11.3748 13.2997H8.6415C8.38317 13.2997 8.0165 13.2414 7.77484 12.7581L7.07484 11.3831C6.70817 10.6581 5.97484 10.1997 5.1665 10.1997H2.24984C1.92484 10.1997 1.6665 10.4581 1.6665 10.7831V13.4997C1.6665 16.5247 3.48317 18.3331 6.5165 18.3331H13.4998C16.3582 18.3331 18.1165 16.7664 18.3332 13.9831V10.7747C18.3332 10.4581 18.0748 10.1914 17.7498 10.1914Z"
+      fill="currentColor"
+    />
+    <path
+      d="M13.4915 1.66699H6.50817C3.47484 1.66699 1.6665 3.47533 1.6665 6.50866V9.04199C1.84984 8.97533 2.04984 8.94199 2.24984 8.94199H5.1665C6.45817 8.94199 7.6165 9.65866 8.1915 10.817L8.8165 12.042H11.1998L11.8248 10.8087C12.3998 9.65866 13.5582 8.94199 14.8498 8.94199H17.7498C17.9498 8.94199 18.1498 8.97533 18.3332 9.04199V6.50866C18.3332 3.47533 16.5248 1.66699 13.4915 1.66699ZM8.70817 4.50866H11.2915C11.6082 4.50866 11.8748 4.76699 11.8748 5.08366C11.8748 5.40866 11.6082 5.66699 11.2915 5.66699H8.70817C8.3915 5.66699 8.12484 5.40866 8.12484 5.08366C8.12484 4.76699 8.3915 4.50866 8.70817 4.50866ZM11.9415 7.99199H8.05817C7.7415 7.99199 7.48317 7.73366 7.48317 7.41699C7.48317 7.09199 7.7415 6.83366 8.05817 6.83366H11.9415C12.2582 6.83366 12.5165 7.09199 12.5165 7.41699C12.5165 7.73366 12.2582 7.99199 11.9415 7.99199Z"
+      fill="currentColor"
+    />
+  </svg>
+)
+
+const OrdersActiveIcon = ({ className }: { className?: string }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <path
+      d="M17.7498 10.1914H14.8498C14.0332 10.1914 13.3082 10.6414 12.9415 11.3747L12.2415 12.7581C12.0748 13.0914 11.7415 13.2997 11.3748 13.2997H8.6415C8.38317 13.2997 8.0165 13.2414 7.77484 12.7581L7.07484 11.3831C6.70817 10.6581 5.97484 10.1997 5.1665 10.1997H2.24984C1.92484 10.1997 1.6665 10.4581 1.6665 10.7831V13.4997C1.6665 16.5247 3.48317 18.3331 6.5165 18.3331H13.4998C16.3582 18.3331 18.1165 16.7664 18.3332 13.9831V10.7747C18.3332 10.4581 18.0748 10.1914 17.7498 10.1914Z"
+      fill="#0F67FD"
+    />
+    <path
+      d="M13.4915 1.66699H6.50817C3.47484 1.66699 1.6665 3.47533 1.6665 6.50866V9.04199C1.84984 8.97533 2.04984 8.94199 2.24984 8.94199H5.1665C6.45817 8.94199 7.6165 9.65866 8.1915 10.817L8.8165 12.042H11.1998L11.8248 10.8087C12.3998 9.65866 13.5582 8.94199 14.8498 8.94199H17.7498C17.9498 8.94199 18.1498 8.97533 18.3332 9.04199V6.50866C18.3332 3.47533 16.5248 1.66699 13.4915 1.66699ZM8.70817 4.50866H11.2915C11.6082 4.50866 11.8748 4.76699 11.8748 5.08366C11.8748 5.40866 11.6082 5.66699 11.2915 5.66699H8.70817C8.3915 5.66699 8.12484 5.40866 8.12484 5.08366C8.12484 4.76699 8.3915 4.50866 8.70817 4.50866ZM11.9415 7.99199H8.05817C7.7415 7.99199 7.48317 7.73366 7.48317 7.41699C7.48317 7.09199 7.7415 6.83366 8.05817 6.83366H11.9415C12.2582 6.83366 12.5165 7.09199 12.5165 7.41699C12.5165 7.73366 12.2582 7.99199 11.9415 7.99199Z"
+      fill="#0F67FD"
+    />
+  </svg>
+)
+
 const CategoriesIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 20 20" fill="none" className={className}>
     <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
@@ -4959,6 +5225,7 @@ const CategoriesIcon = ({ className }: { className?: string }) => (
 )
 
 export const dashboardSidebarLinks = [
+  { label: 'Orders', icon: OrdersIcon, activeIcon: OrdersActiveIcon },
   { label: 'Categories', icon: CategoriesIcon, activeIcon: CategoriesIcon },
   { label: 'Accreditation', icon: AwardIcon, activeIcon: AccreditationActiveIcon },
   { label: 'Testimonials', icon: QuoteIcon, activeIcon: TestimonialActiveIcon },
