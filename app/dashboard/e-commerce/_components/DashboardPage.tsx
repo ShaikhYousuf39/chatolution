@@ -723,6 +723,8 @@ const DashboardPage = () => {
   }
 
   const [activeOrderTab, setActiveOrderTab] = useState('All')
+  const [orderStatusFilter, setOrderStatusFilter] = useState('')
+  const [orderSearchInput, setOrderSearchInput] = useState('')
   const [orderSearch, setOrderSearch] = useState('')
   const normalizedOrderSearch = orderSearch.trim().toLowerCase()
   const filteredOrderRows = orderRows.filter((order) => {
@@ -3143,7 +3145,7 @@ const DashboardPage = () => {
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                  <div className="flex flex-wrap items-center gap-4 rounded-xl  border-slate-200 bg-white px-4 py-3 ">
                     <div className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
                       <SearchIcon className="h-4 w-4" />
                       <input
@@ -3154,7 +3156,7 @@ const DashboardPage = () => {
                     <button className="h-9 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm">
                       Search Products
                     </button>
-                    <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 pl-2 text-sm text-slate-400">
+                    <select className="h-9 w-[20%] rounded-lg border border-slate-200 bg-white px-3 pl-2 text-sm text-slate-400">
                       <option>Select a category</option>
                     </select>
                     <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
@@ -3163,19 +3165,19 @@ const DashboardPage = () => {
                     <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-400">
                       <option>Filter by brand</option>
                     </select>
-                    <button className="ml-2 text-sm text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline">
+                    <button className="ml-2 text-sm text-slate-500 cursor-pointer underline underline-offset-2 hover:text-slate-700 ">
                       Reset
                     </button>
-                    <button className="ml-auto flex h-9 items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm">
+                    <button className="ml-auto flex h-9 items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm cursor-pointer">
                       Filter <FilterIcon className="h-4 w-4" />
                     </button>
                   </div>
 
-                  <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="mt-4 overflow-hidden rounded-xl   bg-white shadow-[0_8px_25px_-16px_rgba(15,23,42,0.18)]">
                     <div className="p-4">
                       <div className="overflow-x-auto rounded-lg border border-slate-200">
                         <table className="w-full text-left text-sm">
-                          <thead className="bg-[#EBEBEB] bg-slate-100 text-xs font-semibold text-slate-700">
+                          <thead className="bg-[#EBEBEB] bg-slate-100 text-xs font-semibold text-slate-950">
                             <tr>
                               <th className="px-4 py-3">Image</th>
                               <th className="px-4 py-3">Name</th>
@@ -3203,14 +3205,14 @@ const DashboardPage = () => {
                                     )}
                                   </div>
                                 </td>
-                                <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
-                                <td className="px-4 py-3">{row.sku}</td>
-                                <td className="px-4 py-3">{row.price}</td>
-                                <td className="px-4 py-3">{row.category}</td>
-                                <td className="px-4 py-3">{row.stock}</td>
-                                <td className="px-4 py-3">
-                                  <div className="text-xs text-slate-500">{row.date}</div>
-                                  <div className="text-xs text-slate-400">{row.status}</div>
+                                <td className="px-4 py-3 font-medium text-slate-950">{row.name}</td>
+                                <td className="px-4 py-3 text-slate-900">{row.sku}</td>
+                                <td className="px-4 py-3 text-slate-900">{row.price}</td>
+                                <td className="px-4 py-3 text-slate-900">{row.category}</td>
+                                <td className="px-4 py-3 text-slate-900">{row.stock}</td>
+                                <td className="px-4 py-3 text-slate-900">
+                                  <div className="text-xs text-slate-900">{row.date}</div>
+                                  <div className="text-xs text-slate-900">{row.status}</div>
                                 </td>
                                 <td className="px-4 py-3">
                                   <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1">
@@ -3277,13 +3279,24 @@ const DashboardPage = () => {
 
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <select className="h-9 rounded-lg border border-slate-200 bg-white px-3  text-xs text-slate-500">
-                    <option>Select status action</option>
-                    <option>Mark as completed</option>
-                    <option>Mark as cancelled</option>
-                    <option>Issue refund</option>
+                  <select
+                    value={orderStatusFilter}
+                    onChange={(event) => setOrderStatusFilter(event.target.value)}
+                    className="h-9 rounded-lg border border-slate-200 bg-white px-3  text-xs text-slate-500"
+                  >
+                    <option value="">Select status action</option>
+                    <option value="Completed">Mark as completed</option>
+                    <option value="Cancelled">Mark as cancelled</option>
+                    <option value="Processing">Mark as processing</option>
+                    <option value="Refunded">Mark as refunded</option>
                   </select>
-                  <button className="h-9 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white hover:cursor-pointer">
+                  <button
+                    onClick={() => {
+                      if (!orderStatusFilter) return
+                      setActiveOrderTab(orderStatusFilter === 'Refunded' ? 'Refund' : orderStatusFilter)
+                    }}
+                    className="h-9 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white hover:cursor-pointer"
+                  >
                     Apply
                   </button>
                   <select className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-500">
@@ -3297,13 +3310,16 @@ const DashboardPage = () => {
                   <div className="relative w-full sm:w-60">
                     <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
-                      value={orderSearch}
-                      onChange={(event) => setOrderSearch(event.target.value)}
+                      value={orderSearchInput}
+                      onChange={(event) => setOrderSearchInput(event.target.value)}
                       placeholder="Search order ID..."
                       className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-xs text-slate-600 placeholder:text-slate-400"
                     />
                   </div>
-                  <button className="h-9 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white hover:cursor-pointer ">
+                  <button
+                    onClick={() => setOrderSearch(orderSearchInput)}
+                    className="h-9 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white hover:cursor-pointer "
+                  >
                     Search Orders
                   </button>
                 </div>
